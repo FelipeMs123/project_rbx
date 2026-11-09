@@ -1,0 +1,6 @@
+# Normaliza finais de linha (evita conflitos falsos entre Windows/Mac/Linux)
+* text=auto eol=lf
+*.rbxl binary
+*.rbxlx binary
+*.rbxm binary
+*.rbxmx binary

@@ -2,7 +2,7 @@
 
 Jogo em desenvolvimento para o **Roblox**. 🎮
 
-> Status: 🟡 Planejamento. Veja o [documento de início de projeto](INICIO_PROJETO.md).
+> Status: 🟡 Planejamento. Veja o [documento de início de projeto](INICIO_PROJETO.md) e o [guia de contribuição](CONTRIBUINDO.md).
 
 ---
 
