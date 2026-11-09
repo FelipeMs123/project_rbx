@@ -1,0 +1,19 @@
+# Arquivos de place/modelo do Roblox (ficam na nuvem do Roblox / Team Create)
+*.rbxl
+*.rbxlx
+*.rbxl.lock
+*.rbxlx.lock
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+
+# Rojo / ferramentas
+sourcemap.json
