@@ -1,0 +1,32 @@
+# Quem precisa aprovar o PR quando ele mexe em cada pasta.
+# Ver docs/TIME.md. Squad A = @FelipeMs123, Squad B = @drkk71.
+
+# Padrão: qualquer arquivo sem dono abaixo precisa das duas squads
+*                                          @FelipeMs123 @drkk71
+
+# Squad A: dados de jogo, economia, blocos, HUD
+/src/shared/Config/Blocks.luau             @FelipeMs123
+/src/shared/Config/Areas.luau              @FelipeMs123
+/src/shared/Logic/Formulas.luau            @FelipeMs123
+/src/server/Services/EconomyService.luau   @FelipeMs123
+/src/server/Services/BlockService.luau     @FelipeMs123
+/src/client/Controllers/BlockController.luau @FelipeMs123
+/src/client/Controllers/HudController.luau @FelipeMs123
+/src/client/UI/Hud/                        @FelipeMs123
+
+# Squad B: pets, ovos, inventário
+/src/shared/Config/Pets.luau               @drkk71
+/src/shared/Config/Eggs.luau               @drkk71
+/src/shared/Logic/Inventory.luau           @drkk71
+/src/shared/Logic/WeightedRoll.luau        @drkk71
+/src/server/Services/PetService.luau       @drkk71
+/src/server/Services/EggService.luau       @drkk71
+/src/client/Controllers/PetController.luau @drkk71
+/src/client/Controllers/EggController.luau @drkk71
+/src/client/UI/Pets/                       @drkk71
+/src/client/UI/Eggs/                       @drkk71
+
+# Testes: dono do módulo testado (o padrão cobre o resto)
+/tests/Formulas.spec.luau                  @FelipeMs123
+/tests/Inventory.spec.luau                 @drkk71
+/tests/WeightedRoll.spec.luau              @drkk71

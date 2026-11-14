@@ -1,0 +1,15 @@
+# Roda o mesmo portão de qualidade do `lune run check` em todo PR e push na main.
+name: check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: CompeyDev/setup-rokit@v0.2.1
+      - run: lune run check
