@@ -4,10 +4,10 @@
 local Types = require(script.Parent.Parent.Types)
 
 local Blocks: { [string]: Types.BlockDef } = {
-	GummyBlock = { Name = "Bloco de Goma", MaxHP = 10, Coins = 5, Gems = 0, RespawnSeconds = 5 },
-	LollipopBlock = { Name = "Bloco Pirulito", MaxHP = 40, Coins = 25, Gems = 0, RespawnSeconds = 8 },
-	ChocoBlock = { Name = "Bloco de Chocolate", MaxHP = 250, Coins = 180, Gems = 1, RespawnSeconds = 12 },
-	CloudBlock = { Name = "Bloco de Nuvem", MaxHP = 1500, Coins = 1200, Gems = 3, RespawnSeconds = 20 },
+	GummyBlock = { Name = "Bloco de Goma", MaxHP = 12, Coins = 8, Gems = 0, RespawnSeconds = 4 },
+	LollipopBlock = { Name = "Bloco Pirulito", MaxHP = 35, Coins = 22, Gems = 0, RespawnSeconds = 6 },
+	ChocoBlock = { Name = "Bloco de Chocolate", MaxHP = 150, Coins = 105, Gems = 1, RespawnSeconds = 8 },
+	CloudBlock = { Name = "Bloco de Nuvem", MaxHP = 480, Coins = 340, Gems = 3, RespawnSeconds = 12 },
 }
 
 return table.freeze(Blocks)

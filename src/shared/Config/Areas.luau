@@ -8,10 +8,10 @@ local Areas: { [string]: Types.AreaDef } = {
 	ChocolateFalls = {
 		Name = "Cascata de Chocolate",
 		Order = 2,
-		Price = 2500,
+		Price = 1800,
 		Blocks = { "LollipopBlock", "ChocoBlock" },
 	},
-	CottonClouds = { Name = "Nuvens de Algodão", Order = 3, Price = 25000, Blocks = { "ChocoBlock", "CloudBlock" } },
+	CottonClouds = { Name = "Nuvens de Algodão", Order = 3, Price = 6000, Blocks = { "ChocoBlock", "CloudBlock" } },
 }
 
 return table.freeze(Areas)
