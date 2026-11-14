@@ -3,14 +3,22 @@
 ## Painel
 | Tarefa | Status | Feito por (ferramenta e modelo) | Branch / PR | Bloqueio ou próximo passo |
 |---|---|---|---|---|
-| A1 Fórmulas | 🔵 em teste | Codex gpt-6.1-sol / Gemini gemini-4-hydrogen-high | `a/fase1` #7 | Testar no Studio |
-| A2 BlockService | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Revisar correções do gpt-6.1-terra e testar no Studio |
-| A3 AreaService | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Revisar correções do gpt-6.1-terra e testar no Studio |
-| A4 Cliente dos blocos | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Revisar correções do gpt-6.1-terra e testar no Studio |
-| A5 HUD e portões | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Revisar correções do gpt-6.1-terra e testar no Studio |
+| A1 Fórmulas | 🔵 em teste | Codex gpt-6.1-sol / Gemini gemini-4-hydrogen-high | `a/fase1` #7 | Felipe testar o PR #7 no Studio |
+| A2 BlockService | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Felipe testar o PR #7 no Studio |
+| A3 AreaService | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Felipe testar o PR #7 no Studio |
+| A4 Cliente dos blocos | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Felipe testar o PR #7 no Studio |
+| A5 HUD e portões | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Felipe testar o PR #7 no Studio |
 | A6 Studio: Praça dos Doces | ⬜ a fazer | não informado | não informado | Felipe montar a área e modelos dos blocos no Studio |
 
 ## Registro
+
+### 2026-11-14 · Rodada 3: correções da revisão
+- **O que foi feito:** Correção dos 7 achados da revisão do Gemini no PR #7 (portão aberto não bloqueia clique com CanQuery e raycast só em Workspace.Blocks; prompt do portão na PrimaryPart ou peça mais baixa; balanço move o Model inteiro; avisos do HUD abaixo do painel e cabendo no celular; sem aviso "+0 moedas"; dano formatado com 1 casa fracionária; BillboardGui em escala). Criação do papel rbx-escrivao em docs/agentes, regras do diário em AGENTS.md e TIME.md, e criação do branch diario. Commit 8aef515.
+- **Como:** Correções feitas por Codex gpt-6.1-terra chamado direto com codex exec. Revisão do diff e formatação stylua pelo líder Claude Opus. Escrivão rodando em gemini-3.8-flash-low.
+- **Decisões:** não informado
+- **Problemas e soluções:** Na primeira tentativa o codex exec em segundo plano travou esperando entrada do terminal ("Reading additional input from stdin") sem alterar nada; solucionado rodando com `< /dev/null`. O gpt-6.1-terra não conseguiu rodar o lune ("home directory not found"); o líder rodou, formatou com stylua e validou os testes.
+- **Testes:** `lune run check` (24 testes, TUDO OK) / Studio: não testado (falta o Felipe testar o PR #7 no Studio).
+- **Próximo passo:** Felipe testar o PR #7 no Studio; A6 (Studio) a fazer.
 
 ### 2026-11-14 · Rodada 2: Gemini (design e revisão)
 - **O que foi feito:** Balanceamento da curva de progressão e revisão técnica do PR #7.
