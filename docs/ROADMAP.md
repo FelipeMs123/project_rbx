@@ -17,13 +17,13 @@ Cada squad tem 6 tarefas no mesmo formato: 1 de lógica pura, 2 de servidor, 2 d
 
 ### Squad A: Blocos e Mundo
 
-**A1 ⬜ Fórmulas dos blocos** (`rbx-logica`)
+**A1 🟡 Fórmulas dos blocos** (Felipe: código pronto, falta teste no Studio) (`rbx-logica`)
 - Arquivos: `src/shared/Logic/Formulas.luau`, `tests/Formulas.spec.luau`.
 - `damage(baseDamage, petBonus)` e `splitReward(coins, gems, maxHp, damageByPlayer)` com as regras
   do GDD (overkill não conta, gemas para quem deu mais dano, empate = último golpe).
 - Pronto quando: testes cobrem 1 jogador, 3 jogadores, overkill, empate de gemas, `Gems = 0`.
 
-**A2 ⬜ BlockService** (`rbx-server`)
+**A2 🟡 BlockService** (Felipe: código pronto, falta teste no Studio) (`rbx-server`)
 - Arquivo: `src/server/Services/BlockService.luau`.
 - Nasce blocos nos `Workspace.Areas.*.BlockSpawns`. Sem mapa e no Studio: cria uma área de teste
   com 6 spawns perto da origem.
@@ -35,20 +35,20 @@ Cada squad tem 6 tarefas no mesmo formato: 1 de lógica pura, 2 de servidor, 2 d
 - `BlockHit` / `BlockBroken` via `NetServer.FireNearby(..., EffectsRadius)`. Limpa quem sai.
 - Pronto quando: com 2 players no Studio os dois quebram o mesmo bloco e as moedas batem com o GDD.
 
-**A3 ⬜ AreaService** (`rbx-server`)
+**A3 🟡 AreaService** (Felipe: código pronto, falta teste no Studio) (`rbx-server`)
 - Arquivo: `src/server/Services/AreaService.luau`.
 - Remote `UnlockArea(areaId)`: área existe, ainda não liberada, a anterior (`Order - 1`) liberada,
   `EconomyService.Spend`, depois adiciona em `UnlockedAreas`. Rate 2/s.
 - Personagem que entra numa área bloqueada volta para a última liberada (checagem a cada ~1 s).
 - Pronto quando: sem moedas devolve `NOT_ENOUGH_COINS`; pular área devolve `AREA_LOCKED`.
 
-**A4 ⬜ Cliente: blocos** (`rbx-client`)
+**A4 🟡 Cliente: blocos** (Felipe: código pronto, falta teste no Studio) (`rbx-client`)
 - Arquivo: `src/client/Controllers/BlockController.luau`.
 - Clique/toque no bloco -> `RequestClick` (só o pedido; nenhum número calculado no cliente).
 - Barra de HP sobre o bloco (lê atributos), efeito ao `BlockHit` (balanço, partículas, número de
   dano) e ao `BlockBroken` (explosão de doce, som).
 
-**A5 ⬜ Cliente: HUD e portões** (`rbx-client`)
+**A5 🟡 Cliente: HUD e portões** (Felipe: código pronto, falta teste no Studio) (`rbx-client`)
 - Arquivos: `src/client/Controllers/HudController.luau`, `AreaController.luau`, `src/client/UI/Hud/`.
 - HUD: moedas e gemas com números abreviados (1.2K, 3.4M), avisos de `Notify` e de `Result.err`
   em português. Funciona bem no celular.

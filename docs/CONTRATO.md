@@ -71,7 +71,7 @@ Validações obrigatórias no servidor:
 | `DataChanged` | Event | `key: string, value: any` | dono dos dados |
 | `BlockHit` | UnreliableEvent | `blockId, hp, maxHp, damage, attacker: Player` | jogadores a até `EffectsRadius` |
 | `BlockBroken` | Event | `blockId, position: Vector3, blockType: string` | jogadores a até `EffectsRadius` |
-| `Notify` | Event | `code: string, payload: any?` | um jogador (ex.: recompensa, erro) |
+| `Notify` | Event | `code: string, payload: any?` | um jogador. `code` é um `ErrorCodes` ou `REWARD` com `payload = { coins, gems }` (já creditados) |
 
 ### Estado replicado por atributos (sem remote)
 
