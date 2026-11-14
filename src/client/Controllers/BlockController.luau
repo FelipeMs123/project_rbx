@@ -11,6 +11,7 @@ local GuiService = game:GetService("GuiService")
 local Workspace = game:GetService("Workspace")
 
 local Blocks = require(ReplicatedStorage.Shared.Config.Blocks)
+local Format = require(ReplicatedStorage.Shared.Logic.Format)
 local NetClient = require(script.Parent.Parent.Net.NetClient)
 local BlockController = {}
 
@@ -22,7 +23,7 @@ type View = {
 	connections: { RBXScriptConnection },
 	tween: Tween?,
 	shake: Tween?,
-	part: BasePart?,
+	offset: CFrameValue?,
 	origin: CFrame?,
 }
 
@@ -91,8 +92,11 @@ local function remove(model: Model)
 	if view.shake then
 		view.shake:Cancel()
 	end
-	if view.part and view.origin and view.part.Parent then
-		view.part.CFrame = view.origin
+	if view.origin then
+		model:PivotTo(view.origin)
+	end
+	if view.offset then
+		view.offset:Destroy()
 	end
 	view.gui:Destroy()
 end
@@ -104,7 +108,7 @@ local function add(instance: Instance)
 	local model = instance
 	local gui = Instance.new("BillboardGui")
 	gui.Name = "BlockHealth"
-	gui.Size = UDim2.fromOffset(170, 48)
+	gui.Size = UDim2.fromScale(5, 1.4)
 	gui.StudsOffsetWorldSpace = Vector3.new(0, 4, 0)
 	gui.MaxDistance = 60
 	gui.AlwaysOnTop = true
@@ -173,8 +177,8 @@ local function target(position: Vector2): Model?
 	end
 	local ray = camera:ScreenPointToRay(position.X, position.Y)
 	local params = RaycastParams.new()
-	params.FilterType = Enum.RaycastFilterType.Exclude
-	params.FilterDescendantsInstances = if Players.LocalPlayer.Character then { Players.LocalPlayer.Character } else {}
+	params.FilterType = Enum.RaycastFilterType.Include
+	params.FilterDescendantsInstances = { folder }
 	local result = Workspace:Raycast(ray.Origin, ray.Direction * 1000, params)
 	local instance = if result then result.Instance else nil
 	while instance and instance.Parent ~= folder do
@@ -207,19 +211,37 @@ function BlockController.Init()
 			if view.shake then
 				view.shake:Cancel()
 			end
-			if view.part and view.origin and view.part.Parent then
-				view.part.CFrame = view.origin
+			if view.origin then
+				model:PivotTo(view.origin)
 			end
-			view.part = part
-			view.origin = part.CFrame
+			if view.offset then
+				view.offset:Destroy()
+			end
+			local origin = model:GetPivot()
+			local offset = Instance.new("CFrameValue")
+			offset.Value = CFrame.identity
+			view.origin = origin
+			view.offset = offset
+			offset.Changed:Connect(function(value)
+				if views[model] == view then
+					model:PivotTo(origin * value)
+				end
+			end)
 			local shake = TweenService:Create(
-				part,
+				offset,
 				TweenInfo.new(0.045, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, true),
-				{
-					CFrame = part.CFrame * CFrame.Angles(0, 0, math.rad(if own then 5 else 3)),
-				}
+				{ Value = CFrame.Angles(0, 0, math.rad(if own then 5 else 3)) }
 			)
 			view.shake = shake
+			shake.Completed:Connect(function()
+				if view.shake == shake then
+					model:PivotTo(origin)
+					view.shake = nil
+					view.origin = nil
+					view.offset = nil
+					offset:Destroy()
+				end
+			end)
 			shake:Play()
 			local anchor = effectPart(part.Position)
 			particles(anchor, if own then 8 else 4)
@@ -233,7 +255,7 @@ function BlockController.Init()
 			local label = Instance.new("TextLabel")
 			label.BackgroundTransparency = 1
 			label.Size = UDim2.fromScale(1, 1)
-			label.Text = `+{damage}`
+			label.Text = `+{Format.abbreviate(damage)}`
 			label.TextSize = if own then 32 else 24
 			label.TextColor3 = Color3.fromRGB(255, 220, 95)
 			label.TextStrokeTransparency = 0.3

@@ -136,7 +136,9 @@ local function onClick(player: Player, blockId: any)
 		if recipient.Parent == Players then
 			local coins = EconomyService.AddCoins(recipient, reward.coins)
 			local gems = EconomyService.AddGems(recipient, reward.gems)
-			NetServer.Fire("Notify", recipient, "REWARD", { coins = coins, gems = gems })
+			if coins > 0 or gems > 0 then
+				NetServer.Fire("Notify", recipient, "REWARD", { coins = coins, gems = gems })
+			end
 		end
 	end
 	NetServer.FireNearby("BlockBroken", position, GameConfig.EffectsRadius, blockId, position, state.blockType)
@@ -212,6 +214,8 @@ function BlockService.Start()
 			spawn.Name = `Spawn{index}`
 			spawn.Anchored = true
 			spawn.CanCollide = false
+			spawn.CanQuery = false
+			spawn.CanTouch = false
 			spawn.Transparency = 1
 			spawn.CFrame = CFrame.new(25 * math.cos(angle), 3, 25 * math.sin(angle))
 			spawn.Parent = folder

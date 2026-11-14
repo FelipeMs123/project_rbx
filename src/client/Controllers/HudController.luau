@@ -22,7 +22,10 @@ local function label(parent: Instance, text: string): TextLabel
 	item.BackgroundTransparency = 0.1
 	item.TextColor3 = Color3.new(1, 1, 1)
 	item.Font = Enum.Font.GothamBold
-	item.TextSize = 19
+	item.TextScaled = true
+	local textConstraint = Instance.new("UITextSizeConstraint")
+	textConstraint.MaxTextSize = 19
+	textConstraint.Parent = item
 	item.TextWrapped = true
 	item.Text = text
 	local corner = Instance.new("UICorner")
@@ -40,6 +43,7 @@ function HudController.Toast(text: string, kind: string)
 	end
 	local item = label(stack, text)
 	item.Size = UDim2.new(1, 0, 0, 52)
+	item.AutomaticSize = Enum.AutomaticSize.Y
 	item.BackgroundColor3 = colors[kind] or colors.info
 	task.delay(2.5, function()
 		item:Destroy()
@@ -111,8 +115,8 @@ function HudController.Start()
 	local stack = Instance.new("Frame")
 	stack.BackgroundTransparency = 1
 	stack.AnchorPoint = Vector2.new(0.5, 0)
-	stack.Position = UDim2.fromScale(0.5, 0.2)
-	stack.Size = UDim2.fromScale(0.53, 0.8)
+	stack.Position = UDim2.new(0.5, 0, 0, 124)
+	stack.Size = UDim2.new(0.9, 0, 1, -124)
 	stack.Parent = root
 	local layout = Instance.new("UIListLayout")
 	layout.Padding = UDim.new(0, 6)

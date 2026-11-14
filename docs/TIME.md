@@ -41,6 +41,7 @@ Os papéis valem para qualquer ferramenta. A descrição completa de cada um est
 | `rbx-logica` | Módulos puros em `Logic/` + testes Lune | Código com `game:` | Codex (modelo barato) |
 | `rbx-design` | Balanceamento, conteúdo de Config, textos, GDD | Código de Service | Antigravity (Gemini) |
 | `rbx-revisor` | Lê o diff e caça exploit, bug e quebra de contrato | Corrigir (só relata) | Modelo **diferente** do que escreveu o código |
+| `rbx-escrivao` | No fim de cada rodada, atualiza o diário da squad no branch `diario` | Código ou decisão técnica | Modelo leve: Gemini Flash ou Haiku |
 
 Regra de ouro da revisão: quem escreveu não revisa. Código feito pelo Codex é revisado
 pelo Claude ou pelo Gemini, e vice-versa. Modelos diferentes erram em lugares diferentes.
@@ -78,6 +79,13 @@ Entregue com `lune run check` passando.
 7. `rbx-revisor` lê o diff (`git diff main...HEAD`). Corrija o que ele achar.
 8. Commit, push e PR. O CI roda o check de novo. A outra squad aprova se mexeu em contrato.
 9. Merge (squash). A outra squad faz `git pull`.
+10. `rbx-escrivao` atualiza o diário no branch `diario` (o que foi feito, como, modelos, próximos passos).
+
+## Diário: a ponte entre as squads
+
+O branch `diario` tem `squad-a.md`, `squad-b.md` e `recados.md`. Não passa por PR: cada
+escrivão envia direto, e a outra squad lê na hora pelo GitHub. Antes de começar uma rodada,
+leia o diário da outra squad e os recados. Formato e comandos no `README.md` desse branch.
 
 ## Ambiente (uma vez por máquina)
 

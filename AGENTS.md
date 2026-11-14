@@ -65,6 +65,8 @@ tests/       -> testes Lune dos módulos puros (src/shared/Logic)
 2. Escreva no resumo final: o que mudou, como testar no Studio (passo a passo) e o que
    ficou de fora. Não diga que testou no Studio se não testou: agentes não abrem o Studio.
 3. Não faça commit na `main`, push ou merge sem a pessoa pedir. Branch: `a/<tarefa>` ou `b/<tarefa>`.
+4. O andamento de cada squad fica no branch `diario` (`squad-a.md`, `squad-b.md`, `recados.md`).
+   Leia antes de começar; o papel `rbx-escrivao` atualiza no fim de cada rodada.
 
 ## Limites de escopo
 

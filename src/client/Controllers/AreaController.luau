@@ -10,7 +10,7 @@ local NetClient = require(script.Parent.Parent.Net.NetClient)
 local Messages = require(script.Parent.Parent.UI.Hud.Messages)
 
 local AreaController = {}
-type Original = { transparency: number, canCollide: boolean }
+type Original = { transparency: number, canCollide: boolean, canQuery: boolean }
 type GateState = {
 	gate: Instance,
 	areaId: string,
@@ -27,12 +27,29 @@ local unlocked: { [string]: boolean } = {}
 
 local function refresh(state: GateState)
 	local open = unlocked[state.areaId] == true
-	local anchor: BasePart? = nil
+	local anchor: BasePart? = if state.gate:IsA("Model") then state.gate.PrimaryPart else nil
 	for part, original in state.parts do
 		part.Transparency = if open then 1 else original.transparency
 		part.CanCollide = if open then false else original.canCollide
-		if not anchor then
-			anchor = part
+		part.CanQuery = if open then false else original.canQuery
+	end
+	if not anchor or not state.parts[anchor] then
+		anchor = nil
+		for _, item in state.gate:GetDescendants() do
+			if
+				item:IsA("BasePart")
+				and state.parts[item]
+				and (
+					not anchor
+					or item.Position.Y < anchor.Position.Y
+					or (item.Position.Y == anchor.Position.Y and item:GetFullName() < anchor:GetFullName())
+				)
+			then
+				anchor = item
+			end
+		end
+		if state.gate:IsA("BasePart") and state.parts[state.gate] then
+			anchor = state.gate
 		end
 	end
 	if state.attachment and state.attachment.Parent ~= anchor then
@@ -66,6 +83,7 @@ local function removeGate(gate: Instance)
 	for part, original in state.parts do
 		part.Transparency = original.transparency
 		part.CanCollide = original.canCollide
+		part.CanQuery = original.canQuery
 	end
 	state.prompt:Destroy()
 	if state.attachment then
@@ -84,7 +102,7 @@ local function addGate(gate: Instance, areaId: string)
 	end
 	local billboard = Instance.new("BillboardGui")
 	billboard.Name = "CandyGatePrice"
-	billboard.Size = UDim2.fromOffset(240, 80)
+	billboard.Size = UDim2.fromScale(6, 2)
 	billboard.StudsOffsetWorldSpace = Vector3.new(0, 4, 0)
 	billboard.MaxDistance = 65
 	billboard.AlwaysOnTop = true
@@ -118,7 +136,8 @@ local function addGate(gate: Instance, areaId: string)
 	gates[gate] = state
 	local function addPart(item: Instance)
 		if item:IsA("BasePart") and not state.parts[item] then
-			state.parts[item] = { transparency = item.Transparency, canCollide = item.CanCollide }
+			state.parts[item] =
+				{ transparency = item.Transparency, canCollide = item.CanCollide, canQuery = item.CanQuery }
 		end
 	end
 	addPart(gate)
@@ -146,6 +165,7 @@ local function addGate(gate: Instance, areaId: string)
 					end
 					item.Transparency = original.transparency
 					item.CanCollide = original.canCollide
+					item.CanQuery = original.canQuery
 					task.defer(function()
 						if gates[gate] == state then
 							refresh(state)
