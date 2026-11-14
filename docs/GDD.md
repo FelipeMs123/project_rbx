@@ -13,7 +13,10 @@ Documento de game design. Números ficam em `src/shared/Config/`; aqui ficam as 
 
 Público principal no celular: botões grandes, toque direto no bloco, nada que dependa de teclado.
 
-## Fórmulas (módulo puro `src/shared/Logic/Formulas.luau`, tarefa A1)
+## Fórmulas
+
+Módulos puros: dano e recompensa em `Logic/Formulas.luau` (A1), bônus de moedas em
+`Logic/Economy.luau` (fundação), custo de rebirth em `Logic/Rebirth.luau` (B1).
 
 **Dano por clique**
 ```
@@ -31,7 +34,7 @@ As gemas do bloco (poucas, inteiras) vão todas para quem causou mais dano. Empa
 O dano que passa do HP restante não conta (o último golpe conta só até zerar).
 Isso impede "roubar" o bloco que outro jogador quase quebrou.
 
-**Bônus de rebirth (aplicado em `EconomyService.AddCoins`)**
+**Bônus de rebirth (já aplicado em `EconomyService.AddCoins`)**
 ```
 moedas_creditadas = floor(moedas * (1 + Rebirths * RebirthCoinBonus))
 ```

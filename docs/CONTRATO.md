@@ -8,7 +8,7 @@ arquivo e o código no mesmo PR. Adicionar é barato; renomear ou remover é car
 
 Arquivos de contrato: `src/shared/Net/Remotes.luau`, `src/shared/Types.luau`,
 `src/shared/ErrorCodes.luau`, `src/shared/Config/Game.luau`, `src/server/Data/Template.luau`,
-`src/server/Net/NetServer.luau`, `src/server/Services/DataService.luau`, `src/client/Net/NetClient.luau`,
+`src/server/Net/NetServer.luau`, `src/server/Services/DataService.luau`, `src/server/Services/EconomyService.luau`, `src/shared/Logic/Economy.luau`, `src/client/Net/NetClient.luau`,
 `src/client/Controllers/DataController.luau`, e a API pública de cada Service.
 
 ---
@@ -20,9 +20,9 @@ ProfileStore `PlayerData_v1`, chave `Player_<UserId>`.
 | Campo | Tipo | Padrão | Dono |
 |---|---|---|---|
 | `Version` | number | 1 | fundação |
-| `Coins` | number | 100 | A |
-| `Gems` | number | 0 | A |
-| `Rebirths` | number | 0 | A |
+| `Coins` | number | 100 | fundação (via EconomyService) |
+| `Gems` | number | 0 | fundação (via EconomyService) |
+| `Rebirths` | number | 0 | B |
 | `UnlockedAreas` | `{string}` | `{"CandyPlaza"}` | A |
 | `Inventory` | `{[uuid]: {Id: string}}` | `{}` | B |
 | `Equipped` | `{uuid}` | `{}` (máx. `MaxEquipped` = 3) | B |
@@ -48,7 +48,7 @@ Criados pelo `NetServer.Init()`. Rate limit é por jogador e por remote.
 |---|---|---|---|---|---|
 | `GetData` | Function | - | `Result{data: PlayerData}` | 2/s | fundação |
 | `RequestClick` | Event | `blockId: string` | - | 15/s, burst 15 | A |
-| `RequestRebirth` | Function | - | `Result` | 2/s | A |
+| `RequestRebirth` | Function | - | `Result` | 2/s | B |
 | `UnlockArea` | Function | `areaId: string` | `Result` | 2/s | A |
 | `EquipPet` | Function | `uuid: string` | `Result` | 8/s | B |
 | `UnequipPet` | Function | `uuid: string` | `Result` | 8/s | B |
@@ -98,13 +98,18 @@ DataService.Loaded: Signal<(Player, PlayerData)>
 DataService.Changed: Signal<(Player, key, value)>
 ```
 
-### EconomyService (Squad A, tarefa A2)
+### EconomyService (fundação, pronto)
 ```luau
 EconomyService.AddCoins(player, amount): number   -- aplica bônus de rebirth; devolve o creditado
 EconomyService.AddGems(player, amount): number
-EconomyService.Spend(player, "Coins" | "Gems", amount): boolean
+EconomyService.Spend(player, "Coins" | "Gems", amount): boolean  -- recusa NaN, negativo, infinito
+EconomyService.GetBalance(player, "Coins" | "Gems"): number
 EconomyService.HasArea(player, areaId): boolean
 ```
+
+### AreaService (Squad A, tarefa A3) e RebirthService (Squad B, tarefa B3)
+Só registram os remotes `UnlockArea` e `RequestRebirth`; não têm API para outros Services.
+`AreaService` é o único que adiciona áreas em `UnlockedAreas`; o rebirth só volta para a área inicial.
 
 ### PetService (Squad B, tarefa B2)
 ```luau
@@ -113,14 +118,14 @@ PetService.AddPet(player, petId): (uuid?, errCode?)
 ```
 
 Até a tarefa ficar pronta, cada Service tem um stub com a mesma assinatura (ver o arquivo).
-`PetService.GetDamageBonus` devolve 0 e `EconomyService.HasArea` devolve true.
+`PetService.GetDamageBonus` devolve 0.
 
 ## 4. Pastas do mapa (Studio)
 
 | Caminho | O que é | Dono |
 |---|---|---|
-| `Workspace.Areas.<AreaId>.BlockSpawns` | Parts invisíveis onde nascem blocos. Atributo opcional `BlockType`. | A |
-| `Workspace.Areas.<AreaId>.Gate` | Portão que some quando a área é liberada (no cliente). | A |
+| `Workspace.Areas.<AreaId>.BlockSpawns` | Parts invisíveis onde nascem blocos. Atributo opcional `BlockType`. | quem constrói a área (CandyPlaza = A, ChocolateFalls = B) |
+| `Workspace.Areas.<AreaId>.Gate` | Portão que some quando a área é liberada (lógica no cliente: A). | quem constrói a área |
 | `Workspace.Areas.<AreaId>.Eggs.<EggId>` | Model do ovo para comprar (com `PrimaryPart`). | B |
 | `Workspace.Blocks` | Criado pelo servidor; blocos vivos. | A |
 | `ServerStorage.BlockTemplates.<BlockType>` | Model do bloco (com `PrimaryPart`). | A |

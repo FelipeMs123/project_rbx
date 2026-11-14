@@ -39,5 +39,5 @@ docs/agentes/ -> papéis dos agentes de IA
 
 ## Equipe
 
-- Squad A: Felipe ([@FelipeMs123](https://github.com/FelipeMs123)): economia, blocos, mapa
-- Squad B: [@drkk71](https://github.com/drkk71): pets, ovos, inventário
+- Squad A, Blocos e Mundo: Felipe ([@FelipeMs123](https://github.com/FelipeMs123))
+- Squad B, Pets e Progressão: [@drkk71](https://github.com/drkk71)

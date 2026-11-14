@@ -4,8 +4,8 @@
 Fecha #
 
 ## Squad
-- [ ] A (economia, blocos, HUD)
-- [ ] B (pets, ovos, inventário)
+- [ ] A (blocos, áreas, HUD)
+- [ ] B (pets, ovos, rebirth)
 - [ ] Contrato (mexe em arquivo compartilhado: precisa das duas squads)
 
 ## Como testar no Studio

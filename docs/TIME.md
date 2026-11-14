@@ -5,23 +5,28 @@
 Cada pessoa é líder de uma squad e dona de **sistemas inteiros**: servidor, cliente,
 config e testes do sistema. Assim cada um orquestra os próprios agentes sem pisar no outro.
 
-| | Squad A | Squad B |
+| | Squad A: Blocos e Mundo | Squad B: Pets e Progressão |
 |---|---|---|
 | Líder | Felipe (@FelipeMs123) | amigo (@drkk71) |
-| Sistemas | Economia (moedas, gemas, rebirth, áreas), Lucky Blocks (dano, HP, recompensa, respawn), anti-cheat de clique, HUD | Pets (inventário, equipar, seguir), Ovos (compra, sorteio, chocar), UI de inventário e loja |
+| Lógica pura | Fórmulas de dano e divisão de recompensa | Inventário, sorteio de ovo, custo de rebirth |
+| Servidor | `BlockService` (dano, HP, recompensa, respawn, anti-cheat de clique), `AreaService` (liberar áreas) | `PetService` (inventário, equipar), `EggService` (comprar e sortear), `RebirthService` |
+| Cliente | Blocos (clique, HP, efeitos), HUD (moedas, gemas, avisos), portões | Pets seguindo, inventário, chocar ovo, tela de rebirth |
 | Config | `Blocks.luau`, `Areas.luau` | `Pets.luau`, `Eggs.luau` |
-| Studio | Mapa, áreas, portões, spawns e modelos dos blocos | Modelos dos pets e dos ovos |
+| Studio | Área Praça dos Doces + modelos dos blocos | Área Cascata de Chocolate + modelos dos pets e ovos |
+| Tarefas | A1 a A6 | B1 a B6 |
 | Branch | `a/<tarefa>` | `b/<tarefa>` |
 
-**Fundação / contrato** (`docs/CONTRATO.md`): DataService, NetServer, NetClient,
+As duas squads têm o mesmo formato: 1 tarefa de lógica, 2 de servidor, 2 de cliente e 1 no Studio.
+
+**Fundação / contrato** (`docs/CONTRATO.md`): DataService, EconomyService, NetServer, NetClient,
 DataController, Types, Remotes, ErrorCodes, Config/Game. Pronta na Fase 0. Mudança só com as
 duas squads de acordo.
 
 Quem é dono de cada arquivo está em `.github/CODEOWNERS`: o GitHub pede a aprovação certa sozinho.
 
-**Ponto de contato entre as squads:** a Squad A chama `PetService.GetDamageBonus` (dano) e a
-Squad B chama `EconomyService.Spend` e `HasArea` (comprar ovo). Os stubs já existem, então
-ninguém espera ninguém para começar.
+**Ponto de contato entre as squads:** só um. A Squad A chama `PetService.GetDamageBonus` para o
+dano; até a B2 ficar pronta o stub devolve 0. Dinheiro e áreas liberadas passam pelo
+`EconomyService` da fundação, que já funciona. Ninguém espera ninguém para começar.
 
 ## Papéis dos agentes
 
