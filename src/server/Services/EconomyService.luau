@@ -39,9 +39,12 @@ function EconomyService.AddCoins(player: Player, amount: number): number
 	if credited ~= credited or credited == math.huge or credited <= 0 then
 		return 0
 	end
-	DataService.Update(player, "Coins", function(coins: number)
+	local updated = DataService.Update(player, "Coins", function(coins: number)
 		return coins + credited
 	end)
+	if updated == nil then
+		return 0
+	end
 	return credited
 end
 
@@ -54,9 +57,12 @@ function EconomyService.AddGems(player: Player, amount: number): number
 	if credited <= 0 then
 		return 0
 	end
-	DataService.Update(player, "Gems", function(gems: number)
+	local updated = DataService.Update(player, "Gems", function(gems: number)
 		return gems + credited
 	end)
+	if updated == nil then
+		return 0
+	end
 	return credited
 end
 
@@ -74,10 +80,10 @@ function EconomyService.Spend(player: Player, currency: Currency, amount: number
 	if balance < amount then
 		return false
 	end
-	DataService.Update(player, currency, function(current: number)
+	local updated = DataService.Update(player, currency, function(current: number)
 		return current - amount
 	end)
-	return true
+	return updated ~= nil
 end
 
 -- Saldo atual (0 se os dados não carregaram).

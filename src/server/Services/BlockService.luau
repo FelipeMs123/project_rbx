@@ -110,7 +110,7 @@ local function spawnBlock(spawn: BasePart, areaId: string)
 end
 
 local function onClick(player: Player, blockId: any)
-	if typeof(blockId) ~= "string" or #blockId > 64 then
+	if typeof(blockId) ~= "string" or #blockId < 1 or #blockId > 64 then
 		return
 	end
 	local state = states[blockId]

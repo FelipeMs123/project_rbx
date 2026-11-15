@@ -16,9 +16,11 @@ local DataService = require(script.Parent.DataService)
 local EconomyService = require(script.Parent.EconomyService)
 
 local AreaService = {}
+local previousAreas: { [Player]: { string } } = {}
+local recentResetUntil: { [Player]: number } = {}
 
 local function unlockArea(player: Player, areaId: any): Types.Result
-	if typeof(areaId) ~= "string" or #areaId > 64 then
+	if typeof(areaId) ~= "string" or #areaId < 1 or #areaId > 64 then
 		return { ok = false, err = ErrorCodes.INVALID_ARGS }
 	end
 	local area = AreasConfig[areaId]
@@ -34,18 +36,60 @@ local function unlockArea(player: Player, areaId: any): Types.Result
 		return { ok = false, err = err }
 	end
 	if area.Price > 0 and not EconomyService.Spend(player, "Coins", area.Price) then
-		return { ok = false, err = ErrorCodes.NOT_ENOUGH_COINS }
+		return {
+			ok = false,
+			err = if DataService.IsLoaded(player) then ErrorCodes.NOT_ENOUGH_COINS else ErrorCodes.DATA_NOT_LOADED,
+		}
 	end
-	DataService.Update(player, "UnlockedAreas", function(list: { string })
+	local updated = DataService.Update(player, "UnlockedAreas", function(list: { string })
 		table.insert(list, areaId)
 		return list
 	end)
+	if updated == nil then
+		if area.Price > 0 then
+			local refunded = DataService.Update(player, "Coins", function(coins: number)
+				return coins + area.Price
+			end)
+			if refunded == nil then
+				warn(`[AreaService] Não foi possível estornar a área {areaId} para {player.Name}`)
+			end
+		end
+		return { ok = false, err = ErrorCodes.DATA_NOT_LOADED }
+	end
 	DataService.Save(player)
 	return { ok = true, data = { areaId = areaId } }
 end
 
 function AreaService.Init()
 	NetServer.OnInvoke("UnlockArea", unlockArea, { rate = 2, burst = 3 })
+	DataService.Loaded:Connect(function(player: Player, data: Types.PlayerData)
+		previousAreas[player] = table.clone(data.UnlockedAreas)
+	end)
+	DataService.Changed:Connect(function(player: Player, key: string, value: any)
+		if key ~= "UnlockedAreas" then
+			return
+		end
+		local previous = previousAreas[player]
+		if previous then
+			for _, areaId in previous do
+				if not table.find(value, areaId) then
+					recentResetUntil[player] = os.clock() + 3
+					break
+				end
+			end
+		end
+		previousAreas[player] = table.clone(value)
+	end)
+	Players.PlayerRemoving:Connect(function(player: Player)
+		previousAreas[player] = nil
+		recentResetUntil[player] = nil
+	end)
+	for _, player in Players:GetPlayers() do
+		local data = DataService.Get(player)
+		if data then
+			previousAreas[player] = table.clone(data.UnlockedAreas)
+		end
+	end
 end
 
 local function coordinates(position: Vector3): Areas.Position
@@ -120,10 +164,15 @@ local function enforceArea(player: Player, folder: Instance, boxes: { Areas.Box 
 		return
 	end
 	local lastId = Areas.lastUnlocked(AreasConfig :: any, data.UnlockedAreas)
-	local spawn = findSpawn(folder, lastId) or findSpawn(folder, "CandyPlaza")
+	local recentReset = (recentResetUntil[player] or 0) > os.clock()
+	local spawn = if recentReset
+		then findSpawn(folder, "CandyPlaza")
+		else findSpawn(folder, lastId) or findSpawn(folder, "CandyPlaza")
 	if spawn then
 		character:PivotTo(spawn.CFrame + Vector3.new(0, 4, 0))
-		NetServer.Fire("Notify", player, ErrorCodes.AREA_NOT_UNLOCKED, { areaId = lockedAreaId })
+		if not recentReset then
+			NetServer.Fire("Notify", player, ErrorCodes.AREA_NOT_UNLOCKED, { areaId = lockedAreaId })
+		end
 	end
 end
 
