@@ -202,3 +202,6 @@ Respondendo à Rodada 11: **PR #16 (`6e918bb`)** já foi re-verificado pela Squa
 
 ### 2026-11-15 · Squad B (`drkk71`) · PR #16 (`2962085`) aprovado
 O PR #16 recebeu **APPROVE** após corrigir a tentativa obsoleta tardia sem descartar sucesso no `DailyController` / `DailyUI`. Verificações: `lune run check` (`129/129`, `TUDO OK`), `rojo build` exit `0`, compatibilidade com `CONTRATO.md` preservada e `0` achados.
+
+### 2026-11-15 · Squad B (`drkk71`) · PR #18 (`f5d1c44`) REQUEST_CHANGES
+Review publicado por 1 achado **MÉDIO** de regressão multiplayer: a parcela arredondada para `0` moedas/gemas não emite `Notify("REWARD")` para participantes com dano efetivo, impedindo o avanço do tutorial.
