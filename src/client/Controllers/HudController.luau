@@ -43,6 +43,7 @@ function HudController.Toast(text: string, kind: string)
 		return
 	end
 	local item = label(stack, text)
+	item.Active = false
 	item.Size = UDim2.new(1, 0, 0, 52)
 	item.AutomaticSize = Enum.AutomaticSize.Y
 	item.BackgroundColor3 = colors[kind] or colors.info
@@ -77,14 +78,27 @@ function HudController.Start()
 	screen.ScreenInsets = Enum.ScreenInsets.CoreUISafeInsets
 	screen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	gui = screen
+	local toastScreen = Instance.new("ScreenGui")
+	toastScreen.Name = "CandyToasts"
+	toastScreen.DisplayOrder = 100
+	toastScreen.ResetOnSpawn = false
+	toastScreen.IgnoreGuiInset = screen.IgnoreGuiInset
+	toastScreen.ScreenInsets = screen.ScreenInsets
+	toastScreen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	local root = Instance.new("Frame")
 	root.BackgroundTransparency = 1
 	root.Size = UDim2.fromScale(1, 1)
 	root.Parent = screen
+	local toastRoot = Instance.new("Frame")
+	toastRoot.BackgroundTransparency = 1
+	toastRoot.Active = false
+	toastRoot.Size = UDim2.fromScale(1, 1)
+	toastRoot.Parent = toastScreen
 	-- O ScreenGui aplica o inset; a consulta também acompanha alterações da barra superior.
 	local function updateInset()
 		local topLeft = GuiService:GetGuiInset()
 		root.Position = UDim2.fromOffset(0, if topLeft.Y > 0 then 8 else 12)
+		toastRoot.Position = root.Position
 	end
 	updateInset()
 	GuiService:GetPropertyChangedSignal("TopbarInset"):Connect(updateInset)
@@ -128,11 +142,12 @@ function HudController.Start()
 	end
 	local stack = Instance.new("Frame")
 	stack.BackgroundTransparency = 1
+	stack.Active = false
 	stack.AnchorPoint = Vector2.new(0.5, 0)
 	-- Topo central, estreito o bastante para não encostar no chat (canto superior esquerdo).
 	stack.Position = UDim2.new(0.5, 0, 0, topReserve)
 	stack.Size = UDim2.fromScale(0.5, 0.6)
-	stack.Parent = root
+	stack.Parent = toastRoot
 	local stackLimit = Instance.new("UISizeConstraint")
 	stackLimit.MaxSize = Vector2.new(360, math.huge)
 	stackLimit.Parent = stack
@@ -141,7 +156,9 @@ function HudController.Start()
 	layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	layout.Parent = stack
 	toastStack = stack
-	screen.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
+	screen.Parent = playerGui
+	toastScreen.Parent = playerGui
 	for _, entry in pending do
 		HudController.Toast(entry.text, entry.kind)
 	end
