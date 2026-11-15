@@ -23,7 +23,7 @@ Regras:
 - Se um ajuste afetar testes unitários existentes em tests/, atualize os testes correspondentes.
 - Não introduza conexões duplicadas, yields infinitos nem quebras de tipo --!strict.
 
-No fim, escreva um resumo curto: o que mudou por arquivo para cada item e como testar no Studio.
+No fim, escreva um resumo curto: o que mudou por arquivo para cada item, como testar no Studio (não diga que testou se não testou; agentes de código não abrem o Studio) e, se descobrir lição nova, relate no formato: "Lição nova: sintoma -> causa -> o que fazer" (o líder acrescentará em docs/LICOES.md).
 ```
 
 ## Exemplo real
@@ -32,4 +32,4 @@ No fim, escreva um resumo curto: o que mudou por arquivo para cada item e como t
 > Corrija os 3 pontos:
 > 1) ALTO: `AreaService.Start()` está vazio. Acrescente `Areas.lockedAreaAt` e `Areas.lastUnlocked` em `src/shared/Logic/Areas.luau` (com testes em `tests/Areas.spec.luau`) e o loop de 1 s em `src/server/Services/AreaService.luau`.
 > 2) MÉDIO: `src/server/Services/BlockService.luau` ~linha 130-134: o alcance soma metade do tamanho do bloco aos 26 studs; use só `(root.Position - primary.Position).Magnitude <= GameConfig.MaxHitDistance + GameConfig.HitDistanceTolerance`.
-> No fim, escreva um resumo curto: o que mudou por arquivo e como testar no Studio.
+> No fim, escreva um resumo curto: o que mudou por arquivo, como testar no Studio e eventual lição nova ("Lição nova: sintoma -> causa -> o que fazer").

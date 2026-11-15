@@ -75,7 +75,7 @@ Entregue com `lune run check` passando.
 3. Líder escreve o brief: tarefa, arquivos permitidos, critérios de pronto (copie do ROADMAP).
 4. Delegue: lógica pura primeiro (`rbx-logica`), depois servidor (`rbx-server`), depois cliente (`rbx-client`).
 5. `lune run check` -> `TUDO OK`.
-6. **Teste no Studio** (só humano): `rojo serve`, Connect no plugin, Play. Siga o "Como testar" da tarefa.
+6. **Teste no Studio**: feito pelo humano ou por um agente testador acionado de propósito pelo líder com a receita `docs/agentes/receitas/teste-studio.md` (MCP Roblox_Studio, um testador por vez, Studio conectado ao `rojo serve` do branch certo). Agentes de código (`rbx-server`, `rbx-client`, `rbx-logica`, `rbx-design`, `rbx-revisor`) não abrem o Studio nem dizem que testaram. Siga o "Como testar" da tarefa.
 7. `rbx-revisor` lê o diff (`git diff main...HEAD`). Corrija o que ele achar.
 8. Commit, push e PR. O CI roda o check de novo. A outra squad aprova se mexeu em contrato.
 9. Merge (squash). A outra squad faz `git pull`.

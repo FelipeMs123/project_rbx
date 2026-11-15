@@ -20,7 +20,7 @@ Leia antes de mexer:
 | `docs/GDD.md` | Regras do jogo e fórmulas. |
 | `docs/TIME.md` | Squads, quem é dono de quê, papéis dos agentes. |
 | `docs/ROADMAP.md` | Tarefas. Trabalhe só na tarefa que você recebeu. |
-| `docs/LICOES.md` | Pegadinhas já resolvidas (Rojo, MCP do Studio, agentes). Leia antes; acrescente as novas. |
+| `docs/LICOES.md` | Pegadinhas já resolvidas (Rojo, MCP do Studio, agentes). Leia antes. Só o líder edita (ou PR de docs); workers sugerem lições no resumo final. |
 | `docs/agentes/receitas/` | Modelos de prompt prontos para delegar tarefas a outros agentes. |
 
 ## Onde fica cada coisa
@@ -65,7 +65,7 @@ tests/       -> testes Lune dos módulos puros (src/shared/Logic)
 
 1. Rode `lune run check` (ou `lune run check fix` para formatar). Tem que terminar em `TUDO OK`.
 2. Escreva no resumo final: o que mudou, como testar no Studio (passo a passo) e o que
-   ficou de fora. Não diga que testou no Studio se não testou: agentes não abrem o Studio.
+   ficou de fora. Não diga que testou no Studio se não testou: agentes de código (rbx-server, rbx-client, rbx-logica, rbx-design, rbx-revisor) não abrem o Studio nem dizem que testaram; o teste no Studio é feito pelo humano ou por um agente testador acionado de propósito pelo líder com a receita docs/agentes/receitas/teste-studio.md (MCP Roblox_Studio, um testador por vez, Studio conectado ao rojo serve do branch certo).
 3. Não faça commit na `main`, push ou merge sem a pessoa pedir. Branch: `a/<tarefa>` ou `b/<tarefa>`.
 4. O andamento de cada squad fica no branch `diario` (`squad-a.md`, `squad-b.md`, `recados.md`).
    Leia antes de começar; o papel `rbx-escrivao` atualiza no fim de cada rodada.

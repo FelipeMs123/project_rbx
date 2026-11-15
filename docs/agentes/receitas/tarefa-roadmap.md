@@ -27,8 +27,9 @@ Restrições:
 
 No fim, escreva um resumo curto contendo:
 1. O que mudou por arquivo e decisões tomadas.
-2. Como testar no Studio (roteiro passo a passo de 3 a 8 passos). Não diga que testou no Studio se não testou.
+2. Como testar no Studio (roteiro passo a passo de 3 a 8 passos). Não diga que testou no Studio se não testou (agentes de código não abrem o Studio).
 3. O que ficou de fora ou depende de outra tarefa.
+4. Se descobrir uma lição nova de pegadinha/ambiente, relate no formato: "Lição nova: sintoma -> causa -> o que fazer" (o líder acrescentará em docs/LICOES.md).
 ```
 
 ## Exemplo real
@@ -36,4 +37,4 @@ No fim, escreva um resumo curto contendo:
 > Papel: `rbx-server` (siga `docs/agentes/rbx-server.md` e `AGENTS.md`). Branch atual: `a/fase1`.
 > NÃO faça commit, branch nem push. Só edite `src/shared/Logic/Areas.luau`, `tests/Areas.spec.luau` e `src/server/Services/AreaService.luau`.
 > Tarefa: A3 de `docs/ROADMAP.md` — implementar checagem a cada 1 s em `AreaService.Start()` para devolver personagens em área bloqueada ao `SpawnLocation` da última área liberada e enviar `Notify` com `ErrorCodes.AREA_LOCKED`.
-> No fim, escreva um resumo curto: o que mudou por arquivo e como testar no Studio.
+> No fim, escreva um resumo curto: o que mudou por arquivo, como testar no Studio e eventual lição nova ("Lição nova: sintoma -> causa -> o que fazer").

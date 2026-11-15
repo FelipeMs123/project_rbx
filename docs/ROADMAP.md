@@ -114,4 +114,4 @@ dano maior, liberar área, rebirth), sair e voltar com dados salvos.
 ## Fase 2: ideias (não começar antes do MVP)
 
 Game Passes e Developer Products, mais áreas, recompensa diária, ranking global, troca e
-fusão de pets, sons e música, tutorial curto, Studio MCP para os agentes mexerem no Studio.
+fusão de pets, sons e música, tutorial curto. (Studio MCP para os agentes mexerem no Studio: já em uso para testes via receita `docs/agentes/receitas/teste-studio.md`, acionado de propósito só pelo líder, um testador por vez, Studio conectado ao `rojo serve` do branch certo; agentes de código não abrem o Studio).

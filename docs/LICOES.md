@@ -1,6 +1,6 @@
 # Lições aprendidas
 
-Leia este documento antes de iniciar qualquer tarefa e acrescente novas lições no final da seção correspondente (com data).
+Leia este documento antes de iniciar qualquer tarefa. Só o líder da squad (ou um PR de docs) edita este arquivo; agentes workers não editam. Se descobrir uma lição nova, escreva no resumo final: "Lição nova: sintoma -> causa -> o que fazer" e o líder acrescenta.
 
 ## Rojo 7.7
 - Erro `did not match any variant of untagged enum UnresolvedValue` em `.model.json` -> CFrame sem tipo explícito -> Declarar no formato explícito `{"CFrame": {"CFrame": {"position": [...], "orientation": [[...]]}}}`. (14/11/2026)
@@ -31,6 +31,7 @@ Leia este documento antes de iniciar qualquer tarefa e acrescente novas lições
 - Agente bate o limite de uso no meio da tarefa -> Cota da conta esgotada -> Delegar com `tools/ia/delegar.sh <nivel> <prompt>`, que troca para o modelo reserva. (15/11/2026)
 
 ## Como acrescentar uma lição
+Editado apenas pelo líder da squad ou via PR de documentação. Agentes workers não editam este arquivo; se descobrirem uma lição nova durante uma tarefa, devem relatar no resumo final como `Lição nova: sintoma -> causa -> o que fazer` para o líder acrescentar.
 1. Escolha a seção correta (Rojo 7.7, MCP do Roblox Studio, Luau e Roblox ou Agentes de IA).
 2. Adicione no fim da seção seguindo o formato: `Sintoma -> causa -> o que fazer. (DD/MM/AAAA)`.
 3. Generalize: nunca inclua caminhos locais/pessoais, ferramentas proprietárias de uso individual ou segredos.

@@ -2,7 +2,7 @@
 
 - **Papel**: Testador no Studio (via MCP `Roblox_Studio`)
 - **Modelo sugerido**: Médio (`gpt-6.1-sol` com flag de aprovação do MCP `Roblox_Studio`)
-- **Quando usar**: Com o Roblox Studio aberto e sincronizado pelo Rojo, para medir comportamento real no Server/Client antes de aprovar um PR.
+- **Quando usar**: Acionado exclusivamente pelo líder da squad (apenas um testador por vez), com o Roblox Studio aberto e conectado ao `rojo serve` da branch certa, para medir comportamento real no Server/Client antes de aprovar um PR. Agentes de código (`rbx-server`, `rbx-client`, etc.) não abrem o Studio.
 
 ## Modelo de Prompt
 

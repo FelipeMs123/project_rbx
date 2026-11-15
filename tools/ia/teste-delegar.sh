@@ -14,6 +14,7 @@ nome=${0##*/}
 printf '%s\n' "$nome" >> "$CHAMADAS"
 printf '%s\n' "$@" >> "$ARGUMENTOS"
 if [ "$nome" = codex ]; then
+    [ "${ALTERAR_ARVORE:-0}" -eq 0 ] || printf alterado > arquivo-criado
     printf '%s\n' "$CODEX_SAIDA"
     exit "$CODEX_CODIGO"
 fi
@@ -22,14 +23,13 @@ exit "$AGY_CODIGO"
 EOF
 cp "$teste/stub" "$teste/codex"
 cp "$teste/stub" "$teste/agy"
-chmod +x "$teste/codex" "$teste/agy"
 CODEX_BIN=$teste/codex AGY_BIN=$teste/agy CHAMADAS=$teste/chamadas ARGUMENTOS=$teste/argumentos
 export CODEX_BIN AGY_BIN CHAMADAS ARGUMENTOS
 falhas=0
 preparar() {
     : > "$CHAMADAS"; : > "$ARGUMENTOS"
-    CODEX_SAIDA=ok CODEX_CODIGO=0 AGY_SAIDA=ok AGY_CODIGO=0
-    export CODEX_SAIDA CODEX_CODIGO AGY_SAIDA AGY_CODIGO
+    CODEX_SAIDA=ok CODEX_CODIGO=0 AGY_SAIDA=ok AGY_CODIGO=0 ALTERAR_ARVORE=0
+    export CODEX_SAIDA CODEX_CODIGO AGY_SAIDA AGY_CODIGO ALTERAR_ARVORE
 }
 resultado() {
     if [ "$1" -eq 0 ]; then printf 'OK: %s\n' "$2"; else printf 'FALHOU: %s\n' "$2"; falhas=$((falhas + 1)); fi
@@ -65,5 +65,29 @@ if [ "$status" -eq 3 ] && [ "$(cat "$CHAMADAS")" = codex ]; then resultado 0 're
 preparar
 rodar simples "$teste/prompt" --mcp
 if [ "$status" -eq 0 ] && grep -Fx -- '-c' "$ARGUMENTOS" >/dev/null && grep -Fx 'mcp_servers.Roblox_Studio.default_tools_approval_mode="approve"' "$ARGUMENTOS" >/dev/null; then resultado 0 'flag MCP do codex'; else resultado 1 'flag MCP do codex'; fi
+
+# O repositório temporário permite verificar alterações reais feitas pelo primário.
+git -C "$teste/repo" init -q || exit 1
+git -C "$teste/repo" -c user.name=Teste -c user.email=teste@example.invalid commit --allow-empty -qm inicial || exit 1
+preparar
+CODEX_SAIDA='429 Too Many Requests' CODEX_CODIGO=1 ALTERAR_ARVORE=1
+rodar simples "$teste/prompt"
+if [ "$status" -eq 4 ] && [ "$(cat "$CHAMADAS")" = codex ]; then resultado 0 'cota com árvore alterada'; else resultado 1 'cota com árvore alterada'; fi
+rm -f "$teste/repo/arquivo-criado"
+
+preparar
+CODEX_SAIDA=$(printf 'quota\n'; i=0; while [ "$i" -lt 31 ]; do printf 'linha comum\n'; i=$((i + 1)); done; printf 'código: rate limit = valor\n')
+CODEX_CODIGO=7
+rodar simples "$teste/prompt"
+if [ "$status" -eq 7 ] && [ "$(cat "$CHAMADAS")" = codex ]; then resultado 0 'termos genéricos não indicam cota'; else resultado 1 'termos genéricos não indicam cota'; fi
+
+preparar
+rodar critico "$teste/prompt" --mcp
+if [ "$status" -eq 0 ] && [ "$(cat "$CHAMADAS")" = codex ] && grep -Fx 'gpt-6.1-sol' "$ARGUMENTOS" >/dev/null && grep -Fx -- '-c' "$ARGUMENTOS" >/dev/null; then resultado 0 'crítico com MCP usa codex'; else resultado 1 'crítico com MCP usa codex'; fi
+
+preparar
+CODEX_SAIDA='429 Too Many Requests' CODEX_CODIGO=1
+rodar critico "$teste/prompt" --mcp
+if [ "$status" -eq 3 ] && [ "$(cat "$CHAMADAS")" = codex ]; then resultado 0 'cota com MCP sem agy'; else resultado 1 'cota com MCP sem agy'; fi
 
 [ "$falhas" -eq 0 ]

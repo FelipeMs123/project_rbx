@@ -9,7 +9,7 @@ Uma **receita** é um modelo de prompt reutilizável com lacunas em `{{CHAVES}}`
 | [tarefa-roadmap.md](tarefa-roadmap.md) | `rbx-logica` / `rbx-server` / `rbx-client` / `rbx-design` | Simples a Médio | `gpt-6.1-terra`, `gemini-3.8-flash-high` ou `gpt-6.1-sol` |
 | [correcao-pr.md](correcao-pr.md) | `rbx-server` / `rbx-client` / `rbx-logica` | Médio | `gpt-6.1-sol` |
 | [revisao-diff.md](revisao-diff.md) | `rbx-revisor` | Crítico | `gemini-4-hydrogen-high` ou `gpt-6.1-sol` (high) |
-| [teste-studio.md](teste-studio.md) | Testador (Studio MCP) | Médio | `gpt-6.1-sol` |
+| [teste-studio.md](teste-studio.md) | Testador (Studio MCP — só líder, 1 por vez) | Médio | `gpt-6.1-sol` |
 | [escrivao.md](escrivao.md) | `rbx-escrivao` | Trivial | `gemini-3.8-flash-low` |
 
 ### Escala de níveis de modelo
@@ -51,3 +51,4 @@ Escolhe o modelo pelo nível e, se a cota do primário acabar (rate limit, 429, 
 1. **Limite os arquivos permitidos**: liste exatamente quais arquivos de `src/` e `tests/` o agente pode criar ou editar.
 2. **Proíba commit e push**: o agente entrega o código na árvore de trabalho; o líder roda `lune run check` e faz o commit.
 3. **Exporte diffs em arquivo**: para revisão sem terminal, salve `git diff` em um arquivo temporário antes de chamar o revisor.
+4. **Teste no Studio via MCP**: acionado exclusivamente pelo líder da squad e apenas um testador por vez (Studio conectado ao `rojo serve` da branch certa). Agentes de código não abrem o Studio.
