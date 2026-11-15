@@ -1,0 +1,3547 @@
+{
+  "Children": [
+    {
+      "ClassName": "Part",
+      "Name": "Bounds",
+      "Properties": {
+        "Anchored": true,
+        "CFrame": {
+          "CFrame": {
+            "orientation": [
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                0,
+                1,
+                -0.0
+              ],
+              [
+                0,
+                0,
+                1
+              ]
+            ],
+            "position": [
+              141,
+              160,
+              0
+            ]
+          }
+        },
+        "CanCollide": false,
+        "CanQuery": false,
+        "CanTouch": false,
+        "Color": [
+          1,
+          1,
+          1
+        ],
+        "Material": "SmoothPlastic",
+        "Shape": "Block",
+        "Size": [
+          139,
+          480,
+          140
+        ],
+        "Transparency": 1
+      }
+    },
+    {
+      "ClassName": "SpawnLocation",
+      "Name": "SpawnLocation",
+      "Properties": {
+        "Anchored": true,
+        "CFrame": {
+          "CFrame": {
+            "orientation": [
+              [
+                6.123233995736766e-17,
+                -0.0,
+                -1
+              ],
+              [
+                0,
+                1,
+                -0.0
+              ],
+              [
+                1,
+                0,
+                6.123233995736766e-17
+              ]
+            ],
+            "position": [
+              122,
+              0.5,
+              0
+            ]
+          }
+        },
+        "CanCollide": true,
+        "Color": [
+          0.9607843137254902,
+          0.7254901960784313,
+          0.29411764705882354
+        ],
+        "Enabled": false,
+        "Material": "SmoothPlastic",
+        "Neutral": true,
+        "Shape": "Block",
+        "Size": [
+          8,
+          1,
+          8
+        ],
+        "Transparency": 0
+      }
+    },
+    {
+      "Children": [
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Lollipop_01",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  122,
+                  3,
+                  -20
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "LollipopBlock"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Lollipop_02",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  122,
+                  3,
+                  20
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "LollipopBlock"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Lollipop_03",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  136,
+                  3,
+                  -12
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "LollipopBlock"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Lollipop_04",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  136,
+                  3,
+                  12
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "LollipopBlock"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Choco_01",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  150,
+                  3,
+                  -12
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "ChocoBlock"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Choco_02",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  150,
+                  3,
+                  12
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "ChocoBlock"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Choco_03",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  168,
+                  3,
+                  -24
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "ChocoBlock"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Choco_04",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  168,
+                  3,
+                  24
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "ChocoBlock"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Choco_05",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  178,
+                  3,
+                  -10
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "ChocoBlock"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Choco_06",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  178,
+                  3,
+                  10
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "ChocoBlock"
+          }
+        }
+      ],
+      "ClassName": "Folder",
+      "Name": "BlockSpawns"
+    },
+    {
+      "Children": [
+        {
+          "ClassName": "Part",
+          "Name": "Core",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  70.6,
+                  4.5,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.47058823529411764,
+              0.2823529411764706,
+              0.16470588235294117
+            ],
+            "Material": "Glass",
+            "Shape": "Block",
+            "Size": [
+              1.2,
+              9,
+              16
+            ],
+            "Transparency": 0.25
+          },
+          "attributes": {
+            "Rojo_Id": "ChocolateFallsGateCore"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FrameTopBeam",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  70.6,
+                  9.5,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.6,
+              1.4,
+              16.4
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CaramelStripeCenter",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  70.6,
+                  5,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "Neon",
+            "Shape": "Block",
+            "Size": [
+              1.4,
+              1,
+              16.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "BarNorth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  70.6,
+                  4.6,
+                  -4
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              9,
+              0.9,
+              0.9
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "BarSouth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  70.6,
+                  4.6,
+                  4
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              9,
+              0.9,
+              0.9
+            ],
+            "Transparency": 0
+          }
+        }
+      ],
+      "ClassName": "Model",
+      "Name": "Gate",
+      "attributes": {
+        "Rojo_Target_PrimaryPart": "ChocolateFallsGateCore"
+      }
+    },
+    {
+      "Children": [
+        {
+          "Children": [
+            {
+              "ClassName": "Part",
+              "Name": "Core",
+              "Properties": {
+                "Anchored": true,
+                "CFrame": {
+                  "CFrame": {
+                    "orientation": [
+                      [
+                        1,
+                        0,
+                        0
+                      ],
+                      [
+                        0,
+                        1,
+                        -0.0
+                      ],
+                      [
+                        0,
+                        0,
+                        1
+                      ]
+                    ],
+                    "position": [
+                      140,
+                      5,
+                      -28
+                    ]
+                  }
+                },
+                "CanCollide": true,
+                "Color": [
+                  0.47058823529411764,
+                  0.2823529411764706,
+                  0.16470588235294117
+                ],
+                "Material": "SmoothPlastic",
+                "Shape": "Ball",
+                "Size": [
+                  3.8,
+                  4.8,
+                  3.8
+                ],
+                "Transparency": 0
+              },
+              "attributes": {
+                "Rojo_Id": "ChocolateEggCore"
+              }
+            },
+            {
+              "ClassName": "Part",
+              "Name": "BaseRing",
+              "Properties": {
+                "Anchored": true,
+                "CFrame": {
+                  "CFrame": {
+                    "orientation": [
+                      [
+                        6.123233995736766e-17,
+                        -1,
+                        0
+                      ],
+                      [
+                        1,
+                        6.123233995736766e-17,
+                        -0.0
+                      ],
+                      [
+                        0,
+                        0,
+                        1
+                      ]
+                    ],
+                    "position": [
+                      140,
+                      2.8,
+                      -28
+                    ]
+                  }
+                },
+                "CanCollide": false,
+                "CanQuery": false,
+                "CanTouch": false,
+                "Color": [
+                  0.29411764705882354,
+                  0.1568627450980392,
+                  0.08627450980392157
+                ],
+                "Material": "SmoothPlastic",
+                "Shape": "Cylinder",
+                "Size": [
+                  0.4,
+                  3.4,
+                  3.4
+                ],
+                "Transparency": 0
+              }
+            },
+            {
+              "ClassName": "Part",
+              "Name": "CaramelBelt",
+              "Properties": {
+                "Anchored": true,
+                "CFrame": {
+                  "CFrame": {
+                    "orientation": [
+                      [
+                        6.123233995736766e-17,
+                        -1,
+                        0
+                      ],
+                      [
+                        1,
+                        6.123233995736766e-17,
+                        -0.0
+                      ],
+                      [
+                        0,
+                        0,
+                        1
+                      ]
+                    ],
+                    "position": [
+                      140,
+                      4.9,
+                      -28
+                    ]
+                  }
+                },
+                "CanCollide": false,
+                "CanQuery": false,
+                "CanTouch": false,
+                "Color": [
+                  0.9607843137254902,
+                  0.7254901960784313,
+                  0.29411764705882354
+                ],
+                "Material": "Neon",
+                "Shape": "Cylinder",
+                "Size": [
+                  0.45,
+                  3.95,
+                  3.95
+                ],
+                "Transparency": 0
+              }
+            },
+            {
+              "ClassName": "Part",
+              "Name": "FudgeCap",
+              "Properties": {
+                "Anchored": true,
+                "CFrame": {
+                  "CFrame": {
+                    "orientation": [
+                      [
+                        1,
+                        0,
+                        0
+                      ],
+                      [
+                        0,
+                        1,
+                        -0.0
+                      ],
+                      [
+                        0,
+                        0,
+                        1
+                      ]
+                    ],
+                    "position": [
+                      140,
+                      6.4,
+                      -28
+                    ]
+                  }
+                },
+                "CanCollide": false,
+                "CanQuery": false,
+                "CanTouch": false,
+                "Color": [
+                  0.29411764705882354,
+                  0.1568627450980392,
+                  0.08627450980392157
+                ],
+                "Material": "SmoothPlastic",
+                "Shape": "Ball",
+                "Size": [
+                  3.2,
+                  2.2,
+                  3.2
+                ],
+                "Transparency": 0
+              }
+            },
+            {
+              "ClassName": "Part",
+              "Name": "FudgeDripFront",
+              "Properties": {
+                "Anchored": true,
+                "CFrame": {
+                  "CFrame": {
+                    "orientation": [
+                      [
+                        1,
+                        0,
+                        0
+                      ],
+                      [
+                        0,
+                        1,
+                        -0.0
+                      ],
+                      [
+                        0,
+                        0,
+                        1
+                      ]
+                    ],
+                    "position": [
+                      139.2,
+                      5.5,
+                      -29.6
+                    ]
+                  }
+                },
+                "CanCollide": false,
+                "CanQuery": false,
+                "CanTouch": false,
+                "Color": [
+                  0.29411764705882354,
+                  0.1568627450980392,
+                  0.08627450980392157
+                ],
+                "Material": "SmoothPlastic",
+                "Shape": "Ball",
+                "Size": [
+                  0.9,
+                  1.4,
+                  0.6
+                ],
+                "Transparency": 0
+              }
+            },
+            {
+              "ClassName": "Part",
+              "Name": "FudgeDripRight",
+              "Properties": {
+                "Anchored": true,
+                "CFrame": {
+                  "CFrame": {
+                    "orientation": [
+                      [
+                        1,
+                        0,
+                        0
+                      ],
+                      [
+                        0,
+                        1,
+                        -0.0
+                      ],
+                      [
+                        0,
+                        0,
+                        1
+                      ]
+                    ],
+                    "position": [
+                      141.6,
+                      5.4,
+                      -27.4
+                    ]
+                  }
+                },
+                "CanCollide": false,
+                "CanQuery": false,
+                "CanTouch": false,
+                "Color": [
+                  0.29411764705882354,
+                  0.1568627450980392,
+                  0.08627450980392157
+                ],
+                "Material": "SmoothPlastic",
+                "Shape": "Ball",
+                "Size": [
+                  0.6,
+                  1.4,
+                  0.9
+                ],
+                "Transparency": 0
+              }
+            },
+            {
+              "ClassName": "Part",
+              "Name": "WhippedSwirl",
+              "Properties": {
+                "Anchored": true,
+                "CFrame": {
+                  "CFrame": {
+                    "orientation": [
+                      [
+                        6.123233995736766e-17,
+                        -1,
+                        0
+                      ],
+                      [
+                        1,
+                        6.123233995736766e-17,
+                        -0.0
+                      ],
+                      [
+                        0,
+                        0,
+                        1
+                      ]
+                    ],
+                    "position": [
+                      140,
+                      7.45,
+                      -28
+                    ]
+                  }
+                },
+                "CanCollide": false,
+                "CanQuery": false,
+                "CanTouch": false,
+                "Color": [
+                  1,
+                  0.9607843137254902,
+                  0.8627450980392157
+                ],
+                "Material": "SmoothPlastic",
+                "Shape": "Cylinder",
+                "Size": [
+                  0.5,
+                  1.6,
+                  1.6
+                ],
+                "Transparency": 0
+              }
+            },
+            {
+              "ClassName": "Part",
+              "Name": "CherryTop",
+              "Properties": {
+                "Anchored": true,
+                "CFrame": {
+                  "CFrame": {
+                    "orientation": [
+                      [
+                        1,
+                        0,
+                        0
+                      ],
+                      [
+                        0,
+                        1,
+                        -0.0
+                      ],
+                      [
+                        0,
+                        0,
+                        1
+                      ]
+                    ],
+                    "position": [
+                      140,
+                      7.95,
+                      -28
+                    ]
+                  }
+                },
+                "CanCollide": false,
+                "CanQuery": false,
+                "CanTouch": false,
+                "Color": [
+                  1,
+                  0.2549019607843137,
+                  0.35294117647058826
+                ],
+                "Material": "Neon",
+                "Shape": "Ball",
+                "Size": [
+                  0.85,
+                  0.85,
+                  0.85
+                ],
+                "Transparency": 0
+              }
+            }
+          ],
+          "ClassName": "Model",
+          "Name": "ChocolateEgg",
+          "attributes": {
+            "Rojo_Target_PrimaryPart": "ChocolateEggCore"
+          }
+        }
+      ],
+      "ClassName": "Folder",
+      "Name": "Eggs"
+    },
+    {
+      "Children": [
+        {
+          "ClassName": "Part",
+          "Name": "BaseFloor",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  -0.9,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.37254901960784315,
+              0.21568627450980393,
+              0.12549019607843137
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              140,
+              2,
+              140
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EntranceBridge",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  78,
+                  0.1,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              16,
+              0.2,
+              14
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CenterPlazaDisc",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  0.1,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              0.2,
+              44,
+              44
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "PathWestEast",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  148,
+                  0.1,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              124,
+              0.2,
+              14
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "PathNorth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  0.1,
+                  -18
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              12,
+              0.2,
+              24
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "PathSouth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  0.1,
+                  18
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              12,
+              0.2,
+              24
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "WallNorth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  2.5,
+                  -69
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              140,
+              5,
+              2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "WallSouth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  2.5,
+                  69
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              140,
+              5,
+              2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "WallEastNorth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  209,
+                  2.5,
+                  -39
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              2,
+              5,
+              62
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "WallEastSouth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  209,
+                  2.5,
+                  39
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              2,
+              5,
+              62
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EastGateBarrier",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  209,
+                  4.5,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "Glass",
+            "Shape": "Block",
+            "Size": [
+              2,
+              9,
+              16
+            ],
+            "Transparency": 0.15
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EastGatePillarNorth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  209,
+                  6,
+                  -9.75
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              12,
+              3.5,
+              3.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EastGatePillarSouth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  209,
+                  6,
+                  9.75
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              12,
+              3.5,
+              3.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EastGateCapNorth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  209,
+                  12.5,
+                  -9.75
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "Neon",
+            "Shape": "Ball",
+            "Size": [
+              4.5,
+              4.5,
+              4.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EastGateCapSouth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  209,
+                  12.5,
+                  9.75
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "Neon",
+            "Shape": "Ball",
+            "Size": [
+              4.5,
+              4.5,
+              4.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CornerPostNW",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  74,
+                  4,
+                  -68
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              8,
+              5,
+              5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CornerPostSW",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  74,
+                  4,
+                  68
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              8,
+              5,
+              5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CornerPostNE",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  208,
+                  4,
+                  -68
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              8,
+              5,
+              5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CornerPostSE",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  208,
+                  4,
+                  68
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              8,
+              5,
+              5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EggPedestalBase",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  0.7,
+                  -28
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              1.4,
+              12,
+              12
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EggPedestalTop",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  2,
+                  -28
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              1.2,
+              9,
+              9
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EggPedestalRing",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  1.5,
+                  -28
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.9019607843137255,
+              0.37254901960784315
+            ],
+            "Material": "Neon",
+            "Shape": "Cylinder",
+            "Size": [
+              0.4,
+              10,
+              10
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "SpawnPadRing",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  122,
+                  0.15,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.47058823529411764,
+              0.2823529411764706,
+              0.16470588235294117
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              0.3,
+              11,
+              11
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FallsCliffLeft",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  124,
+                  11,
+                  -58
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              12,
+              22,
+              10
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FallsCliffCenter",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  10,
+                  -60
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              24,
+              20,
+              10
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FallsCliffRight",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  156,
+                  11,
+                  -58
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              12,
+              22,
+              10
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FallsTopReservoir",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  20.5,
+                  -58
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.47058823529411764,
+              0.2823529411764706,
+              0.16470588235294117
+            ],
+            "Material": "Glass",
+            "Shape": "Cylinder",
+            "Size": [
+              1.5,
+              20,
+              20
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FallsStreamMain",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  10.5,
+                  -54.5
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.47058823529411764,
+              0.2823529411764706,
+              0.16470588235294117
+            ],
+            "Material": "Glass",
+            "Shape": "Block",
+            "Size": [
+              16,
+              20,
+              2.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FallsStreamFoamLeft",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  134,
+                  1.2,
+                  -52
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              3.5,
+              2.4,
+              3.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FallsStreamFoamCenter",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  1.3,
+                  -51.5
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              4.5,
+              2.6,
+              4.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FallsStreamFoamRight",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  146,
+                  1.2,
+                  -52
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              3.5,
+              2.4,
+              3.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FallsPoolRim",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  0.6,
+                  -50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              1.2,
+              28,
+              28
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FallsPoolSurface",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  0.65,
+                  -50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.47058823529411764,
+              0.2823529411764706,
+              0.16470588235294117
+            ],
+            "Material": "Glass",
+            "Shape": "Cylinder",
+            "Size": [
+              1.4,
+              24,
+              24
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FountainBasin",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  0.8,
+                  50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              1.6,
+              22,
+              22
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FountainPool",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  0.85,
+                  50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.47058823529411764,
+              0.2823529411764706,
+              0.16470588235294117
+            ],
+            "Material": "Glass",
+            "Shape": "Cylinder",
+            "Size": [
+              1.8,
+              19,
+              19
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FountainColumn",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  7,
+                  50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              14,
+              4,
+              4
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FountainTier1",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  6,
+                  50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.47058823529411764,
+              0.2823529411764706,
+              0.16470588235294117
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              1.2,
+              14,
+              14
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FountainTier2",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  11,
+                  50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.47058823529411764,
+              0.2823529411764706,
+              0.16470588235294117
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              1.2,
+              9,
+              9
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FountainCrownCherry",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  140,
+                  15,
+                  50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.2549019607843137,
+              0.35294117647058826
+            ],
+            "Material": "Neon",
+            "Shape": "Ball",
+            "Size": [
+              3.5,
+              3.5,
+              3.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "WaferNW_Slab",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9305475967963663,
+                    -0.13077993598406573,
+                    0.3420201433256687
+                  ],
+                  [
+                    0.13917310096006544,
+                    0.9902680687415704,
+                    -0.0
+                  ],
+                  [
+                    -0.3386916268018251,
+                    0.04760000393743934,
+                    0.9396926207859084
+                  ]
+                ],
+                "position": [
+                  92,
+                  8,
+                  -50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9411764705882353,
+              0.7647058823529411,
+              0.5294117647058824
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              4,
+              16,
+              8
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "WaferNW_Cream",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9305475967963663,
+                    -0.13077993598406573,
+                    0.3420201433256687
+                  ],
+                  [
+                    0.13917310096006544,
+                    0.9902680687415704,
+                    -0.0
+                  ],
+                  [
+                    -0.3386916268018251,
+                    0.04760000393743934,
+                    0.9396926207859084
+                  ]
+                ],
+                "position": [
+                  92,
+                  8,
+                  -50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              4.2,
+              16.2,
+              1.6
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "WaferSW_Slab",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9305475967963663,
+                    0.13077993598406573,
+                    -0.3420201433256687
+                  ],
+                  [
+                    -0.13917310096006544,
+                    0.9902680687415704,
+                    -0.0
+                  ],
+                  [
+                    0.3386916268018251,
+                    0.04760000393743934,
+                    0.9396926207859084
+                  ]
+                ],
+                "position": [
+                  92,
+                  8,
+                  50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9411764705882353,
+              0.7647058823529411,
+              0.5294117647058824
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              4,
+              16,
+              8
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "WaferSW_Cream",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9305475967963663,
+                    0.13077993598406573,
+                    -0.3420201433256687
+                  ],
+                  [
+                    -0.13917310096006544,
+                    0.9902680687415704,
+                    -0.0
+                  ],
+                  [
+                    0.3386916268018251,
+                    0.04760000393743934,
+                    0.9396926207859084
+                  ]
+                ],
+                "position": [
+                  92,
+                  8,
+                  50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              4.2,
+              16.2,
+              1.6
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "ChocoBarNE_Base",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9063077870366499,
+                    -0.0,
+                    -0.42261826174069944
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0.42261826174069944,
+                    0,
+                    0.9063077870366499
+                  ]
+                ],
+                "position": [
+                  188,
+                  9,
+                  -50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              8,
+              18,
+              3
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "ChocoBarNE_GoldFoil",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9063077870366499,
+                    -0.0,
+                    -0.42261826174069944
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0.42261826174069944,
+                    0,
+                    0.9063077870366499
+                  ]
+                ],
+                "position": [
+                  188,
+                  3.5,
+                  -50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              8.4,
+              7,
+              3.4
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "TruffleSE_Dark",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  188,
+                  3.2,
+                  50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              7,
+              7,
+              7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "TruffleSE_Caramel",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  181,
+                  2.4,
+                  53
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              5.5,
+              5.5,
+              5.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "TruffleSE_White",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  195,
+                  2.4,
+                  53
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              5.5,
+              5.5,
+              5.5
+            ],
+            "Transparency": 0
+          }
+        }
+      ],
+      "ClassName": "Folder",
+      "Name": "Scenery"
+    }
+  ],
+  "ClassName": "Folder",
+  "Name": "ChocolateFalls"
+}

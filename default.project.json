@@ -5,6 +5,9 @@
     "ReplicatedStorage": {
       "Shared": {
         "$path": "src/shared"
+      },
+      "PetModels": {
+        "$path": "assets/PetModels.model.json"
       }
     },
     "ServerScriptService": {
@@ -28,6 +31,9 @@
         "$className": "Folder",
         "CandyPlaza": {
           "$path": "assets/map/CandyPlaza.model.json"
+        },
+        "ChocolateFalls": {
+          "$path": "assets/map/ChocolateFalls.model.json"
         }
       }
     },

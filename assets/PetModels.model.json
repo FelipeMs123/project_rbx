@@ -1,0 +1,2506 @@
+{
+  "Children": [
+    {
+      "Children": [
+        {
+          "ClassName": "Part",
+          "Name": "Core",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              1.9,
+              1.8,
+              2
+            ],
+            "Transparency": 0
+          },
+          "attributes": {
+            "Rojo_Id": "Pet_CottonCatCore"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FluffCheekLeft",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  -0.75,
+                  -0.1,
+                  -0.55
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.8235294117647058,
+              0.9019607843137255
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              0.8,
+              0.7,
+              0.8
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "FluffCheekRight",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0.75,
+                  -0.1,
+                  -0.55
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.8235294117647058,
+              0.9019607843137255
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              0.8,
+              0.7,
+              0.8
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "WedgePart",
+          "Name": "EarLeft",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9781476007338057,
+                    -0.20791169081775934,
+                    0
+                  ],
+                  [
+                    0.20791169081775934,
+                    0.9781476007338057,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  -0.55,
+                  0.95,
+                  -0.15
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.37254901960784315,
+              0.6352941176470588
+            ],
+            "Material": "SmoothPlastic",
+            "Size": [
+              0.45,
+              0.7,
+              0.55
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "WedgePart",
+          "Name": "EarRight",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9781476007338057,
+                    0.20791169081775934,
+                    0
+                  ],
+                  [
+                    -0.20791169081775934,
+                    0.9781476007338057,
+                    -0.0
+                  ],
+                  [
+                    -0.0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0.55,
+                  0.95,
+                  -0.15
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.37254901960784315,
+              0.6352941176470588
+            ],
+            "Material": "SmoothPlastic",
+            "Size": [
+              0.45,
+              0.7,
+              0.55
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EyeLeft",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  -0.38,
+                  0.2,
+                  -0.92
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.17647058823529413,
+              0.09803921568627451,
+              0.19607843137254902
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              0.3,
+              0.35,
+              0.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EyeRight",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0.38,
+                  0.2,
+                  -0.92
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.17647058823529413,
+              0.09803921568627451,
+              0.19607843137254902
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              0.3,
+              0.35,
+              0.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Nose",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  0.02,
+                  -1
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.2549019607843137,
+              0.35294117647058826
+            ],
+            "Material": "Neon",
+            "Shape": "Ball",
+            "Size": [
+              0.25,
+              0.2,
+              0.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Tail",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    0.573576436351046,
+                    0.8191520442889918
+                  ],
+                  [
+                    0,
+                    0.8191520442889918,
+                    -0.573576436351046
+                  ],
+                  [
+                    -1,
+                    3.5121427342182706e-17,
+                    5.015859645267624e-17
+                  ]
+                ],
+                "position": [
+                  0,
+                  0.35,
+                  1.15
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              1.1,
+              0.38,
+              0.38
+            ],
+            "Transparency": 0
+          }
+        }
+      ],
+      "ClassName": "Model",
+      "Name": "CottonCat",
+      "attributes": {
+        "Rojo_Target_PrimaryPart": "Pet_CottonCatCore"
+      }
+    },
+    {
+      "Children": [
+        {
+          "ClassName": "Part",
+          "Name": "Core",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.47058823529411764,
+              0.9411764705882353,
+              0.7058823529411765
+            ],
+            "Material": "Glass",
+            "Shape": "Block",
+            "Size": [
+              1.7,
+              1.8,
+              1.6
+            ],
+            "Transparency": 0
+          },
+          "attributes": {
+            "Rojo_Id": "Pet_BearGummyCore"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "BellyPatch",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  -0.15,
+                  -0.78
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.1,
+              1,
+              0.15
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Snout",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  0.05,
+                  -0.85
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              0.85,
+              0.65,
+              0.55
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Nose",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  0.18,
+                  -1.1
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.37254901960784315,
+              0.6352941176470588
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              0.3,
+              0.24,
+              0.24
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EarLeft",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    0,
+                    1
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    -1,
+                    0,
+                    6.123233995736766e-17
+                  ]
+                ],
+                "position": [
+                  -0.65,
+                  0.95,
+                  -0.1
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.47058823529411764,
+              0.9411764705882353,
+              0.7058823529411765
+            ],
+            "Material": "Glass",
+            "Shape": "Cylinder",
+            "Size": [
+              0.3,
+              0.65,
+              0.65
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EarRight",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    0,
+                    1
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    -1,
+                    0,
+                    6.123233995736766e-17
+                  ]
+                ],
+                "position": [
+                  0.65,
+                  0.95,
+                  -0.1
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.47058823529411764,
+              0.9411764705882353,
+              0.7058823529411765
+            ],
+            "Material": "Glass",
+            "Shape": "Cylinder",
+            "Size": [
+              0.3,
+              0.65,
+              0.65
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EyeLeft",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  -0.4,
+                  0.38,
+                  -0.78
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.17647058823529413,
+              0.09803921568627451,
+              0.19607843137254902
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              0.28,
+              0.28,
+              0.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EyeRight",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0.4,
+                  0.38,
+                  -0.78
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.17647058823529413,
+              0.09803921568627451,
+              0.19607843137254902
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              0.28,
+              0.28,
+              0.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "TailPuff",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  -0.25,
+                  0.85
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.9019607843137255,
+              0.37254901960784315
+            ],
+            "Material": "Neon",
+            "Shape": "Ball",
+            "Size": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "Transparency": 0
+          }
+        }
+      ],
+      "ClassName": "Model",
+      "Name": "BearGummy",
+      "attributes": {
+        "Rojo_Target_PrimaryPart": "Pet_BearGummyCore"
+      }
+    },
+    {
+      "Children": [
+        {
+          "ClassName": "Part",
+          "Name": "Core",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.45098039215686275,
+              0.8431372549019608,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              1.8,
+              1.8,
+              1.9
+            ],
+            "Transparency": 0
+          },
+          "attributes": {
+            "Rojo_Id": "Pet_LollipopBunnyCore"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EarLeft",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9902680687415704,
+                    -0.13917310096006544,
+                    0
+                  ],
+                  [
+                    0.13917310096006544,
+                    0.9902680687415704,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  -0.45,
+                  1.35,
+                  -0.1
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.45098039215686275,
+              0.8431372549019608,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              0.42,
+              1.45,
+              0.28
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EarInnerLeft",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9902680687415704,
+                    -0.13917310096006544,
+                    0
+                  ],
+                  [
+                    0.13917310096006544,
+                    0.9902680687415704,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  -0.45,
+                  1.35,
+                  -0.12
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.37254901960784315,
+              0.6352941176470588
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              0.24,
+              1.1,
+              0.3
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EarRight",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9902680687415704,
+                    0.13917310096006544,
+                    0
+                  ],
+                  [
+                    -0.13917310096006544,
+                    0.9902680687415704,
+                    -0.0
+                  ],
+                  [
+                    -0.0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0.45,
+                  1.35,
+                  -0.1
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.45098039215686275,
+              0.8431372549019608,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              0.42,
+              1.45,
+              0.28
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EarInnerRight",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9902680687415704,
+                    0.13917310096006544,
+                    0
+                  ],
+                  [
+                    -0.13917310096006544,
+                    0.9902680687415704,
+                    -0.0
+                  ],
+                  [
+                    -0.0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0.45,
+                  1.35,
+                  -0.12
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.37254901960784315,
+              0.6352941176470588
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              0.24,
+              1.1,
+              0.3
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EyeLeft",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  -0.36,
+                  0.22,
+                  -0.88
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.17647058823529413,
+              0.09803921568627451,
+              0.19607843137254902
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              0.28,
+              0.34,
+              0.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EyeRight",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0.36,
+                  0.22,
+                  -0.88
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.17647058823529413,
+              0.09803921568627451,
+              0.19607843137254902
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              0.28,
+              0.34,
+              0.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Nose",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  0.05,
+                  -0.95
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.37254901960784315,
+              0.6352941176470588
+            ],
+            "Material": "Neon",
+            "Shape": "Ball",
+            "Size": [
+              0.26,
+              0.2,
+              0.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "LollipopBadge",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    0,
+                    1
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    -1,
+                    0,
+                    6.123233995736766e-17
+                  ]
+                ],
+                "position": [
+                  0,
+                  0.1,
+                  0.88
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.37254901960784315,
+              0.6352941176470588
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              0.25,
+              1.1,
+              1.1
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CottonTail",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  -0.35,
+                  1.05
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              0.65,
+              0.65,
+              0.65
+            ],
+            "Transparency": 0
+          }
+        }
+      ],
+      "ClassName": "Model",
+      "Name": "LollipopBunny",
+      "attributes": {
+        "Rojo_Target_PrimaryPart": "Pet_LollipopBunnyCore"
+      }
+    },
+    {
+      "Children": [
+        {
+          "ClassName": "Part",
+          "Name": "Core",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "Glass",
+            "Shape": "Ball",
+            "Size": [
+              1.85,
+              1.8,
+              2.1
+            ],
+            "Transparency": 0
+          },
+          "attributes": {
+            "Rojo_Id": "Pet_JellyUnicornCore"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Snout",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  0.05,
+                  -1
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              0.9,
+              0.75,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "HornBase",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    -0.42261826174069944,
+                    -8.711024503246596e-17,
+                    0.9063077870366499
+                  ],
+                  [
+                    0.9063077870366499,
+                    5.549534652183772e-17,
+                    0.42261826174069944
+                  ],
+                  [
+                    -8.711024503246596e-17,
+                    1,
+                    5.549534652183772e-17
+                  ]
+                ],
+                "position": [
+                  0,
+                  0.95,
+                  -0.55
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.9019607843137255,
+              0.37254901960784315
+            ],
+            "Material": "Neon",
+            "Shape": "Cylinder",
+            "Size": [
+              0.7,
+              0.36,
+              0.36
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "WedgePart",
+          "Name": "HornTip",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    -0.0,
+                    0
+                  ],
+                  [
+                    0,
+                    0.9063077870366499,
+                    0.42261826174069944
+                  ],
+                  [
+                    -0.0,
+                    -0.42261826174069944,
+                    0.9063077870366499
+                  ]
+                ],
+                "position": [
+                  0,
+                  1.4,
+                  -0.75
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.9019607843137255,
+              0.37254901960784315
+            ],
+            "Material": "Neon",
+            "Size": [
+              0.26,
+              0.65,
+              0.26
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "WedgePart",
+          "Name": "EarLeft",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9659258262890683,
+                    -0.25881904510252074,
+                    0
+                  ],
+                  [
+                    0.25881904510252074,
+                    0.9659258262890683,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  -0.52,
+                  0.85,
+                  -0.25
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "SmoothPlastic",
+            "Size": [
+              0.35,
+              0.55,
+              0.4
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "WedgePart",
+          "Name": "EarRight",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9659258262890683,
+                    0.25881904510252074,
+                    0
+                  ],
+                  [
+                    -0.25881904510252074,
+                    0.9659258262890683,
+                    -0.0
+                  ],
+                  [
+                    -0.0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0.52,
+                  0.85,
+                  -0.25
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "SmoothPlastic",
+            "Size": [
+              0.35,
+              0.55,
+              0.4
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "ManeCrest1",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  0.9,
+                  0.05
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.37254901960784315,
+              0.6352941176470588
+            ],
+            "Material": "Neon",
+            "Shape": "Ball",
+            "Size": [
+              0.5,
+              0.6,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "ManeCrest2",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  0.65,
+                  0.55
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.45098039215686275,
+              0.8431372549019608,
+              1
+            ],
+            "Material": "Neon",
+            "Shape": "Ball",
+            "Size": [
+              0.5,
+              0.55,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EyeLeft",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  -0.42,
+                  0.28,
+                  -0.88
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.17647058823529413,
+              0.09803921568627451,
+              0.19607843137254902
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              0.28,
+              0.32,
+              0.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EyeRight",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0.42,
+                  0.28,
+                  -0.88
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.17647058823529413,
+              0.09803921568627451,
+              0.19607843137254902
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              0.28,
+              0.32,
+              0.2
+            ],
+            "Transparency": 0
+          }
+        }
+      ],
+      "ClassName": "Model",
+      "Name": "JellyUnicorn",
+      "attributes": {
+        "Rojo_Target_PrimaryPart": "Pet_JellyUnicornCore"
+      }
+    },
+    {
+      "Children": [
+        {
+          "ClassName": "Part",
+          "Name": "Core",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  0,
+                  0
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.47058823529411764,
+              0.2823529411764706,
+              0.16470588235294117
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.9,
+              1.85,
+              2.1
+            ],
+            "Transparency": 0
+          },
+          "attributes": {
+            "Rojo_Id": "Pet_ChocolateDragonCore"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "BellyPlate",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  -0.15,
+                  -1.02
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.3,
+              1.2,
+              0.15
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Snout",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  0.05,
+                  -1.25
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.1,
+              0.7,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "WedgePart",
+          "Name": "HornLeft",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9659258262890683,
+                    -0.25881904510252074,
+                    0
+                  ],
+                  [
+                    0.24321034680169396,
+                    0.9076733711903687,
+                    0.3420201433256687
+                  ],
+                  [
+                    -0.08852132690137686,
+                    -0.33036608954935215,
+                    0.9396926207859084
+                  ]
+                ],
+                "position": [
+                  -0.58,
+                  1.15,
+                  -0.15
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "Neon",
+            "Size": [
+              0.35,
+              0.85,
+              0.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "WedgePart",
+          "Name": "HornRight",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9659258262890683,
+                    0.25881904510252074,
+                    0
+                  ],
+                  [
+                    -0.24321034680169396,
+                    0.9076733711903687,
+                    0.3420201433256687
+                  ],
+                  [
+                    0.08852132690137686,
+                    -0.33036608954935215,
+                    0.9396926207859084
+                  ]
+                ],
+                "position": [
+                  0.58,
+                  1.15,
+                  -0.15
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "Neon",
+            "Size": [
+              0.35,
+              0.85,
+              0.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "WedgePart",
+          "Name": "WingLeft",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    5.549534652183772e-17,
+                    -2.5877905075098294e-17,
+                    1
+                  ],
+                  [
+                    0.42261826174069944,
+                    0.9063077870366499,
+                    -0.0
+                  ],
+                  [
+                    -0.9063077870366499,
+                    0.42261826174069944,
+                    6.123233995736766e-17
+                  ]
+                ],
+                "position": [
+                  -1.35,
+                  0.35,
+                  0.15
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Size": [
+              0.25,
+              1.2,
+              1.6
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "WedgePart",
+          "Name": "WingRight",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    5.549534652183772e-17,
+                    2.5877905075098294e-17,
+                    -1
+                  ],
+                  [
+                    -0.42261826174069944,
+                    0.9063077870366499,
+                    -0.0
+                  ],
+                  [
+                    0.9063077870366499,
+                    0.42261826174069944,
+                    6.123233995736766e-17
+                  ]
+                ],
+                "position": [
+                  1.35,
+                  0.35,
+                  0.15
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Size": [
+              0.25,
+              1.2,
+              1.6
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EyeLeft",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  -0.45,
+                  0.42,
+                  -1.02
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.9019607843137255,
+              0.37254901960784315
+            ],
+            "Material": "Neon",
+            "Shape": "Ball",
+            "Size": [
+              0.3,
+              0.26,
+              0.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EyeRight",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0.45,
+                  0.42,
+                  -1.02
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.9019607843137255,
+              0.37254901960784315
+            ],
+            "Material": "Neon",
+            "Shape": "Ball",
+            "Size": [
+              0.3,
+              0.26,
+              0.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "WedgePart",
+          "Name": "BackSpike",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  1.05,
+                  0.45
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "Neon",
+            "Size": [
+              0.3,
+              0.55,
+              0.6
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Tail",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    0.9659258262890683,
+                    -0.25881904510252074
+                  ],
+                  [
+                    0,
+                    0.25881904510252074,
+                    0.9659258262890683
+                  ]
+                ],
+                "position": [
+                  0,
+                  -0.3,
+                  1.35
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              0.5,
+              0.5,
+              1.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "TailTipFlame",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  0,
+                  -0.1,
+                  1.95
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.6078431372549019,
+              0.27450980392156865
+            ],
+            "Material": "Neon",
+            "Shape": "Ball",
+            "Size": [
+              0.6,
+              0.6,
+              0.6
+            ],
+            "Transparency": 0
+          }
+        }
+      ],
+      "ClassName": "Model",
+      "Name": "ChocolateDragon",
+      "attributes": {
+        "Rojo_Target_PrimaryPart": "Pet_ChocolateDragonCore"
+      }
+    }
+  ],
+  "ClassName": "Folder",
+  "Name": "PetModels"
+}
