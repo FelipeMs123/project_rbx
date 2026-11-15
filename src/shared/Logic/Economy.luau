@@ -20,4 +20,22 @@ function Economy.applyCoinBonus(amount: number, rebirths: number, bonusPerRebirt
 	return math.floor(amount * Economy.coinMultiplier(rebirths, bonusPerRebirth))
 end
 
+-- Ignora multiplicadores inválidos e arredonda apenas depois de aplicar o produto.
+function Economy.applyMultipliers(base: number, multipliers: { any }): number
+	local product = 1
+	for _, multiplier in multipliers do
+		if type(multiplier) == "number" and multiplier == multiplier and multiplier >= 1 and multiplier < math.huge then
+			product *= multiplier
+			if product ~= product or product == math.huge then
+				return 0
+			end
+		end
+	end
+	local credited = base * product
+	if credited ~= credited or credited == math.huge or credited == -math.huge then
+		return 0
+	end
+	return math.floor(credited)
+end
+
 return Economy

@@ -115,14 +115,15 @@ local function enforceArea(player: Player, folder: Instance, boxes: { Areas.Box 
 	if not humanoid or humanoid.Health <= 0 or not root or not root:IsA("BasePart") then
 		return
 	end
-	if not Areas.lockedAreaAt(boxes, data.UnlockedAreas, coordinates(root.Position)) then
+	local lockedAreaId = Areas.lockedAreaAt(boxes, data.UnlockedAreas, coordinates(root.Position))
+	if not lockedAreaId then
 		return
 	end
 	local lastId = Areas.lastUnlocked(AreasConfig :: any, data.UnlockedAreas)
 	local spawn = findSpawn(folder, lastId) or findSpawn(folder, "CandyPlaza")
 	if spawn then
 		character:PivotTo(spawn.CFrame + Vector3.new(0, 4, 0))
-		NetServer.Fire("Notify", player, ErrorCodes.AREA_LOCKED)
+		NetServer.Fire("Notify", player, ErrorCodes.AREA_NOT_UNLOCKED, { areaId = lockedAreaId })
 	end
 end
 

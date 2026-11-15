@@ -24,4 +24,25 @@ return function(t)
 		t.eq(Economy.applyCoinBonus(5, 1, 0.5), 7)
 		t.eq(Economy.applyCoinBonus(100, 3, 0.5), 250)
 	end)
+
+	t.test("applyMultipliers combina bônus e arredonda só no final", function()
+		t.eq(Economy.applyMultipliers(5, {}), 5)
+		t.eq(Economy.applyMultipliers(5, { 2, 3 }), 30)
+		t.eq(Economy.applyMultipliers(7.5, { 2 }), 15)
+		t.eq(Economy.applyMultipliers(5, { 1.5 }), 7)
+		t.eq(Economy.applyMultipliers(0, { 2 }), 0)
+	end)
+
+	t.test("applyMultipliers ignora valores inválidos", function()
+		t.eq(Economy.applyMultipliers(5, { 0 / 0, math.huge, -math.huge, -2, 0, 0.5, "2", false, {}, 1, 2 }), 10)
+	end)
+
+	t.test("applyMultipliers recusa overflow no produto de multiplicadores finitos", function()
+		t.eq(Economy.applyMultipliers(1, { 1e200, 1e200 }), 0)
+		t.eq(Economy.applyMultipliers(0, { 1e200, 1e200 }), 0, "zero vezes infinito não credita NaN")
+	end)
+
+	t.test("applyMultipliers recusa overflow da base vezes o produto", function()
+		t.eq(Economy.applyMultipliers(1e308, { 2 }), 0)
+	end)
 end

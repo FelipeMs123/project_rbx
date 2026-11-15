@@ -4,7 +4,7 @@
 
 local Inventory = {}
 
-type PetInstance = { Id: string }
+type PetInstance = { Id: string, Variant: string? }
 type PlayerData = { Inventory: { [string]: PetInstance }, Equipped: { string } }
 type PetDefinition = { Multiplier: number }
 

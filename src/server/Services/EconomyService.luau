@@ -14,15 +14,29 @@ local DataService = require(script.Parent.DataService)
 export type Currency = "Coins" | "Gems"
 
 local EconomyService = {}
+local coinMultipliers: { [string]: (Player) -> number } = {}
 
--- Soma moedas já com o bônus de rebirth. Devolve o valor creditado (0 se não deu).
+-- Registrar o mesmo nome substitui o multiplicador anterior.
+function EconomyService.RegisterCoinMultiplier(name: string, fn: (Player) -> number)
+	coinMultipliers[name] = fn
+end
+
+-- Soma moedas com rebirth e multiplicadores registrados. Devolve o creditado (0 se não deu).
 function EconomyService.AddCoins(player: Player, amount: number): number
 	local data = DataService.Get(player)
 	if data == nil or not Economy.isValidAmount(amount) then
 		return 0
 	end
-	local credited = Economy.applyCoinBonus(amount, data.Rebirths, GameConfig.RebirthCoinBonus)
-	if credited <= 0 then
+	local multipliers: { any } = {}
+	for _, multiplier in coinMultipliers do
+		local ok, value = pcall(multiplier, player)
+		if ok then
+			table.insert(multipliers, value)
+		end
+	end
+	local base = amount * Economy.coinMultiplier(data.Rebirths, GameConfig.RebirthCoinBonus)
+	local credited = Economy.applyMultipliers(base, multipliers)
+	if credited ~= credited or credited == math.huge or credited <= 0 then
 		return 0
 	end
 	DataService.Update(player, "Coins", function(coins: number)

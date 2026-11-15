@@ -178,4 +178,75 @@ function DataService.Save(player: Player)
 	end
 end
 
+local function matchesSavedData(lastSavedData: any, isSaved: (lastSavedData: any) -> boolean): boolean
+	local ok, result = pcall(isSaved, lastSavedData)
+	return ok and result == true
+end
+
+-- Sem yield. No ProcessReceipt, confira o PurchaseId em LastSavedData.Receipts
+-- antes de confirmar uma compra que já aparece nos dados vivos.
+function DataService.IsSaved(player: Player, isSaved: (lastSavedData: any) -> boolean): boolean
+	local profile = profiles[player]
+	if profile == nil or not profile:IsActive() then
+		return false
+	end
+	return matchesSavedData(profile.LastSavedData, isSaved)
+end
+
+-- Pede um salvamento e espera o OnAfterSave, por até 15 segundos por padrão.
+-- No ProcessReceipt, passe isSaved conferindo o PurchaseId em LastSavedData.Receipts:
+-- um auto-save iniciado antes da compra pode terminar sem conter esse recibo.
+-- Pode fazer yield: não chamar de dentro de código que precisa ser sem yield.
+function DataService.SaveAndWait(player: Player, timeout: number?, isSaved: ((lastSavedData: any) -> boolean)?): boolean
+	local profile = profiles[player]
+	if profile == nil or not profile:IsActive() then
+		return false
+	end
+	local duration = timeout or 15
+	if duration ~= duration or duration < 0 or duration == math.huge then
+		return false
+	end
+	if isSaved and matchesSavedData(profile.LastSavedData, isSaved) then
+		return true
+	end
+	local deadline = os.clock() + duration
+	local saved = false
+	local retryRequested = false
+	local retryPending = false
+	local connection = profile.OnAfterSave:Connect(function(lastSavedData: any)
+		if saved or os.clock() > deadline then
+			return
+		end
+		if isSaved == nil or matchesSavedData(lastSavedData, isSaved) then
+			saved = true
+		elseif not retryRequested then
+			-- Só repete uma vez; snapshots antigos continuam sem confirmar a compra.
+			retryRequested = true
+			retryPending = true
+		end
+	end)
+	local ok = pcall(function()
+		profile:Save()
+	end)
+	if not ok then
+		connection:Disconnect()
+		return false
+	end
+	while not saved and profile:IsActive() and os.clock() < deadline do
+		if retryPending then
+			retryPending = false
+			local retryOk = pcall(function()
+				profile:Save()
+			end)
+			if not retryOk then
+				connection:Disconnect()
+				return false
+			end
+		end
+		task.wait(math.clamp(deadline - os.clock(), 0, 0.1))
+	end
+	connection:Disconnect()
+	return saved and profile:IsActive()
+end
+
 return DataService

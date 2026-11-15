@@ -1,5 +1,6 @@
 --!strict
 -- Template.luau (ServerScriptService.Server.Data.Template)
+-- Dono: fundação.
 -- Dados iniciais de um jogador novo. CONTRATO (ver docs/CONTRATO.md).
 -- Campo novo: adicione aqui com valor padrão; o Reconcile do ProfileStore preenche nos
 -- jogadores antigos. Renomear ou mudar o tipo de um campo exige migração (DataService.migrate).
@@ -15,6 +16,11 @@ local Template: Types.PlayerData = {
 	UnlockedAreas = { GameConfig.StartingArea },
 	Inventory = {},
 	Equipped = {},
+	Daily = { LastClaimDay = 0, Streak = 0 },
+	TutorialStep = 0,
+	Settings = { Music = true, Sfx = true },
+	CoinBoostUntil = 0,
+	Receipts = {},
 }
 
 return Template
