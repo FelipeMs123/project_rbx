@@ -3,14 +3,23 @@
 ## Painel
 | Tarefa | Status | Feito por (ferramenta e modelo) | Branch / PR | Bloqueio ou próximo passo |
 |---|---|---|---|---|
-| A1 Fórmulas | 🔵 em teste | Codex gpt-6.1-sol / Gemini gemini-4-hydrogen-high | `a/fase1` #7 | Felipe testar o PR #7 no Studio |
-| A2 BlockService | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Felipe testar o PR #7 no Studio |
-| A3 AreaService | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Felipe testar o PR #7 no Studio |
-| A4 Cliente dos blocos | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Felipe testar o PR #7 no Studio |
-| A5 HUD e portões | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Felipe testar o PR #7 no Studio |
-| A6 Studio: Praça dos Doces | ⬜ a fazer | não informado | não informado | Felipe montar a área e modelos dos blocos no Studio |
+| A1 Fórmulas | 🔵 em teste | Codex gpt-6.1-sol / Gemini gemini-4-hydrogen-high | `a/fase1` #7 | Aprovação do PR #7 pela Squad B ou merge pelo Felipe |
+| A2 BlockService | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Aprovação do PR #7 pela Squad B ou merge pelo Felipe |
+| A3 AreaService | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Aprovação do PR #7 pela Squad B ou merge pelo Felipe |
+| A4 Cliente dos blocos | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Aprovação do PR #7 pela Squad B ou merge pelo Felipe |
+| A5 HUD e portões | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Aprovação do PR #7 pela Squad B ou merge pelo Felipe |
+| A6 Studio: Praça dos Doces | 🔵 em teste | Gemini 4 Argon + Codex gpt-6.1-sol + Gemini 3.8 Flash | `a/fase1` #7 | Aprovação do PR #7 pela Squad B ou merge pelo Felipe |
 
 ## Registro
+(entrada mais nova em cima)
+
+### 2026-11-14 · Rodada 4: teste no Studio via MCP e mapa A6
+- **O que foi feito:** Teste completo do PR #7 no Studio via MCP (servidor inicia, quebra de bloco e recompensa exatas, anti-cheat de distância, rate limit de 100 cliques para 15 aceitos, argumentos lixo ignorados, UnlockArea em todos os casos, compra da Cascata cobrando 1800 moedas). Ajustes no HUD (painel de moedas movido para lateral esquerda para não ficar sob o chat; barra de HP e preço do portão legíveis com escala e mínimo em pixels de 137x43 px). Implementação da A6 (Praça dos Doces e modelos dos 4 blocos gerados por código, chão subido para Y 0.1, fallback para Core como PrimaryPart e remoção do SpawnLocation do template Baseplate).
+- **Como:** Registro e testes no Roblox Studio via MCP pelo líder (Claude Opus). Spec da A6 pelo Gemini 4 Argon, gerador Lune e .model.json pelo Codex gpt-6.1-sol, correções do Rojo e da barra de HP pelo Gemini 3.8 Flash, ajuste do painel de moedas e remoção de SpawnLocation pelo líder Claude Opus.
+- **Decisões:** Mover painel de moedas para lateral esquerda para evitar sobreposição com chat do Roblox. Subir chão para Y 0.1 para evitar z-fighting com o Baseplate. Usar a Part Core como reserva de PrimaryPart no BlockService quando PrimaryPart não chegar via sync ao vivo.
+- **Problemas e soluções:** Chat do Roblox cobria o painel de moedas; solucionado movendo o painel para a lateral esquerda. Barra de HP sumia (media 66x18 px só com escala); corrigido com escala mais mínimo em pixels (137x43 px). Rojo recusou formato de .model.json; líder descobriu 3 regras (CFrame com tipo explícito, chave attributes minúscula, PrimaryPart via Rojo_Id/Rojo_Target_PrimaryPart), gpt-6.1-terra falhou ao gravar o arquivo e Gemini 3.8 Flash aplicou a correção. PrimaryPart não chega no sync ao vivo; BlockService passou a usar Part Core como reserva. Z-fighting do chão com Baseplate; chão subido para Y 0.1.
+- **Testes:** Studio via MCP: tudo passou (mapa com 65 Parts, 10 blocos com modelo de presente nos spawns do mapa, quebra e recompensa ok, jogador nasce no spawn da praça). Não testado: 2 jogadores, celular, salvamento real, portões (dependem da Cascata da Squad B).
+- **Próximo passo:** Aprovação do PR #7 pela Squad B ou merge pelo Felipe.
 
 ### 2026-11-14 · Rodada 3: correções da revisão
 - **O que foi feito:** Correção dos 7 achados da revisão do Gemini no PR #7 (portão aberto não bloqueia clique com CanQuery e raycast só em Workspace.Blocks; prompt do portão na PrimaryPart ou peça mais baixa; balanço move o Model inteiro; avisos do HUD abaixo do painel e cabendo no celular; sem aviso "+0 moedas"; dano formatado com 1 casa fracionária; BillboardGui em escala). Criação do papel rbx-escrivao em docs/agentes, regras do diário em AGENTS.md e TIME.md, e criação do branch diario. Commit 8aef515.
