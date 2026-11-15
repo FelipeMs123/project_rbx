@@ -1,5 +1,6 @@
 --!strict
 -- NetServer.luau (ServerScriptService.Server.Net.NetServer)
+-- Dono: fundação.
 -- Camada única de rede do servidor (o "NetworkHandler" do prompt original).
 -- 1. Cria ReplicatedStorage.Remotes a partir de Shared.Net.Remotes.
 -- 2. Todo handler passa por: rate limit por jogador + pcall (erro de um handler
@@ -59,7 +60,11 @@ function NetServer.Init()
 		if remote:IsA("RemoteFunction") then
 			-- Sem callback, o InvokeServer do cliente ficaria travado para sempre.
 			-- OnInvoke substitui esta resposta padrão.
-			remote.OnServerInvoke = function()
+			local limiter = makeLimiter({ rate = 2, burst = 3 })
+			remote.OnServerInvoke = function(player)
+				if not limiter:Allow(player, os.clock()) then
+					return { ok = false, err = ErrorCodes.RATE_LIMITED }
+				end
 				return { ok = false, err = ErrorCodes.NOT_IMPLEMENTED }
 			end
 		end

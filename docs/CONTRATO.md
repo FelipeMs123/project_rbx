@@ -30,11 +30,11 @@ ProfileStore `PlayerData_v1`, chave `Player_<UserId>`.
 | `TutorialStep` | number | 0 (0 = não começou; `#Config.Tutorial` = concluído) | A (v2) |
 | `Settings` | `{Music: boolean, Sfx: boolean}` | `{Music = true, Sfx = true}` | A (v2) |
 | `CoinBoostUntil` | number (`os.time()` UTC) | 0 | B (v2) |
-| `Receipts` | `{string}` (últimos 50 `PurchaseId`) | `{}` | B (v2) |
+| `Receipts` | `{string}` (últimos 100 `PurchaseId`) | `{}` | B (v2) |
 
 Diferenças em relação ao prompt original, de propósito:
 - `Inventory` é um dicionário por UUID, não uma lista: busca direta e sem UUID duplicado.
-- O pet salva só `Id`. `Rarity` e `Multiplier` vêm de `Config/Pets` na hora. Rebalancear
+- O pet salva `Id` e, na v2, `Variant` opcional (`"Golden"`). `Rarity` e `Multiplier` vêm de `Config/Pets` na hora. Rebalancear
   um pet vale para todo mundo sem migração. Variantes futuras (dourado, arco-íris) entram como
   campo novo `Variant`.
 - Sem `JSONEncode`: o DataStore já serializa tabelas. Só tabelas, strings, números e booleanos.
@@ -48,7 +48,7 @@ Rebirths) e manda `DataChanged(key, value)` ao dono dos dados.
 
 ## 2. Remotes (`ReplicatedStorage.Remotes`)
 
-Criados pelo `NetServer.Init()`. Rate limit é por jogador e por remote.
+Criados pelo `NetServer.Init()`. Rate limit é por jogador e por remote. Remote ainda sem handler responde `NOT_IMPLEMENTED` com o limite padrão (v2).
 
 ### Cliente -> Servidor
 
@@ -113,6 +113,7 @@ Um Service só chama outro por estas funções.
 
 ### DataService (fundação, pronto)
 ```luau
+DataService.SaveAndWait(player, timeout?): boolean  -- v2: pede o save e espera o OnAfterSave (faz yield)
 DataService.Get(player): PlayerData?          -- só leitura
 DataService.WaitForData(player, timeout?): PlayerData?
 DataService.IsLoaded(player): boolean
@@ -154,9 +155,17 @@ Fluxo do `ProcessReceipt` (Developer Products), nesta ordem:
 1. `ProductId` precisa existir em `Config/Monetization.DevProducts` com `Id > 0`; senão `NotProcessedYet` e log.
 2. Jogador fora do servidor ou dados não carregados (`DataService.WaitForData` com timeout): `NotProcessedYet` (o Roblox tenta de novo).
 3. `PurchaseId` já em `Receipts`: devolve `PurchaseGranted` sem entregar de novo.
-4. Num único `DataService.Update` lógico: entrega (gemas por `AddGems`, boost somando em `CoinBoostUntil`)
-   e grava o `PurchaseId` em `Receipts` (mantém os últimos 50).
-5. `DataService.Save(player)` e só então `PurchaseGranted`. Falha em qualquer passo: `Notify("PURCHASE_FAILED")` e `NotProcessedYet`.
+4. Sem yield entre as chamadas: entrega (gemas por `EconomyService.AddGems`, boost somando em
+   `CoinBoostUntil` por `DataService.Update`) e grava o `PurchaseId` em `Receipts` (mantém os últimos 100).
+   O servidor Luau roda uma coisa por vez: chamadas seguidas sem yield não se misturam com outro
+   código, e as duas mudanças vão no mesmo `Profile.Data`, salvas juntas.
+5. `DataService.SaveAndWait(player)` (espera o `OnAfterSave` do ProfileStore). `true`: devolve
+   `PurchaseGranted`. `false`: devolve `NotProcessedYet` (o Roblox reentrega; o passo 3 evita entregar
+   duas vezes se a entrega já estava salva). Erro em qualquer passo: `Notify("PURCHASE_FAILED")` e `NotProcessedYet`.
+
+Por que 100 recibos bastam: o Roblox só reentrega o recibo que ainda não recebeu `PurchaseGranted`.
+Um recibo concedido nunca volta; a lista só precisa cobrir os que estão em trânsito (é o padrão do
+autor do ProfileStore).
 
 Quem usa os passes:
 - `ExtraPetSlot`: `PetService` (limite de equipados = `MaxEquipped + 1`); a UI de pets (B) lê o atributo `Passes`.

@@ -36,7 +36,7 @@ function EconomyService.AddCoins(player: Player, amount: number): number
 	end
 	local base = amount * Economy.coinMultiplier(data.Rebirths, GameConfig.RebirthCoinBonus)
 	local credited = Economy.applyMultipliers(base, multipliers)
-	if credited <= 0 then
+	if credited ~= credited or credited == math.huge or credited <= 0 then
 		return 0
 	end
 	DataService.Update(player, "Coins", function(coins: number)

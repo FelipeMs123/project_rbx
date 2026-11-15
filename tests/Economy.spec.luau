@@ -36,4 +36,13 @@ return function(t)
 	t.test("applyMultipliers ignora valores inválidos", function()
 		t.eq(Economy.applyMultipliers(5, { 0 / 0, math.huge, -math.huge, -2, 0, 0.5, "2", false, {}, 1, 2 }), 10)
 	end)
+
+	t.test("applyMultipliers recusa overflow no produto de multiplicadores finitos", function()
+		t.eq(Economy.applyMultipliers(1, { 1e200, 1e200 }), 0)
+		t.eq(Economy.applyMultipliers(0, { 1e200, 1e200 }), 0, "zero vezes infinito não credita NaN")
+	end)
+
+	t.test("applyMultipliers recusa overflow da base vezes o produto", function()
+		t.eq(Economy.applyMultipliers(1e308, { 2 }), 0)
+	end)
 end

@@ -178,4 +178,36 @@ function DataService.Save(player: Player)
 	end
 end
 
+-- Pede um salvamento e espera o próximo OnAfterSave, por até 15 segundos por padrão.
+-- Pode fazer yield: não chamar de dentro de código que precisa ser sem yield.
+function DataService.SaveAndWait(player: Player, timeout: number?): boolean
+	local profile = profiles[player]
+	if profile == nil or not profile:IsActive() then
+		return false
+	end
+	local duration = timeout or 15
+	if duration ~= duration or duration < 0 or duration == math.huge then
+		return false
+	end
+	local deadline = os.clock() + duration
+	local saved = false
+	local connection = profile.OnAfterSave:Connect(function()
+		if os.clock() <= deadline then
+			saved = true
+		end
+	end)
+	local ok = pcall(function()
+		profile:Save()
+	end)
+	if not ok then
+		connection:Disconnect()
+		return false
+	end
+	while not saved and profile:IsActive() and os.clock() < deadline do
+		task.wait(math.clamp(deadline - os.clock(), 0, 0.1))
+	end
+	connection:Disconnect()
+	return saved and profile:IsActive()
+end
+
 return DataService

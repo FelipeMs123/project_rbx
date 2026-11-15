@@ -26,9 +26,16 @@ function Economy.applyMultipliers(base: number, multipliers: { any }): number
 	for _, multiplier in multipliers do
 		if type(multiplier) == "number" and multiplier == multiplier and multiplier >= 1 and multiplier < math.huge then
 			product *= multiplier
+			if product ~= product or product == math.huge then
+				return 0
+			end
 		end
 	end
-	return math.floor(base * product)
+	local credited = base * product
+	if credited ~= credited or credited == math.huge or credited == -math.huge then
+		return 0
+	end
+	return math.floor(credited)
 end
 
 return Economy
