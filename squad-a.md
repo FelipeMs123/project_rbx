@@ -14,9 +14,21 @@
 | A-P3 Salvamento real | ✅ pronto | Felipe + Codex | — | Testado via MCP em 15/11/2026 |
 | A-P4 Emulador de celular | ✅ pronto | Codex gpt-6.1-sol | — | Testado via MCP em 15/11/2026 |
 | C2 Contrato v2 | ✅ pronto | Claude (plano) + Codex gpt-6.1-sol + Gemini | main (#11, ba21109) | Mesclado na main |
+| A8 Recompensa diária | 🔵 em teste | Codex gpt-6.1-terra + gpt-6.1-sol | `a/a8-diaria` #16 | Re-revisão da Squad B |
+| A10 Tutorial | 🔵 em teste | Codex gpt-6.1-terra + gpt-6.1-sol | `a/a10-tutorial` #18 | Re-revisão da Squad B |
+| I1 Playtest MVP | ✅ pronto | Codex gpt-6.1-sol (MCP) | #20 | Relatório em docs/seguranca |
+| I2 Segurança MVP | ✅ pronto | Gemini 4 Hydrogen + Codex gpt-6.1-sol | main (#19) | Mesclado na main |
 
 ## Registro
 (entrada mais nova em cima)
+
+### 2026-11-15 · Rodada 11: MVP fechado, A8 e A10, I1 e I2
+- **O que foi feito:** Revisão e aprovação dos PRs #15 (B5) e #17 (B7) da Squad B, mesclados pelo Felipe na main. Implementação de A8 (recompensa diária, PR #16) e A10 (tutorial, PR #18), ambos corrigidos após apontamentos da Squad B e aguardando re-revisão. Execução da revisão de segurança geral do MVP (I2), com PR #19 corrigido, aprovado pela Squad B e mesclado na main. Playtest completo do MVP no Studio (I1). Abertura do PR #20 com o ROADMAP fechando a Fase 1 e o relatório do playtest.
+- **Como:** Revisão dos PRs #15 e #17 da Squad B pela Squad A com Gemini gemini-4-hydrogen-high; integração local e merge pelo Felipe. A8 e A10: especificação pelo líder (Claude), Logic por Codex gpt-6.1-terra, Service e UI por Codex gpt-6.1-sol, revisões de código com Gemini e testes no Studio via MCP. I2: revisão de segurança por Gemini gemini-4-hydrogen-high com correções por Codex gpt-6.1-sol no PR #19. I1: playtest no Studio com perfil real via MCP por Codex gpt-6.1-sol.
+- **Decisões:** PRs #15 e #17 mesclados na main após integração local com 119 testes; PR #19 de segurança mesclado na main (commit 194611d) após aprovação da Squad B; avisos do HUD no tutorial movidos para ScreenGui própria (DisplayOrder 100) para ficarem acima dos modais; fechamento da Fase 1 (MVP) no ROADMAP (PR #20).
+- **Problemas e soluções:** Na A8, revisão Gemini apontou 1 MÉDIO e 3 BAIXO (corrigidos); Squad B pediu 3 MÉDIO (prêmio de amanhã, valor com bônus de rebirth e timeout), todos corrigidos. Na A10, revisão Gemini apontou 2 ALTO, 2 MÉDIO e 3 BAIXO (corrigidos); sobreposição de modais resolvida movendo avisos do HUD para ScreenGui própria (DisplayOrder 100); ordem de REWARD antes de BlockBroken apontada pela Squad B resolvida com Tutorial.matchBreak e testes. No I2, corrigido 1 MÉDIO (DataService.Get exigindo profile ativo e Spend/AddCoins/AddGems tratando Update abortado) e 2 BAIXO. Squad B ficou ~45 min parada por pausa na máquina do drkk71, respondendo após envio de mensagem no PR.
+- **Testes:** Integração local com check TUDO OK (119 testes). Studio via MCP: A8 testada com Dia 1 pagando 75 moedas + 2 gemas, segundo resgate DAILY_NOT_READY, spam sem crédito extra e persistência após Stop/Play; A10 testada em Local Server de jogador novo com 5 passos completos e remotes hostis recusados; I1 playtest completo com 3 pets (dano 7,5), compra da Cascata e ChocolateEgg, rebirth funcionando (bônus 8 -> 12 moedas), salvamento comprovado e ~7 min de farm até o rebirth a 14 cliques/s.
+- **Próximo passo:** Squad B re-revisar #16 e #18; Squad A fazer A7 (Área 3) e A9 (sons); Squad B fazer B8 e B9.
 
 ### 2026-11-15 · Rodada 10: Fase 1.5 concluída e servidor do MVP completo
 - **O que foi feito:** Conclusão da Fase 1.5 com validação das pendências A-P1 a A-P4 e do contrato v2 (C2). PR #11 ajustado após 2 rodadas de pedidos de mudanças da Squad B, aprovado e mesclado na main (commit ba21109). Revisão e merge dos PRs da Squad B na main: PR #12 (B2 PetService, commit 16ba206), PR #13 (B6 Cascata + 5 PetModels + 2 ovos, commit 0b56317, após 3 ajustes visuais) e PR #14 (B3 EggService e RebirthService, commit 74119f1, após 2 ajustes). Testes integrados da main no Studio com mapa completo, ovos, pets, compra e equipagem. Vigia em Python atualizado para ignorar ações do próprio Felipe.
