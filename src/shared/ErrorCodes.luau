@@ -1,5 +1,6 @@
 --!strict
 -- ErrorCodes.luau (ReplicatedStorage.Shared.ErrorCodes)
+-- Dono: fundação.
 -- Códigos de erro devolvidos em Result.err. CONTRATO: só adicionar, nunca renomear.
 
 return table.freeze({
@@ -15,6 +16,10 @@ return table.freeze({
 	MAX_EQUIPPED = "MAX_EQUIPPED",
 	INVENTORY_FULL = "INVENTORY_FULL",
 	AREA_LOCKED = "AREA_LOCKED",
+	AREA_NOT_UNLOCKED = "AREA_NOT_UNLOCKED",
+	DAILY_NOT_READY = "DAILY_NOT_READY",
+	FUSE_INVALID = "FUSE_INVALID",
+	PURCHASE_FAILED = "PURCHASE_FAILED",
 	ALREADY_UNLOCKED = "ALREADY_UNLOCKED",
 	UNKNOWN_ITEM = "UNKNOWN_ITEM",
 	TOO_FAR = "TOO_FAR",

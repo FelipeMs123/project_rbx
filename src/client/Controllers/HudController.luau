@@ -146,7 +146,7 @@ function HudController.Start()
 				"reward"
 			)
 		else
-			HudController.Toast(Messages.message(code), "error")
+			HudController.Toast(Messages.message(code, payload), "error")
 		end
 	end)
 end

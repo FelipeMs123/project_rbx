@@ -1,5 +1,6 @@
 --!strict
 -- Types.luau (ReplicatedStorage.Shared.Types)
+-- Dono: fundação.
 -- Tipos compartilhados entre servidor e cliente. Faz parte do CONTRATO:
 -- mudar aqui exige PR aprovado pelas duas squads (ver docs/CONTRATO.md).
 
@@ -10,6 +11,17 @@ export type Rarity = "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary"
 -- assim dá para rebalancear sem migrar dados.
 export type PetInstance = {
 	Id: string,
+	Variant: string?,
+}
+
+export type DailyState = {
+	LastClaimDay: number,
+	Streak: number,
+}
+
+export type PlayerSettings = {
+	Music: boolean,
+	Sfx: boolean,
 }
 
 export type PlayerData = {
@@ -20,6 +32,11 @@ export type PlayerData = {
 	UnlockedAreas: { string },
 	Inventory: { [string]: PetInstance }, -- [UUID] = PetInstance
 	Equipped: { string }, -- lista de UUIDs
+	Daily: DailyState,
+	TutorialStep: number,
+	Settings: PlayerSettings,
+	CoinBoostUntil: number,
+	Receipts: { string },
 }
 
 -- Resposta padrão de toda RemoteFunction.
