@@ -150,11 +150,14 @@ local function onClick(player: Player, blockId: any)
 	local rewards = Formulas.splitReward(definition.Coins, definition.Gems, state.maxHp, state.damageLog)
 	for recipient, reward in rewards do
 		if recipient.Parent == Players then
-			local coins = EconomyService.AddCoins(recipient, reward.coins)
-			local gems = EconomyService.AddGems(recipient, reward.gems)
-			if coins > 0 or gems > 0 then
-				NetServer.Fire("Notify", recipient, "REWARD", { coins = coins, gems = gems })
-			end
+			local coins = if reward.coins > 0 then EconomyService.AddCoins(recipient, reward.coins) else 0
+			local gems = if reward.gems > 0 then EconomyService.AddGems(recipient, reward.gems) else 0
+			NetServer.Fire("Notify", recipient, "REWARD", {
+				coins = coins,
+				gems = gems,
+				blockId = blockId,
+				blockType = state.blockType,
+			})
 		end
 	end
 	NetServer.FireNearby("BlockBroken", position, GameConfig.EffectsRadius, blockId, position, state.blockType)

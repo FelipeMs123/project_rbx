@@ -12,6 +12,7 @@ local Messages = require(script.Parent.Parent.UI.Hud.Messages)
 local HudController = {}
 local gui: ScreenGui? = nil
 local toastStack: Frame? = nil
+local topReserve = 0
 local pending: { { text: string, kind: string } } = {}
 local colors =
 	{ info = Color3.fromRGB(50, 70, 110), error = Color3.fromRGB(165, 45, 65), reward = Color3.fromRGB(30, 115, 80) }
@@ -42,12 +43,24 @@ function HudController.Toast(text: string, kind: string)
 		return
 	end
 	local item = label(stack, text)
+	item.Active = false
 	item.Size = UDim2.new(1, 0, 0, 52)
 	item.AutomaticSize = Enum.AutomaticSize.Y
 	item.BackgroundColor3 = colors[kind] or colors.info
 	task.delay(2.5, function()
 		item:Destroy()
 	end)
+end
+
+function HudController.SetTopReserve(pixels: number)
+	if pixels ~= pixels or math.abs(pixels) == math.huge then
+		return
+	end
+	topReserve = math.max(0, pixels)
+	local stack = toastStack
+	if stack then
+		stack.Position = UDim2.new(0.5, 0, 0, topReserve)
+	end
 end
 
 function HudController.Init()
@@ -65,14 +78,27 @@ function HudController.Start()
 	screen.ScreenInsets = Enum.ScreenInsets.CoreUISafeInsets
 	screen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	gui = screen
+	local toastScreen = Instance.new("ScreenGui")
+	toastScreen.Name = "CandyToasts"
+	toastScreen.DisplayOrder = 100
+	toastScreen.ResetOnSpawn = false
+	toastScreen.IgnoreGuiInset = screen.IgnoreGuiInset
+	toastScreen.ScreenInsets = screen.ScreenInsets
+	toastScreen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	local root = Instance.new("Frame")
 	root.BackgroundTransparency = 1
 	root.Size = UDim2.fromScale(1, 1)
 	root.Parent = screen
+	local toastRoot = Instance.new("Frame")
+	toastRoot.BackgroundTransparency = 1
+	toastRoot.Active = false
+	toastRoot.Size = UDim2.fromScale(1, 1)
+	toastRoot.Parent = toastScreen
 	-- O ScreenGui aplica o inset; a consulta também acompanha alterações da barra superior.
 	local function updateInset()
 		local topLeft = GuiService:GetGuiInset()
 		root.Position = UDim2.fromOffset(0, if topLeft.Y > 0 then 8 else 12)
+		toastRoot.Position = root.Position
 	end
 	updateInset()
 	GuiService:GetPropertyChangedSignal("TopbarInset"):Connect(updateInset)
@@ -116,11 +142,12 @@ function HudController.Start()
 	end
 	local stack = Instance.new("Frame")
 	stack.BackgroundTransparency = 1
+	stack.Active = false
 	stack.AnchorPoint = Vector2.new(0.5, 0)
 	-- Topo central, estreito o bastante para não encostar no chat (canto superior esquerdo).
-	stack.Position = UDim2.fromScale(0.5, 0)
+	stack.Position = UDim2.new(0.5, 0, 0, topReserve)
 	stack.Size = UDim2.fromScale(0.5, 0.6)
-	stack.Parent = root
+	stack.Parent = toastRoot
 	local stackLimit = Instance.new("UISizeConstraint")
 	stackLimit.MaxSize = Vector2.new(360, math.huge)
 	stackLimit.Parent = stack
@@ -129,7 +156,9 @@ function HudController.Start()
 	layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	layout.Parent = stack
 	toastStack = stack
-	screen.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
+	screen.Parent = playerGui
+	toastScreen.Parent = playerGui
 	for _, entry in pending do
 		HudController.Toast(entry.text, entry.kind)
 	end
@@ -138,6 +167,9 @@ function HudController.Start()
 		if code == "REWARD" and type(payload) == "table" then
 			local coins = if type(payload.coins) == "number" then payload.coins else 0
 			local gems = if type(payload.gems) == "number" then payload.gems else 0
+			if coins == 0 and gems == 0 then
+				return
+			end
 			HudController.Toast(
 				"+"
 					.. Format.abbreviate(coins)

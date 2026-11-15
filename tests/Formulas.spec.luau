@@ -49,6 +49,16 @@ return function(t)
 		local r = Formulas.splitReward(5, 0, 10, { { key = "a", damage = 10 } })
 		t.eq(r.a.gems, 0)
 	end)
+	t.test("participante com parcela arredondada a zero permanece na lista", function()
+		local r = Formulas.splitReward(1, 0, 10, {
+			{ key = "a", damage = 1 },
+			{ key = "b", damage = 9 },
+		})
+		t.ok(r.a ~= nil)
+		t.eq(r.a.coins, 0)
+		t.eq(r.a.gems, 0)
+		t.ok(r.b ~= nil)
+	end)
 	t.test("lista vazia e HP inválido não geram recompensa", function()
 		t.eq(next(Formulas.splitReward(5, 1, 10, {})), nil)
 		for _, hp in { 0, -1, 0 / 0, math.huge } do

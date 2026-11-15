@@ -10,7 +10,7 @@ Toolchain (Rokit), Rojo, ProfileStore, `DataService`, `EconomyService` (moedas, 
 
 ---
 
-## Fase 1: MVP jogável
+## Fase 1: MVP jogável ✅ (fechado em 15/11/2026)
 
 Cada squad tem 6 tarefas no mesmo formato: 1 de lógica pura, 2 de servidor, 2 de cliente e
 1 no Studio. As duas começam juntas; ninguém depende do outro para começar (os stubs seguram).
@@ -69,7 +69,7 @@ Cada squad tem 6 tarefas no mesmo formato: 1 de lógica pura, 2 de servidor, 2 d
 - `Rebirth.cost(rebirths, baseCost, growth)` (fórmula do GDD).
 - Pronto quando: testes cobrem limites, UUID inexistente, já equipado, distribuição do sorteio.
 
-**B2 🟡 PetService** (Squad B) (`rbx-server`)
+**B2 ✅ PetService** (#12) (`rbx-server`)
 - Arquivo: `src/server/Services/PetService.luau`.
 - `AddPet` (UUID com `HttpService:GenerateGUID(false)`, respeita `MaxInventory`),
   `GetDamageBonus`, remotes `EquipPet` / `UnequipPet` (validações do CONTRATO, rate 8/s).
@@ -77,7 +77,7 @@ Cada squad tem 6 tarefas no mesmo formato: 1 de lógica pura, 2 de servidor, 2 d
 - Ao carregar: remove de `Equipped` UUIDs que não existem mais e PetIds que sumiram do Config.
 - Pronto quando: equipar o 4º pet devolve `MAX_EQUIPPED`; UUID de outro jogador devolve `NOT_OWNED`.
 
-**B3 ⬜ EggService e RebirthService** (`rbx-server`; depois da B2)
+**B3 ✅ EggService e RebirthService** (#14) (`rbx-server`; depois da B2)
 - Arquivos: `src/server/Services/EggService.luau`, `RebirthService.luau`.
 - `PurchaseEgg(eggId)`: ovo existe -> área liberada -> espaço no inventário -> `Spend` ->
   sorteio com `Random.new()` no servidor -> `AddPet`. Rate 4/s. Devolve `{ uuid, petId }`.
@@ -92,40 +92,40 @@ Cada squad tem 6 tarefas no mesmo formato: 1 de lógica pura, 2 de servidor, 2 d
   `ReplicatedStorage.PetModels` ou placeholder). Movimento só no cliente, sem física.
 - Inventário: grade de pets com raridade e multiplicador, equipar/desequipar, contador 3/3 e 50/50.
 
-**B5 🟡 Cliente: ovos e rebirth** (Squad B) (`rbx-client`)
+**B5 ✅ Cliente: ovos e rebirth** (#15) (`rbx-client`)
 - Arquivos: `src/client/Controllers/EggController.luau`, `RebirthController.luau`,
   `src/client/UI/Eggs/`, `src/client/UI/Rebirth/`.
 - Ovo: chegar perto -> botão comprar -> animação de chocar -> mostra o pet.
 - Rebirth: botão com custo e bônus atual/próximo, confirmação antes de zerar.
 
-**B6 🟡 Studio: Cascata de Chocolate** (humano)
+**B6 ✅ Studio: Cascata de Chocolate** (#13) (humano)
 - `Workspace.Areas.ChocolateFalls` com `BlockSpawns` e `Gate`.
 - Modelos dos 5 pets em `ReplicatedStorage.PetModels` e dos 2 ovos nas áreas. Salvar em `assets/`.
 
 ### Integração (os dois)
 
-**I1 ⬜ Playtest do MVP**: 2 a 4 players no Studio, ciclo completo (bater, comprar ovo, equipar,
+**I1 ✅ Playtest do MVP** (`docs/seguranca/2026-11-15-playtest-mvp.md`; 2 jogadores na A-P2): 2 a 4 players no Studio, ciclo completo (bater, comprar ovo, equipar,
 dano maior, liberar área, rebirth), sair e voltar com dados salvos.
 
-**I2 ⬜ Revisão de segurança geral** (`rbx-revisor`): todos os remotes contra a tabela do CONTRATO.
+**I2 ✅ Revisão de segurança geral** (#19, `docs/seguranca/2026-11-15-revisao-mvp.md`) (`rbx-revisor`): todos os remotes contra a tabela do CONTRATO.
 
 ---
 
 ## Fase 1.5: fechar o MVP (Squad A, enquanto a Squad B termina B2, B3, B5 e B6)
 
-**A-P1 ⬜ Aviso certo ao ser expulso de área** (`rbx-server` + `rbx-client`; entra no PR do contrato v2)
+**A-P1 ✅ Aviso certo ao ser expulso de área** (`rbx-server` + `rbx-client`; entra no PR do contrato v2)
 - `AreaService` manda `Notify("AREA_NOT_UNLOCKED", { areaId })`; o HUD mostra
   "Compre <nome da área> no portão para entrar." (hoje mostra "Libere a área anterior primeiro.").
 
-**A-P2 ⬜ Teste com 2 jogadores** (humano; o MCP do Studio não abre 2 clientes)
+**A-P2 ✅ Teste com 2 jogadores** (humano; o MCP do Studio não abre 2 clientes)
 - Studio > Test > Clients and Servers, 2 players, os dois batem no mesmo bloco.
 - Pronto quando: moedas divididas pelo dano (GDD), gemas para quem deu mais dano, nenhum erro no Output.
 
-**A-P3 ⬜ Salvamento real** (humano publica; agente testa)
+**A-P3 ✅ Salvamento real** (humano publica; agente testa)
 - Publicar o place, ligar Game Settings > Security > Enable Studio Access to API Services.
 - Pronto quando: sair e voltar mantém moedas, gemas, áreas e pets; o aviso do ProfileStore some.
 
-**A-P4 ⬜ Teste no emulador de celular** (humano)
+**A-P4 ✅ Teste no emulador de celular** (humano)
 - Studio > Test > Device (celular deitado e em pé): HUD, botão Pets, toque no bloco, portões.
 
 O MVP fecha com I1 e I2 (acima), depois que a Squad B entregar B2, B3, B5 e B6.
@@ -139,7 +139,7 @@ campos de dados, remotes, códigos de erro e stubs da Fase 2 entram de uma vez, 
 Depois cada squad trabalha só no que é dela, sem esperar a outra. Números e textos vêm de
 `docs/balanceamento/2026-11-15-fase2.md` (rbx-design) e vão para `src/shared/Config/`.
 
-**C2 ⬜ Contrato v2** (líder da Squad A escreve; as duas squads aprovam)
+**C2 ✅ Contrato v2** (#11) (líder da Squad A escreve; as duas squads aprovam)
 - Dados: `Daily`, `TutorialStep`, `Settings` (A); `Variant` opcional no pet, `CoinBoostUntil`, `Receipts` (B).
 - Atributos do `Player`: `EquippedPets` aceita `:Variant`; `Passes` novo (B).
 - Remotes: `ClaimDaily`, `SetTutorialStep`, `SetSetting` (A); `FusePets` (B).
@@ -154,7 +154,7 @@ Depois cada squad trabalha só no que é dela, sem esperar a outra. Números e t
 - `Workspace.Areas.CottonClouds` com `BlockSpawns`, `Gate`, `Bounds`, `SpawnLocation`, gerado em `tools/map/`.
 - Pronto quando: comprar a área no portão libera; quem não tem é devolvido; CloudBlock nasce lá.
 
-**A8 ⬜ Recompensa diária** (`rbx-logica` + `rbx-server` + `rbx-client`)
+**A8 🟡 Recompensa diária** (#16) (`rbx-logica` + `rbx-server` + `rbx-client`)
 - `Logic/Daily.luau` puro (dia UTC, sequência, valor do dia) com testes; `DailyService` (`ClaimDaily`);
   tela com os 7 dias e o botão de resgatar.
 - Pronto quando: resgata 1 vez por dia; sequência segue as regras do balanceamento; mudar o
@@ -166,13 +166,13 @@ Depois cada squad trabalha só no que é dela, sem esperar a outra. Números e t
 
 O passe **AutoClicker** é da Squad A (no `BlockController`, lendo o atributo `Passes`): entra na A8 ou numa tarefa pequena depois da B8.
 
-**A10 ⬜ Tutorial curto** (`rbx-client` + `rbx-server`)
+**A10 🟡 Tutorial curto** (#18) (`rbx-client` + `rbx-server`)
 - 4 a 6 passos (quebrar bloco, juntar moedas, comprar ovo, equipar); seta e texto grandes;
   `SetTutorialStep` só aumenta; pula para quem já jogou.
 
 ### Squad B: Pets e Progressão
 
-**B7 ⬜ Fusão de pets** (`rbx-logica` + `rbx-server` + `rbx-client`)
+**B7 ✅ Fusão de pets** (#17) (`rbx-logica` + `rbx-server` + `rbx-client`)
 - N pets iguais viram 1 dourado (`Variant = "Golden"`), multiplicador maior. `FusePets(uuids)`
   valida dono, quantidade, mesmo `Id`, não equipados; remove antes de entregar.
 

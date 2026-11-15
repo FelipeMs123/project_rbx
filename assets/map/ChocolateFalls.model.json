@@ -1753,53 +1753,6 @@
         },
         {
           "ClassName": "Part",
-          "Name": "EastGateBarrier",
-          "Properties": {
-            "Anchored": true,
-            "CFrame": {
-              "CFrame": {
-                "orientation": [
-                  [
-                    1,
-                    0,
-                    0
-                  ],
-                  [
-                    0,
-                    1,
-                    -0.0
-                  ],
-                  [
-                    0,
-                    0,
-                    1
-                  ]
-                ],
-                "position": [
-                  209,
-                  4.5,
-                  0
-                ]
-              }
-            },
-            "CanCollide": true,
-            "Color": [
-              0.7254901960784313,
-              0.5098039215686274,
-              1
-            ],
-            "Material": "Glass",
-            "Shape": "Block",
-            "Size": [
-              2,
-              9,
-              16
-            ],
-            "Transparency": 0.15
-          }
-        },
-        {
-          "ClassName": "Part",
           "Name": "EastGatePillarNorth",
           "Properties": {
             "Anchored": true,

@@ -497,18 +497,6 @@ return {
 			Attributes = {},
 		},
 		{
-			Name = "EastGateBarrier",
-			Shape = "Block",
-			Size = { 2, 9, 16 },
-			Position = { 209, 4.5, 0 }, -- Portão leste bloqueando saída rumo a CottonClouds
-			Rotation = { 0, 0, 0 },
-			Color = { 185, 130, 255 },
-			Material = "Glass",
-			CanCollide = true,
-			Transparency = 0.15,
-			Attributes = {},
-		},
-		{
 			Name = "EastGatePillarNorth",
 			Shape = "Cylinder",
 			Size = { 12, 3.5, 3.5 },
