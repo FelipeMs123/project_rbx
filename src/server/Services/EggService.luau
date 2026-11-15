@@ -40,15 +40,19 @@ local function getEggPosition(eggInstance: Instance): Vector3?
 		if primary ~= nil and primary:IsA("BasePart") then
 			return primary.Position
 		end
+		local core = eggInstance:FindFirstChild("Core")
+		if core ~= nil and core:IsA("BasePart") then
+			return core.Position
+		end
 		local basePart = eggInstance:FindFirstChildWhichIsA("BasePart", true)
 		if basePart == nil or not basePart:IsA("BasePart") then
 			return nil
 		end
-		local getPivot = (eggInstance :: any).GetPivot
-		if type(getPivot) == "function" then
-			local ok, pivot = pcall(getPivot, eggInstance)
-			if ok and pivot ~= nil and pivot.Position ~= nil then
-				return pivot.Position
+		local getBoundingBox = (eggInstance :: any).GetBoundingBox
+		if type(getBoundingBox) == "function" then
+			local ok, bboxCFrame = pcall(getBoundingBox, eggInstance)
+			if ok and bboxCFrame ~= nil and bboxCFrame.Position ~= nil then
+				return bboxCFrame.Position
 			end
 		end
 		return basePart.Position
@@ -124,8 +128,6 @@ local function handlePurchaseEgg(player: Player, eggId: any): Types.Result
 		if eggDef.Price > 0 then
 			if eggDef.Currency == "Gems" then
 				EconomyService.AddGems(player, eggDef.Price)
-			elseif type(data.Rebirths) == "number" and data.Rebirths <= 0 then
-				EconomyService.AddCoins(player, eggDef.Price)
 			else
 				DataService.Update(player, "Coins", function(coins: number)
 					return coins + eggDef.Price

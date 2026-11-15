@@ -94,6 +94,36 @@ local function makeInstance(name: string, className: string, children: { [string
 			return { Position = makeVector3(0, 0, 0) }
 		end
 	end
+	if className == "Model" and instance.GetBoundingBox == nil then
+		function instance:GetBoundingBox()
+			local minX, minY, minZ = math.huge, math.huge, math.huge
+			local maxX, maxY, maxZ = -math.huge, -math.huge, -math.huge
+			local found = false
+			local function visit(node)
+				for _, child in node._children do
+					if child:IsA("BasePart") and child.Position ~= nil then
+						found = true
+						local p = child.Position
+						minX = math.min(minX, p.X)
+						minY = math.min(minY, p.Y)
+						minZ = math.min(minZ, p.Z)
+						maxX = math.max(maxX, p.X)
+						maxY = math.max(maxY, p.Y)
+						maxZ = math.max(maxZ, p.Z)
+					end
+					visit(child)
+				end
+			end
+			visit(self)
+			if not found then
+				return { Position = makeVector3(0, 0, 0) }, makeVector3(0, 0, 0)
+			end
+			return {
+				Position = makeVector3((minX + maxX) / 2, (minY + maxY) / 2, (minZ + maxZ) / 2),
+			},
+				makeVector3(maxX - minX, maxY - minY, maxZ - minZ)
+		end
+	end
 	return instance
 end
 
@@ -510,15 +540,16 @@ return function(t)
 			t.eq(res.data.petId, "CottonCat")
 			t.eq(h.getData(p1).Coins, 900)
 
-			-- Model sem PrimaryPart mas com BasePart física usa GetPivot().Position
-			local pivotEgg = makeInstance("CandyEgg", "Model", {
+			-- Model sem PrimaryPart e sem Core, com BasePart física, usa GetBoundingBox().Position e ignora GetPivot() na origem
+			local bboxEgg = makeInstance("CandyEgg", "Model", {
 				Body = makeInstance("Body", "Part", nil, { Position = makeVector3(100, 3, 0) }),
 			}, {
 				GetPivot = function()
-					return { Position = makeVector3(100, 3, 0) }
+					return { Position = makeVector3(0, 0, 0) }
 				end,
 			})
-			h.setEggInWorkspace("CandyPlaza", "CandyEgg", pivotEgg)
+			h.setEggInWorkspace("CandyPlaza", "CandyEgg", bboxEgg)
+			h.setCharacterAt(p1, makeVector3(0, 0, 0), 100)
 			res = h.invokeRemote("PurchaseEgg", p1, "CandyEgg")
 			t.eq(res.ok, false)
 			t.eq(res.err, "TOO_FAR")
@@ -628,17 +659,23 @@ return function(t)
 			t.eq(res.err, "TOO_FAR")
 			t.eq(h.getData(p1).Coins, 7300)
 
-			-- Model sem PrimaryPart contendo BasePart física descendente -> aceita <= 24 studs e rejeita > 24 studs
+			-- Model sem PrimaryPart contendo BasePart física descendente -> ignora GetPivot() na origem, usa GetBoundingBox()
 			local physicalChildModelEgg = makeInstance("CandyEgg", "Model", {
 				Parts = makeInstance("Parts", "Folder", {
 					Shell = makeInstance("Shell", "Part", nil, { Position = makeVector3(60, 2, 10) }),
 				}),
 			}, {
 				GetPivot = function()
-					return { Position = makeVector3(60, 2, 10) }
+					return { Position = makeVector3(0, 0, 0) }
 				end,
 			})
 			h.setEggInWorkspace("CandyPlaza", "CandyEgg", physicalChildModelEgg)
+			-- Jogador na origem (onde GetPivot aponta) ainda recebe TOO_FAR
+			res = h.invokeRemote("PurchaseEgg", p1, "CandyEgg")
+			t.eq(res.ok, false)
+			t.eq(res.err, "TOO_FAR")
+			t.eq(h.getData(p1).Coins, 7300)
+
 			h.setCharacterAt(p1, makeVector3(85, 2, 10), 100) -- 25 studs > 24
 			res = h.invokeRemote("PurchaseEgg", p1, "CandyEgg")
 			t.eq(res.ok, false)
@@ -650,12 +687,36 @@ return function(t)
 			t.eq(res.ok, true)
 			t.eq(h.getData(p1).Coins, 7200)
 
+			-- Model sem PrimaryPart com Core em (140, 5, -28) e GetPivot na origem (cenário sync ao vivo Rojo)
+			h.advanceClock(2)
+			local coreEgg = makeInstance("ChocolateEgg", "Model", {
+				Core = makeInstance("Core", "Part", nil, { Position = makeVector3(140, 5, -28) }),
+			}, {
+				GetPivot = function()
+					return { Position = makeVector3(0, 0, 0) }
+				end,
+				GetBoundingBox = function()
+					return { Position = makeVector3(0, 0, 0) }, makeVector3(4, 4, 4)
+				end,
+			})
+			h.setEggInWorkspace("ChocolateFalls", "ChocolateEgg", coreEgg)
+			h.setCharacterAt(p1, makeVector3(0, 5, 0), 100) -- perto da origem, longe de (140, 5, -28)
+			res = h.invokeRemote("PurchaseEgg", p1, "ChocolateEgg")
+			t.eq(res.ok, false)
+			t.eq(res.err, "TOO_FAR")
+			t.eq(h.getData(p1).Coins, 7200)
+
+			h.setCharacterAt(p1, makeVector3(140, 5, -20), 100) -- 8 studs <= 24 do Core
+			res = h.invokeRemote("PurchaseEgg", p1, "ChocolateEgg")
+			t.eq(res.ok, true)
+			t.eq(h.getData(p1).Coins, 4700)
+
 			local folderEgg = makeInstance("CandyEgg", "Folder", {})
 			h.setEggInWorkspace("CandyPlaza", "CandyEgg", folderEgg)
 			res = h.invokeRemote("PurchaseEgg", p1, "CandyEgg")
 			t.eq(res.ok, false)
 			t.eq(res.err, "TOO_FAR")
-			t.eq(h.getData(p1).Coins, 7200)
+			t.eq(h.getData(p1).Coins, 4700)
 
 			-- Ovo sem instância e sem fallback canônico conhecido com Areas presente -> fail-closed
 			local hCustom = loadEggServiceHarness({
@@ -820,6 +881,30 @@ return function(t)
 		t.eq(res2.err, "INTERNAL")
 		t.eq(h2.getData(p2).Coins, 500)
 		t.eq(h2.getSaveCount(), 0)
+
+		-- Caso 2b: Multiplicador de moedas registrado (ex.: DoubleCoins 2x) com Rebirths = 0 não pode dobrar o estorno
+		local hMult = loadEggServiceHarness({ failAddPetWith = "INTERNAL" })
+		hMult.PetService.Init()
+		hMult.EggService.Init()
+		hMult.EconomyService.RegisterCoinMultiplier("DoubleCoins", function()
+			return 2
+		end)
+
+		local pMult = hMult.makePlayer(4, "Davi")
+		hMult.setLoadedData(pMult, {
+			Version = 1,
+			Coins = 500,
+			Gems = 0,
+			Rebirths = 0,
+			UnlockedAreas = { "CandyPlaza" },
+			Inventory = {},
+			Equipped = {},
+		})
+		local resMult = hMult.invokeRemote("PurchaseEgg", pMult, "CandyEgg")
+		t.eq(resMult.ok, false)
+		t.eq(resMult.err, "INTERNAL")
+		t.eq(hMult.getData(pMult).Coins, 500)
+		t.eq(hMult.getSaveCount(), 0)
 
 		-- Caso 3: Ovo em Gems faz rollback de Gems e retorna NOT_ENOUGH_GEMS quando falta saldo
 		local hGems = loadEggServiceHarness({
