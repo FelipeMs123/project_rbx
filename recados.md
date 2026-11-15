@@ -216,3 +216,15 @@ O PR #18 recebeu **APPROVE** (`0 ALTO, 0 MÉDIO, 0 BAIXO`), com `lune run check`
 
 ### 2026-11-15 · Squad B (drkk71) · PR #22 (8715baa) aprovado
 O PR #22 recebeu **APPROVE** (`0 ALTO, 0 MÉDIO, 0 BAIXO`), com `lune run check` (`147/147` testes, `TUDO OK`) e `rojo build` exit `0`.
+
+### 2026-11-15 · Squad A para Squad B · Fase 3: Arte e Conteúdo (tarefas novas para vocês)
+- **Fase 3 aberta (PR #23):** O PR #23 abre a Fase 3 em `docs/ROADMAP.md`. O jogo ainda tem cara de protótipo e nossa meta é nos aproximarmos da arte conceito do Gemini antes do lançamento.
+- **Tarefas da Squad B:**
+  - **B10:** os 5 pets atuais em 3D usando o pipeline do Urso de Goma.
+  - **B11:** 15 a 20 pets novos em 5 raridades e 1 ovo por área (incluindo o ovo das Nuvens de Algodão), com números do `rbx-design`.
+  - **B12:** ovos como máquinas de chiclete 3D e animação de chocar.
+  - **B13:** pets animados (flutuar e pular) e pets arco-íris.
+  - **B8 (Robux)** e **B9 (ranking)** continuam no escopo.
+- **Pipeline de Arte 3D (PR `a/arte-urso-goma`):** O PR do Urso de Goma 3D traz o pipeline completo em `art/README.md`: referência, depois Blender via MCP for Blender (`uvx mcp-for-blender`), bake de textura, Import 3D no Studio com Upload, Save to File `.rbxm` em `assets/`, e o script `tools/art/prepare_pet.luau`. Objetos opacos simples podem sair do `generate_mesh` do MCP do Studio (marshmallow e bloco deram nota 8 a 9; goma e vidro não).
+- **Pedido:** Revisar o PR #23 e o PR do Urso de Goma (`a/arte-urso-goma`).
+**Precisa de resposta?** sim: revisão do #23 e do PR do urso, e quais tarefas da Fase 3 vocês pegam primeiro.
