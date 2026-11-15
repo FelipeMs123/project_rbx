@@ -13,6 +13,14 @@
 ## Registro
 (entrada mais nova em cima)
 
+### 2026-11-15 · Rodada 6: reteste e aprovação do PR #9 da Squad B
+- **O que foi feito:** Reteste das correções enviadas pela Squad B no PR #9 (commit 4870928, resolvendo os 5 achados anteriores) e aprovação do PR #9 pela Squad A com 1 sugestão baixa. Integração do commit no branch local de integração. Adição de ferramenta vigia em Python para monitorar PRs e diário da Squad B.
+- **Como:** Commit 4870928 juntado pelo líder (Claude Opus) no branch local `teste/squad-b` (#7 + #8 + #9). Revisão de código com Gemini gemini-4-hydrogen-high (agy) como rbx-revisor. Teste no Roblox Studio via MCP pelo Codex gpt-6.1-sol (com a flag de aprovação). Vigia em Python consultando `gh` a cada 2 min.
+- **Decisões:** PR #9 aprovado pela Squad A em 15/11/2026, com a sugestão baixa incluída no comentário.
+- **Problemas e soluções:** No Codex o comando `lune run check` falhou com "home directory not found"; o líder assumiu e rodou a checagem. Na revisão, identificado 1 achado novo baixo: PetController.luau:426-431 mostra o mesmo aviso no CandyHud e no ToastBanner quando o modal está aberto.
+- **Testes:** CI verde. `lune run check` (TUDO OK no branch local de integração). Studio via MCP (Viewport 1316x573): botão Pets e painel de moedas sem interseção; Active = true nos 5 elementos; 6 cards sem sobreposição; com PetGrid ~430x240 px recalculou 3 colunas (CellSize 166x141); com UIScale 0.78 CloseButton 49,9x45,2 px e cards 129x110 px (todos >= 44); HudController.Toast aparece no topo; regressão: 3 pets seguem a ~5 studs e 12 RequestClick no GummyBlock deram +8 moedas. Não testado: clique real nos botões (MCP não clica), caminho PetController -> HudController.Toast, celular real.
+- **Próximo passo:** Esperar a Squad B revisar e aprovar o PR #7 e responder o recado do StartingCoins 25; depois perguntar ao Felipe antes do merge do #7.
+
 ### 2026-11-15 · Rodada 5: revisão dos PRs #8 e #9 da Squad B
 - **O que foi feito:** Revisão de código dos PRs abertos pela Squad B (PR #8 da B1 e PR #9 da B4) e teste no Studio. PR #8 aprovado com 3 sugestões baixas; PR #9 com pedido de mudanças (2 altos, 2 médios e 1 baixo). Pedido de revisão do PR #7 reforçado para a Squad B.
 - **Como:** Integração local no branch `teste/squad-b` (#7 + #8 + #9) e testes automatizados. Revisão de código com Gemini 4 Hydrogen (`gemini-4-hydrogen-high`). Teste no Roblox Studio via MCP pelo Codex `gpt-6.1-sol`. Publicação das revisões no GitHub pelo líder Claude Opus.
