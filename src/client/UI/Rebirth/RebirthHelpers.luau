@@ -24,6 +24,16 @@ export type ProgressInfo = {
 	MissingCoins: number,
 }
 
+export type ModalMetrics = {
+	InnerHeight: number,
+	HeaderHeight: number,
+	CloseMinSize: number,
+	StepTwoHeight: number,
+	StepTwoButtonsBottom: number,
+	SummaryMinTextSize: number,
+	TogglePositionYScale: number,
+}
+
 local DEFAULT_REBIRTH_CONFIG: RebirthConfigLike = table.freeze({
 	RebirthBaseCost = 10000,
 	RebirthCostGrowth = 2.5,
@@ -32,6 +42,35 @@ local DEFAULT_REBIRTH_CONFIG: RebirthConfigLike = table.freeze({
 })
 
 local RebirthHelpers = {}
+
+RebirthHelpers.Layout = table.freeze({
+	ModalPaddingScale = 0.04,
+	ModalMinSizeX = 320,
+	ModalMinSizeY = 330,
+	ModalMaxSizeX = 540,
+	ModalMaxSizeY = 480,
+	TogglePositionXScale = 0.98,
+	TogglePositionYScale = 0.37,
+	HeaderHeightScale = 0.18,
+	CloseButtonMinSize = 52,
+	ProgressPosYScale = 0.20,
+	ProgressHeightScale = 0.10,
+	ComparePosYScale = 0.32,
+	CompareHeightScale = 0.30,
+	SummaryPosYScale = 0.63,
+	SummaryHeightScale = 0.10,
+	SummaryMinTextSize = 12,
+	SummaryMaxTextSize = 15,
+	StepOnePosYScale = 0.75,
+	StepOneHeightScale = 0.25,
+	StepTwoPosYScale = 0.74,
+	StepTwoHeightScale = 0.26,
+	StepTwoQuestionPosYScale = 0.04,
+	StepTwoQuestionHeightScale = 0.24,
+	StepTwoButtonPosYScale = 0.30,
+	StepTwoButtonHeightScale = 0.66,
+	StepTwoButtonMinHeight = 52,
+})
 
 RebirthHelpers.ErrorMessages = table.freeze({
 	INVALID_ARGS = "Ops! Algo deu errado nesse pedido. Tente de novo!",
@@ -182,6 +221,26 @@ function RebirthHelpers.computeProgress(coins: number, cost: number): ProgressIn
 		Percent = math.floor(ratio * 100),
 		CanRebirth = canRebirth,
 		MissingCoins = missingCoins,
+	}
+end
+
+function RebirthHelpers.computeModalMetrics(modalHeight: number): ModalMetrics
+	local layout = RebirthHelpers.Layout
+	local safeHeight = if isFiniteNumber(modalHeight) and modalHeight > 0 then modalHeight else layout.ModalMinSizeY
+	local innerHeight = safeHeight * (1 - 2 * layout.ModalPaddingScale)
+	local headerHeight = innerHeight * layout.HeaderHeightScale
+	local stepTwoHeight = innerHeight * layout.StepTwoHeightScale
+	local buttonsTop = stepTwoHeight * layout.StepTwoButtonPosYScale
+	local buttonsHeight = math.max(layout.StepTwoButtonMinHeight, stepTwoHeight * layout.StepTwoButtonHeightScale)
+
+	return {
+		InnerHeight = innerHeight,
+		HeaderHeight = headerHeight,
+		CloseMinSize = layout.CloseButtonMinSize,
+		StepTwoHeight = stepTwoHeight,
+		StepTwoButtonsBottom = buttonsTop + buttonsHeight,
+		SummaryMinTextSize = layout.SummaryMinTextSize,
+		TogglePositionYScale = layout.TogglePositionYScale,
 	}
 end
 

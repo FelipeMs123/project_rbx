@@ -40,6 +40,23 @@ export type PetChanceEntry = {
 	ChancePercent: number,
 }
 
+export type PromptLayout = {
+	IsCompact: boolean,
+	Scale: number,
+	PositionYScale: number,
+	WidthScale: number,
+	HeightScale: number,
+	MinWidth: number,
+	MinHeight: number,
+	MaxWidth: number,
+	MaxHeight: number,
+	HeaderHeightScale: number,
+	ListTopScale: number,
+	ListHeightScale: number,
+	BuyHeightScale: number,
+	BuyMinHeight: number,
+}
+
 local EggHelpers = {}
 
 EggHelpers.Rarities = table.freeze({
@@ -254,6 +271,68 @@ function EggHelpers.buildPetChances(eggDef: EggDefLike?, petsConfig: { [string]:
 	end)
 
 	return entries
+end
+
+function EggHelpers.getCurrencyName(currency: string?): string
+	return if currency == "Gems" then "Gemas" else "Moedas"
+end
+
+function EggHelpers.formatPriceText(eggDef: EggDefLike?): string
+	if type(eggDef) ~= "table" then
+		return "0 Moedas"
+	end
+	local priceText = EggHelpers.formatShortNumber(eggDef.Price)
+	return `{priceText} {EggHelpers.getCurrencyName(eggDef.Currency)}`
+end
+
+function EggHelpers.canTriggerPurchase(isStarted: boolean, isPurchasing: boolean, hasOpenModal: boolean): boolean
+	return isStarted and not isPurchasing and not hasOpenModal
+end
+
+function EggHelpers.computePromptLayout(viewportWidth: number, viewportHeight: number, isTouch: boolean): PromptLayout
+	local validW = isFiniteNumber(viewportWidth) and viewportWidth > 0
+	local validH = isFiniteNumber(viewportHeight) and viewportHeight > 0
+	local width = if validW then viewportWidth else 1280
+	local height = if validH then viewportHeight else 720
+
+	local ratio = math.min(width / 1280, height / 720)
+	local isCompact = height <= 520 or width <= 720
+
+	if isCompact then
+		return {
+			IsCompact = true,
+			Scale = math.clamp(ratio, 0.80, 1.0),
+			PositionYScale = 0.64,
+			WidthScale = 0.56,
+			HeightScale = 0.36,
+			MinWidth = 276,
+			MinHeight = 154,
+			MaxWidth = 360,
+			MaxHeight = 180,
+			HeaderHeightScale = 0.25,
+			ListTopScale = 0.27,
+			ListHeightScale = 0.32,
+			BuyHeightScale = 0.36,
+			BuyMinHeight = 55,
+		}
+	end
+
+	return {
+		IsCompact = false,
+		Scale = math.clamp(ratio, 0.85, 1.25),
+		PositionYScale = if isTouch then 0.72 else 0.92,
+		WidthScale = 0.44,
+		HeightScale = 0.32,
+		MinWidth = 310,
+		MinHeight = 210,
+		MaxWidth = 560,
+		MaxHeight = 330,
+		HeaderHeightScale = 0.22,
+		ListTopScale = 0.25,
+		ListHeightScale = 0.44,
+		BuyHeightScale = 0.24,
+		BuyMinHeight = 52,
+	}
 end
 
 return EggHelpers

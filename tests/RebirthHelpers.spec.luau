@@ -130,4 +130,15 @@ return function(t)
 		t.eq(RebirthHelpers.formatShortNumber(0 / 0), "0")
 		t.eq(RebirthHelpers.formatShortNumber(math.huge), "0")
 	end)
+
+	t.test("métricas do modal de rebirth evitam vazamento no MinSize 320x330 e mantêm aviso legível", function()
+		local metrics = RebirthHelpers.computeModalMetrics(330)
+		t.ok(metrics.HeaderHeight >= metrics.CloseMinSize, "Header deve comportar CloseButton de 52px")
+		t.ok(
+			metrics.StepTwoButtonsBottom <= metrics.StepTwoHeight,
+			"Botões de confirmação não podem vazar do StepTwoPanel"
+		)
+		t.ok(metrics.SummaryMinTextSize >= 12, "SummaryNotice deve ter MinTextSize >= 12")
+		t.ok(metrics.TogglePositionYScale <= 0.37, "RebirthToggleButton deve ficar afastado acima do PetsToggleButton")
+	end)
 end

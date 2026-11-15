@@ -8,6 +8,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local GameConfig = require(Shared.Config.Game)
 local NetClient = require(script.Parent.Parent.Net.NetClient)
 local DataController = require(script.Parent.DataController)
+local HudController = require(script.Parent.HudController)
 local RebirthHelpers = require(script.Parent.Parent.UI.Rebirth.RebirthHelpers)
 local RebirthUI = require(script.Parent.Parent.UI.Rebirth.RebirthUI)
 
@@ -16,6 +17,7 @@ local REBIRTH_TIMEOUT_SECONDS = 8
 local RebirthController = {}
 
 local connections: { RBXScriptConnection } = {}
+local isStarted = false
 local isRequesting = false
 local requestToken = 0
 
@@ -57,7 +59,7 @@ local function handleConfirmRebirth()
 	local snapshot = DataController.Get()
 	if not snapshot then
 		RebirthUI.ResetConfirmation()
-		RebirthUI.ShowToast(RebirthHelpers.translateError("DATA_NOT_LOADED"), true)
+		HudController.Toast(RebirthHelpers.translateError("DATA_NOT_LOADED"), "error")
 		return
 	end
 
@@ -67,7 +69,7 @@ local function handleConfirmRebirth()
 	local progress = RebirthHelpers.computeProgress(coins, cost)
 	if not progress.CanRebirth then
 		RebirthUI.ResetConfirmation()
-		RebirthUI.ShowToast(RebirthHelpers.translateError("NOT_ENOUGH_COINS"), true)
+		HudController.Toast(RebirthHelpers.translateError("NOT_ENOUGH_COINS"), "error")
 		return
 	end
 
@@ -78,7 +80,11 @@ local function handleConfirmRebirth()
 
 	task.delay(REBIRTH_TIMEOUT_SECONDS, function()
 		if isRequesting and requestToken == token then
-			RebirthUI.ShowToast("Ainda aguardando resposta do servidor...", false)
+			requestToken += 1
+			isRequesting = false
+			RebirthUI.ResetConfirmation()
+			pushViewState()
+			HudController.Toast("O servidor demorou para responder. Tente novamente!", "error")
 		end
 	end)
 
@@ -95,9 +101,9 @@ local function handleConfirmRebirth()
 
 		if result.ok then
 			RebirthUI.SetModalOpen(false)
-			RebirthUI.ShowToast(`Rebirth concluído! Você ganhou +{GameConfig.RebirthGemReward} Gemas!`, false)
+			HudController.Toast(`Rebirth concluído! Você ganhou +{GameConfig.RebirthGemReward} Gemas!`, "reward")
 		else
-			RebirthUI.ShowToast(RebirthHelpers.translateError(result.err), true)
+			HudController.Toast(RebirthHelpers.translateError(result.err), "error")
 		end
 	end)
 end
@@ -108,6 +114,10 @@ function RebirthController.Init()
 end
 
 function RebirthController.Start()
+	if isStarted then
+		return
+	end
+	isStarted = true
 	RebirthUI.Mount()
 	syncFromSnapshot()
 
@@ -131,6 +141,7 @@ function RebirthController.Start()
 end
 
 function RebirthController.Destroy()
+	isStarted = false
 	requestToken += 1
 	isRequesting = false
 

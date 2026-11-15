@@ -14,6 +14,7 @@ local GameConfig = require(Shared.Config.Game)
 local PetsConfig = require(Shared.Config.Pets)
 local NetClient = require(script.Parent.Parent.Net.NetClient)
 local DataController = require(script.Parent.DataController)
+local HudController = require(script.Parent.HudController)
 local EggHelpers = require(script.Parent.Parent.UI.Eggs.EggHelpers)
 local EggUI = require(script.Parent.Parent.UI.Eggs.EggUI)
 
@@ -70,6 +71,9 @@ local function isGuiModalVisible(playerGui: Instance, guiName: string, modalName
 end
 
 local function isAnyModalOpen(): boolean
+	if EggUI.IsHatchOverlayVisible() then
+		return true
+	end
 	if not localPlayer then
 		return false
 	end
@@ -77,7 +81,8 @@ local function isAnyModalOpen(): boolean
 	if not playerGui then
 		return false
 	end
-	return isGuiModalVisible(playerGui, "RebirthGui", "RebirthModal")
+	return isGuiModalVisible(playerGui, "EggHatchGui", "EggHatchOverlay")
+		or isGuiModalVisible(playerGui, "RebirthGui", "RebirthModal")
 		or isGuiModalVisible(playerGui, "PetInventoryGui", "PetsModal")
 end
 
@@ -132,14 +137,13 @@ local function refreshActivePrompt()
 	EggUI.UpdatePrompt(activeEggId, eggDef, snapshot, areaName, isPurchasing)
 end
 
-local function requestPurchase(eggId: string)
-	if isPurchasing then
+local function focusEggPrompt(eggId: string)
+	if not isStarted or isAnyModalOpen() then
 		return
 	end
 
 	local eggDef = (EggsConfig :: any)[eggId] :: EggHelpers.EggDefLike?
 	if not eggDef then
-		EggUI.ShowToast(EggHelpers.translateError("UNKNOWN_ITEM"), true)
 		return
 	end
 
@@ -147,14 +151,38 @@ local function requestPurchase(eggId: string)
 	local rootPos = getPlayerRootPosition()
 	local eggPos = if tracked then getInstancePosition(tracked.Instance) else nil
 	if not rootPos or not eggPos or (rootPos - eggPos).Magnitude > EGG_INTERACT_RANGE then
-		EggUI.ShowToast(EggHelpers.translateError("TOO_FAR"), true)
+		HudController.Toast(EggHelpers.translateError("TOO_FAR"), "error")
+		return
+	end
+
+	activeEggId = eggId
+	local snapshot = DataController.Get() :: EggHelpers.PlayerDataLike?
+	EggUI.ShowPrompt(eggId, eggDef, snapshot, getAreaDisplayName(eggDef.Area), isPurchasing)
+end
+
+local function requestPurchase(eggId: string)
+	if not EggHelpers.canTriggerPurchase(isStarted, isPurchasing, isAnyModalOpen()) then
+		return
+	end
+
+	local eggDef = (EggsConfig :: any)[eggId] :: EggHelpers.EggDefLike?
+	if not eggDef then
+		HudController.Toast(EggHelpers.translateError("UNKNOWN_ITEM"), "error")
+		return
+	end
+
+	local tracked = trackedEggs[eggId]
+	local rootPos = getPlayerRootPosition()
+	local eggPos = if tracked then getInstancePosition(tracked.Instance) else nil
+	if not rootPos or not eggPos or (rootPos - eggPos).Magnitude > EGG_INTERACT_RANGE then
+		HudController.Toast(EggHelpers.translateError("TOO_FAR"), "error")
 		return
 	end
 
 	local snapshot = DataController.Get() :: EggHelpers.PlayerDataLike?
 	local canBuy, preErr = EggHelpers.canPurchaseEgg(snapshot, eggDef, GameConfig.MaxInventory, eggId)
 	if not canBuy then
-		EggUI.ShowToast(EggHelpers.translateError(preErr), true)
+		HudController.Toast(EggHelpers.translateError(preErr), "error")
 		return
 	end
 
@@ -165,7 +193,10 @@ local function requestPurchase(eggId: string)
 
 	task.delay(PURCHASE_TIMEOUT_SECONDS, function()
 		if isPurchasing and purchaseToken == token then
-			EggUI.ShowToast("Ainda aguardando resposta do servidor...", false)
+			purchaseToken += 1
+			isPurchasing = false
+			refreshActivePrompt()
+			HudController.Toast("O servidor demorou para responder. Tente novamente!", "error")
 		end
 	end)
 
@@ -185,11 +216,12 @@ local function requestPurchase(eggId: string)
 			if type(petId) == "string" then
 				local petDef = (PetsConfig :: any)[petId] :: EggHelpers.PetDefLike?
 				EggUI.ShowHatchResult(petId, petDef)
+				refreshActivePrompt()
 			else
-				EggUI.ShowToast("Ovo chocado com sucesso!", false)
+				HudController.Toast("Ovo chocado com sucesso!", "reward")
 			end
 		else
-			EggUI.ShowToast(EggHelpers.translateError(result.err), true)
+			HudController.Toast(EggHelpers.translateError(result.err), "error")
 		end
 	end)
 end
@@ -222,7 +254,7 @@ local function hookInteractiveDescendants(eggId: string, rootInst: Instance, hoo
 				hooks,
 				descendant.Triggered:Connect(function(triggerPlayer: Player)
 					if triggerPlayer == localPlayer then
-						requestPurchase(eggId)
+						focusEggPrompt(eggId)
 					end
 				end)
 			)
@@ -232,7 +264,7 @@ local function hookInteractiveDescendants(eggId: string, rootInst: Instance, hoo
 				hooks,
 				descendant.MouseClick:Connect(function(clickPlayer: Player)
 					if clickPlayer == localPlayer then
-						requestPurchase(eggId)
+						focusEggPrompt(eggId)
 					end
 				end)
 			)
@@ -339,7 +371,7 @@ local function createPlaceholderEgg(eggId: string, eggDef: EggHelpers.EggDefLike
 	label.BackgroundColor3 = Color3.fromRGB(30, 23, 51)
 	label.BackgroundTransparency = 0.2
 	label.Font = Enum.Font.GothamBlack
-	label.Text = `{eggDef.Name}\n{EggHelpers.formatShortNumber(eggDef.Price)} Moedas`
+	label.Text = `{eggDef.Name}\n{EggHelpers.formatPriceText(eggDef)}`
 	label.TextColor3 = Color3.fromRGB(255, 232, 138)
 	label.TextScaled = true
 	label.Parent = billboard
@@ -494,13 +526,23 @@ local function updateProximity()
 	local nearestId: string? = nil
 	local nearestDistance = EGG_INTERACT_RANGE
 
-	for eggId, tracked in pairs(trackedEggs) do
-		local eggPos = getInstancePosition(tracked.Instance)
-		if eggPos then
-			local dist = (rootPos - eggPos).Magnitude
-			if dist <= nearestDistance then
-				nearestDistance = dist
-				nearestId = eggId
+	if activeEggId then
+		local currentTracked = trackedEggs[activeEggId]
+		local currentPos = if currentTracked then getInstancePosition(currentTracked.Instance) else nil
+		if currentPos and (rootPos - currentPos).Magnitude <= EGG_INTERACT_RANGE then
+			nearestId = activeEggId
+		end
+	end
+
+	if not nearestId then
+		for eggId, tracked in pairs(trackedEggs) do
+			local eggPos = getInstancePosition(tracked.Instance)
+			if eggPos then
+				local dist = (rootPos - eggPos).Magnitude
+				if dist <= nearestDistance then
+					nearestDistance = dist
+					nearestId = eggId
+				end
 			end
 		end
 	end
@@ -527,6 +569,9 @@ function EggController.Init()
 end
 
 function EggController.Start()
+	if isStarted then
+		return
+	end
 	isStarted = true
 	EggUI.Mount()
 

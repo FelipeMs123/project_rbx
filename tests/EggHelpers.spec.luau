@@ -250,4 +250,58 @@ return function(t)
 		t.eq(EggHelpers.getRarityInfo("UnknownRarity").Name, "Comum")
 		t.eq(EggHelpers.getRarityInfo(nil).Name, "Comum")
 	end)
+
+	t.test("resolve nome da moeda e texto de preço do ovo", function()
+		t.eq(EggHelpers.getCurrencyName("Coins"), "Moedas")
+		t.eq(EggHelpers.getCurrencyName("Gems"), "Gemas")
+		t.eq(EggHelpers.getCurrencyName(nil), "Moedas")
+
+		t.eq(EggHelpers.formatPriceText(EggsConfig.CandyEgg), "100 Moedas")
+		t.eq(
+			EggHelpers.formatPriceText({
+				Name = "Ovo de Gema",
+				Price = 2500,
+				Currency = "Gems",
+				Area = "CandyPlaza",
+				Weights = {},
+			}),
+			"2.5K Gemas"
+		)
+		t.eq(EggHelpers.formatPriceText(nil), "0 Moedas")
+	end)
+
+	t.test("calcula layout compacto do painel de ovo no celular acima dos controles de toque", function()
+		-- Paisagem pequena (568x320): área útil descontando topbar ~58px fica ~262px
+		local smallLandscape = EggHelpers.computePromptLayout(568, 320, true)
+		t.eq(smallLandscape.IsCompact, true)
+		t.ok(smallLandscape.PositionYScale <= 0.66, "painel deve ficar acima dos controles de toque")
+		local scaledHeight = smallLandscape.MinHeight * smallLandscape.Scale
+		t.ok(scaledHeight / 262 <= 0.55, `altura escalada ({scaledHeight}) deve ocupar <= 55% de 262px`)
+		t.ok(
+			smallLandscape.BuyMinHeight * smallLandscape.Scale >= 44,
+			"botão comprar deve manter alvo de toque >= 44px"
+		)
+
+		-- Retrato de celular (390x844)
+		local portrait = EggHelpers.computePromptLayout(390, 844, true)
+		t.eq(portrait.IsCompact, true)
+		t.ok(portrait.PositionYScale <= 0.66)
+
+		-- Tablet touch (1024x768)
+		local tablet = EggHelpers.computePromptLayout(1024, 768, true)
+		t.eq(tablet.IsCompact, false)
+		t.ok(tablet.PositionYScale <= 0.75)
+
+		-- Desktop sem toque (1280x720)
+		local desktop = EggHelpers.computePromptLayout(1280, 720, false)
+		t.eq(desktop.IsCompact, false)
+		t.ok(desktop.PositionYScale >= 0.88)
+	end)
+
+	t.test("bloqueia tentativa de compra quando modal/overlay está aberto, ocupado ou não iniciado", function()
+		t.eq(EggHelpers.canTriggerPurchase(true, false, false), true)
+		t.eq(EggHelpers.canTriggerPurchase(false, false, false), false)
+		t.eq(EggHelpers.canTriggerPurchase(true, true, false), false)
+		t.eq(EggHelpers.canTriggerPurchase(true, false, true), false)
+	end)
 end

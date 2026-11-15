@@ -8,11 +8,11 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local GameConfig = require(Shared.Config.Game)
+local HudController = require(script.Parent.Parent.Parent.Controllers.HudController)
 local RebirthHelpers = require(script.Parent.RebirthHelpers)
 
 local MIN_UI_SCALE = 0.85
 local MAX_UI_SCALE = 1.25
-local TOAST_DURATION_SECONDS = 3.2
 
 export type RebirthViewState = {
 	Coins: number,
@@ -39,8 +39,6 @@ local stepTwoPanel: Frame? = nil
 local startRebirthButton: TextButton? = nil
 local confirmButton: TextButton? = nil
 local cancelButton: TextButton? = nil
-local toastFrame: Frame? = nil
-local toastLabel: TextLabel? = nil
 
 local uiScales: { UIScale } = {}
 local connections: { RBXScriptConnection } = {}
@@ -61,7 +59,6 @@ local latestState: RebirthViewState = {
 	Gems = 0,
 	IsBusy = false,
 }
-local toastToken = 0
 
 local function computeResponsiveScale(): number
 	local camera = Workspace.CurrentCamera
@@ -216,6 +213,7 @@ local function renderView()
 	end
 
 	if startRebirthButton then
+		startRebirthButton.AutoButtonColor = not latestState.IsBusy
 		if latestState.IsBusy then
 			startRebirthButton.Text = "Fazendo Rebirth..."
 			startRebirthButton.BackgroundColor3 = Color3.fromRGB(122, 130, 150)
@@ -229,6 +227,7 @@ local function renderView()
 	end
 
 	if confirmButton then
+		confirmButton.AutoButtonColor = not latestState.IsBusy
 		if latestState.IsBusy then
 			confirmButton.Text = "Enviando..."
 			confirmButton.BackgroundColor3 = Color3.fromRGB(122, 130, 150)
@@ -238,7 +237,7 @@ local function renderView()
 		end
 	end
 	if cancelButton then
-		cancelButton.Active = not latestState.IsBusy
+		cancelButton.AutoButtonColor = not latestState.IsBusy
 	end
 end
 
@@ -311,6 +310,7 @@ local function createComparisonRow(
 end
 
 local function createRebirthGui(playerGui: PlayerGui)
+	local layout = RebirthHelpers.Layout
 	local gui = Instance.new("ScreenGui")
 	gui.Name = "RebirthGui"
 	gui.DisplayOrder = 5
@@ -325,7 +325,7 @@ local function createRebirthGui(playerGui: PlayerGui)
 	local toggle = Instance.new("TextButton")
 	toggle.Name = "RebirthToggleButton"
 	toggle.AnchorPoint = Vector2.new(1, 1)
-	toggle.Position = UDim2.fromScale(0.98, 0.415)
+	toggle.Position = UDim2.fromScale(layout.TogglePositionXScale, layout.TogglePositionYScale)
 	toggle.Size = UDim2.fromScale(0.14, 0.09)
 	toggle.BackgroundColor3 = Color3.fromRGB(78, 54, 130)
 	toggle.AutoButtonColor = true
@@ -386,20 +386,20 @@ local function createRebirthGui(playerGui: PlayerGui)
 	addStroke(modal, Color3.fromRGB(196, 138, 255), 2.5, 0.1)
 
 	local modalConstraint = Instance.new("UISizeConstraint")
-	modalConstraint.MinSize = Vector2.new(320, 330)
-	modalConstraint.MaxSize = Vector2.new(540, 480)
+	modalConstraint.MinSize = Vector2.new(layout.ModalMinSizeX, layout.ModalMinSizeY)
+	modalConstraint.MaxSize = Vector2.new(layout.ModalMaxSizeX, layout.ModalMaxSizeY)
 	modalConstraint.Parent = modal
 
 	local modalPadding = Instance.new("UIPadding")
-	modalPadding.PaddingTop = UDim.new(0.04, 0)
-	modalPadding.PaddingBottom = UDim.new(0.04, 0)
-	modalPadding.PaddingLeft = UDim.new(0.04, 0)
-	modalPadding.PaddingRight = UDim.new(0.04, 0)
+	modalPadding.PaddingTop = UDim.new(layout.ModalPaddingScale, 0)
+	modalPadding.PaddingBottom = UDim.new(layout.ModalPaddingScale, 0)
+	modalPadding.PaddingLeft = UDim.new(layout.ModalPaddingScale, 0)
+	modalPadding.PaddingRight = UDim.new(layout.ModalPaddingScale, 0)
 	modalPadding.Parent = modal
 
 	local header = Instance.new("Frame")
 	header.Name = "Header"
-	header.Size = UDim2.fromScale(1, 0.13)
+	header.Size = UDim2.fromScale(1, layout.HeaderHeightScale)
 	header.BackgroundTransparency = 1
 	header.Parent = modal
 
@@ -428,14 +428,14 @@ local function createRebirthGui(playerGui: PlayerGui)
 	addCorner(closeBtn, UDim.new(0, 10))
 
 	local closeConstraint = Instance.new("UISizeConstraint")
-	closeConstraint.MinSize = Vector2.new(52, 52)
+	closeConstraint.MinSize = Vector2.new(layout.CloseButtonMinSize, layout.CloseButtonMinSize)
 	closeConstraint.MaxSize = Vector2.new(64, 64)
 	closeConstraint.Parent = closeBtn
 
 	local progressBg = Instance.new("Frame")
 	progressBg.Name = "ProgressBarBg"
-	progressBg.Position = UDim2.fromScale(0, 0.16)
-	progressBg.Size = UDim2.fromScale(1, 0.11)
+	progressBg.Position = UDim2.fromScale(0, layout.ProgressPosYScale)
+	progressBg.Size = UDim2.fromScale(1, layout.ProgressHeightScale)
 	progressBg.BackgroundColor3 = Color3.fromRGB(20, 15, 36)
 	progressBg.BorderSizePixel = 0
 	progressBg.ClipsDescendants = true
@@ -472,8 +472,8 @@ local function createRebirthGui(playerGui: PlayerGui)
 
 	local compareCard = Instance.new("Frame")
 	compareCard.Name = "ComparisonCard"
-	compareCard.Position = UDim2.fromScale(0, 0.30)
-	compareCard.Size = UDim2.fromScale(1, 0.36)
+	compareCard.Position = UDim2.fromScale(0, layout.ComparePosYScale)
+	compareCard.Size = UDim2.fromScale(1, layout.CompareHeightScale)
 	compareCard.BackgroundColor3 = Color3.fromRGB(22, 16, 40)
 	compareCard.BorderSizePixel = 0
 	compareCard.Parent = modal
@@ -533,24 +533,25 @@ local function createRebirthGui(playerGui: PlayerGui)
 
 	local summary = Instance.new("TextLabel")
 	summary.Name = "SummaryNotice"
-	summary.Position = UDim2.fromScale(0, 0.68)
-	summary.Size = UDim2.fromScale(1, 0.09)
+	summary.Position = UDim2.fromScale(0, layout.SummaryPosYScale)
+	summary.Size = UDim2.fromScale(1, layout.SummaryHeightScale)
 	summary.BackgroundTransparency = 1
 	summary.Font = Enum.Font.GothamMedium
 	summary.Text = "Zera: Moedas e Áreas | Fica: Todos os Pets e Gemas"
 	summary.TextColor3 = Color3.fromRGB(255, 212, 138)
 	summary.TextScaled = true
+	summary.TextWrapped = true
 	summary.Parent = modal
 
 	local summaryConstraint = Instance.new("UITextSizeConstraint")
-	summaryConstraint.MaxTextSize = 15
-	summaryConstraint.MinTextSize = 9
+	summaryConstraint.MaxTextSize = layout.SummaryMaxTextSize
+	summaryConstraint.MinTextSize = layout.SummaryMinTextSize
 	summaryConstraint.Parent = summary
 
 	local s1 = Instance.new("Frame")
 	s1.Name = "StepOnePanel"
-	s1.Position = UDim2.fromScale(0, 0.79)
-	s1.Size = UDim2.fromScale(1, 0.21)
+	s1.Position = UDim2.fromScale(0, layout.StepOnePosYScale)
+	s1.Size = UDim2.fromScale(1, layout.StepOneHeightScale)
 	s1.BackgroundTransparency = 1
 	s1.Visible = true
 	s1.Parent = modal
@@ -578,8 +579,8 @@ local function createRebirthGui(playerGui: PlayerGui)
 
 	local s2 = Instance.new("Frame")
 	s2.Name = "StepTwoPanel"
-	s2.Position = UDim2.fromScale(0, 0.78)
-	s2.Size = UDim2.fromScale(1, 0.22)
+	s2.Position = UDim2.fromScale(0, layout.StepTwoPosYScale)
+	s2.Size = UDim2.fromScale(1, layout.StepTwoHeightScale)
 	s2.BackgroundColor3 = Color3.fromRGB(45, 28, 66)
 	s2.BorderSizePixel = 0
 	s2.Visible = false
@@ -590,8 +591,8 @@ local function createRebirthGui(playerGui: PlayerGui)
 
 	local confirmTitle = Instance.new("TextLabel")
 	confirmTitle.Name = "ConfirmQuestion"
-	confirmTitle.Position = UDim2.fromScale(0.03, 0.04)
-	confirmTitle.Size = UDim2.fromScale(0.94, 0.26)
+	confirmTitle.Position = UDim2.fromScale(0.03, layout.StepTwoQuestionPosYScale)
+	confirmTitle.Size = UDim2.fromScale(0.94, layout.StepTwoQuestionHeightScale)
 	confirmTitle.BackgroundTransparency = 1
 	confirmTitle.Font = Enum.Font.GothamBlack
 	confirmTitle.Text = "Confirmar Rebirth?"
@@ -601,8 +602,8 @@ local function createRebirthGui(playerGui: PlayerGui)
 
 	local cancelBtn = Instance.new("TextButton")
 	cancelBtn.Name = "CancelButton"
-	cancelBtn.Position = UDim2.fromScale(0.04, 0.34)
-	cancelBtn.Size = UDim2.fromScale(0.44, 0.60)
+	cancelBtn.Position = UDim2.fromScale(0.04, layout.StepTwoButtonPosYScale)
+	cancelBtn.Size = UDim2.fromScale(0.44, layout.StepTwoButtonHeightScale)
 	cancelBtn.BackgroundColor3 = Color3.fromRGB(110, 118, 140)
 	cancelBtn.Font = Enum.Font.GothamBold
 	cancelBtn.Text = "Cancelar"
@@ -613,15 +614,15 @@ local function createRebirthGui(playerGui: PlayerGui)
 	addCorner(cancelBtn, UDim.new(0, 10))
 
 	local cancelConstraint = Instance.new("UISizeConstraint")
-	cancelConstraint.MinSize = Vector2.new(124, 52)
+	cancelConstraint.MinSize = Vector2.new(124, layout.StepTwoButtonMinHeight)
 	cancelConstraint.MaxSize = Vector2.new(220, 68)
 	cancelConstraint.Parent = cancelBtn
 
 	local confBtn = Instance.new("TextButton")
 	confBtn.Name = "ConfirmButton"
 	confBtn.AnchorPoint = Vector2.new(1, 0)
-	confBtn.Position = UDim2.fromScale(0.96, 0.34)
-	confBtn.Size = UDim2.fromScale(0.44, 0.60)
+	confBtn.Position = UDim2.fromScale(0.96, layout.StepTwoButtonPosYScale)
+	confBtn.Size = UDim2.fromScale(0.44, layout.StepTwoButtonHeightScale)
 	confBtn.BackgroundColor3 = Color3.fromRGB(52, 199, 89)
 	confBtn.Font = Enum.Font.GothamBlack
 	confBtn.Text = "Confirmar!"
@@ -632,48 +633,9 @@ local function createRebirthGui(playerGui: PlayerGui)
 	addCorner(confBtn, UDim.new(0, 10))
 
 	local confConstraint = Instance.new("UISizeConstraint")
-	confConstraint.MinSize = Vector2.new(124, 52)
+	confConstraint.MinSize = Vector2.new(124, layout.StepTwoButtonMinHeight)
 	confConstraint.MaxSize = Vector2.new(220, 68)
 	confConstraint.Parent = confBtn
-
-	local toast = Instance.new("Frame")
-	toast.Name = "RebirthToastBanner"
-	toast.AnchorPoint = Vector2.new(0.5, 0)
-	toast.Position = UDim2.fromScale(0.5, 0.13)
-	toast.Size = UDim2.fromScale(0.46, 0.07)
-	toast.BackgroundColor3 = Color3.fromRGB(45, 32, 70)
-	toast.BorderSizePixel = 0
-	toast.Visible = false
-	toast.Active = false
-	toast.ZIndex = 5
-	toast.Parent = gui
-	toastFrame = toast
-	attachResponsiveScale(toast)
-	addCorner(toast, UDim.new(0, 12))
-	addStroke(toast, Color3.fromRGB(214, 168, 255), 2, 0.1)
-
-	local toastConstraint = Instance.new("UISizeConstraint")
-	toastConstraint.MinSize = Vector2.new(260, 44)
-	toastConstraint.MaxSize = Vector2.new(540, 66)
-	toastConstraint.Parent = toast
-
-	local toastText = Instance.new("TextLabel")
-	toastText.Name = "ToastMessage"
-	toastText.Position = UDim2.fromScale(0.04, 0.1)
-	toastText.Size = UDim2.fromScale(0.92, 0.8)
-	toastText.BackgroundTransparency = 1
-	toastText.Font = Enum.Font.GothamBold
-	toastText.Text = ""
-	toastText.TextColor3 = Color3.fromRGB(255, 255, 255)
-	toastText.TextScaled = true
-	toastText.ZIndex = 6
-	toastText.Parent = toast
-	toastLabel = toastText
-
-	local toastTextConstraint = Instance.new("UITextSizeConstraint")
-	toastTextConstraint.MaxTextSize = 18
-	toastTextConstraint.MinTextSize = 11
-	toastTextConstraint.Parent = toastText
 
 	table.insert(
 		connections,
@@ -788,7 +750,6 @@ local function clearGuiResources()
 	end
 	isCleaningUp = true
 
-	toastToken += 1
 	disconnectAllMutualExclusivityWatchers()
 	disconnectList(rebirthGuiLifecycleConnections)
 
@@ -820,8 +781,6 @@ local function clearGuiResources()
 	startRebirthButton = nil
 	confirmButton = nil
 	cancelButton = nil
-	toastFrame = nil
-	toastLabel = nil
 
 	if oldGui and oldGui.Parent then
 		oldGui:Destroy()
@@ -1052,24 +1011,7 @@ function RebirthUI.ResetConfirmation()
 end
 
 function RebirthUI.ShowToast(message: string, isError: boolean?)
-	if not toastFrame or not toastLabel then
-		return
-	end
-	toastToken += 1
-	local token = toastToken
-
-	toastLabel.Text = message
-	local stroke = toastFrame:FindFirstChildOfClass("UIStroke")
-	if stroke then
-		stroke.Color = if isError then Color3.fromRGB(255, 118, 118) else Color3.fromRGB(110, 231, 183)
-	end
-	toastFrame.Visible = true
-
-	task.delay(TOAST_DURATION_SECONDS, function()
-		if token == toastToken and toastFrame then
-			toastFrame.Visible = false
-		end
-	end)
+	HudController.Toast(message, if isError then "error" else "reward")
 end
 
 function RebirthUI.Destroy()

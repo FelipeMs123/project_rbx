@@ -5,34 +5,38 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local GameConfig = require(Shared.Config.Game)
 local PetsConfig = require(Shared.Config.Pets)
+local HudController = require(script.Parent.Parent.Parent.Controllers.HudController)
 local EggHelpers = require(script.Parent.EggHelpers)
 
 local MIN_UI_SCALE = 0.85
 local MAX_UI_SCALE = 1.25
 local AUTO_CLOSE_SECONDS = 2.2
-local TOAST_DURATION_SECONDS = 3.0
 
 local EggUI = {}
 
 local eggsGui: ScreenGui? = nil
 local hatchGui: ScreenGui? = nil
 local promptPanel: Frame? = nil
+local promptScale: UIScale? = nil
+local promptSizeConstraint: UISizeConstraint? = nil
+local promptHeaderFrame: Frame? = nil
 local promptTitleLabel: TextLabel? = nil
 local priceLabel: TextLabel? = nil
 local areaBadgeLabel: TextLabel? = nil
 local inventoryLabel: TextLabel? = nil
 local chancesListFrame: ScrollingFrame? = nil
 local buyButton: TextButton? = nil
-local toastFrame: Frame? = nil
-local toastLabel: TextLabel? = nil
+local buySizeConstraint: UISizeConstraint? = nil
 
 local hatchOverlay: Frame? = nil
 local hatchCard: Frame? = nil
+local hatchScale: UIScale? = nil
 local hatchEggBody: Frame? = nil
 local hatchFlashFrame: Frame? = nil
 local hatchRevealGroup: Frame? = nil
@@ -40,7 +44,6 @@ local hatchRarityBadge: TextLabel? = nil
 local hatchPetNameLabel: TextLabel? = nil
 local hatchDamageLabel: TextLabel? = nil
 
-local uiScales: { UIScale } = {}
 local connections: { RBXScriptConnection } = {}
 local currentCameraConnection: RBXScriptConnection? = nil
 local cameraConnection: RBXScriptConnection? = nil
@@ -48,28 +51,58 @@ local activeTweens: { Tween } = {}
 
 local currentEggId: string? = nil
 local purchaseCallback: ((string) -> ())? = nil
-local toastToken = 0
 local hatchToken = 0
 local hatchRevealed = false
 local pendingRevealPet: { Name: string, Rarity: string, Multiplier: number }? = nil
 
-local function computeResponsiveScale(): number
+local function getViewportSize(): Vector2
 	local camera = Workspace.CurrentCamera
 	if not camera then
-		return 1
+		return Vector2.new(1280, 720)
 	end
 	local viewport = camera.ViewportSize
 	if viewport.X <= 0 or viewport.Y <= 0 then
-		return 1
+		return Vector2.new(1280, 720)
 	end
+	return viewport
+end
+
+local function computeResponsiveScale(): number
+	local viewport = getViewportSize()
 	local ratio = math.min(viewport.X / 1280, viewport.Y / 720)
 	return math.clamp(ratio, MIN_UI_SCALE, MAX_UI_SCALE)
 end
 
 local function updateAllScales()
-	local scaleValue = computeResponsiveScale()
-	for _, scaleObj in uiScales do
-		scaleObj.Scale = scaleValue
+	local viewport = getViewportSize()
+	local layout = EggHelpers.computePromptLayout(viewport.X, viewport.Y, UserInputService.TouchEnabled)
+
+	if promptScale then
+		promptScale.Scale = layout.Scale
+	end
+	if promptPanel then
+		promptPanel.Position = UDim2.fromScale(0.5, layout.PositionYScale)
+		promptPanel.Size = UDim2.fromScale(layout.WidthScale, layout.HeightScale)
+	end
+	if promptSizeConstraint then
+		promptSizeConstraint.MinSize = Vector2.new(layout.MinWidth, layout.MinHeight)
+		promptSizeConstraint.MaxSize = Vector2.new(layout.MaxWidth, layout.MaxHeight)
+	end
+	if promptHeaderFrame then
+		promptHeaderFrame.Size = UDim2.fromScale(1, layout.HeaderHeightScale)
+	end
+	if chancesListFrame then
+		chancesListFrame.Position = UDim2.fromScale(0, layout.ListTopScale)
+		chancesListFrame.Size = UDim2.fromScale(1, layout.ListHeightScale)
+	end
+	if buyButton then
+		buyButton.Size = UDim2.fromScale(if layout.IsCompact then 0.76 else 0.72, layout.BuyHeightScale)
+	end
+	if buySizeConstraint then
+		buySizeConstraint.MinSize = Vector2.new(150, layout.BuyMinHeight)
+	end
+	if hatchScale then
+		hatchScale.Scale = computeResponsiveScale()
 	end
 end
 
@@ -83,13 +116,6 @@ local function bindCameraViewport()
 		cameraConnection = camera:GetPropertyChangedSignal("ViewportSize"):Connect(updateAllScales)
 	end
 	updateAllScales()
-end
-
-local function attachResponsiveScale(target: GuiObject)
-	local scaleObj = Instance.new("UIScale")
-	scaleObj.Scale = computeResponsiveScale()
-	scaleObj.Parent = target
-	table.insert(uiScales, scaleObj)
 end
 
 local function addCorner(parent: Instance, radius: UDim)
@@ -222,7 +248,7 @@ local function populateChancesList(eggDef: EggHelpers.EggDefLike)
 		addCorner(row, UDim.new(0, 8))
 
 		local rowSize = Instance.new("UISizeConstraint")
-		rowSize.MinSize = Vector2.new(0, 32)
+		rowSize.MinSize = Vector2.new(0, 34)
 		rowSize.Parent = row
 
 		local rowPadding = Instance.new("UIPadding")
@@ -234,29 +260,33 @@ local function populateChancesList(eggDef: EggHelpers.EggDefLike)
 		petName.Name = "PetName"
 		petName.BackgroundTransparency = 1
 		petName.Position = UDim2.fromScale(0, 0)
-		petName.Size = UDim2.fromScale(0.46, 1)
+		petName.Size = UDim2.fromScale(0.44, 1)
 		petName.Font = Enum.Font.GothamBold
 		petName.Text = entry.Name
 		petName.TextColor3 = Color3.fromRGB(255, 255, 255)
 		petName.TextScaled = true
+		petName.TextWrapped = true
+		petName.TextTruncate = Enum.TextTruncate.AtEnd
+		petName.ClipsDescendants = true
 		petName.TextXAlignment = Enum.TextXAlignment.Left
 		petName.Parent = row
 
 		local nameConstraint = Instance.new("UITextSizeConstraint")
-		nameConstraint.MaxTextSize = 16
+		nameConstraint.MaxTextSize = 15
 		nameConstraint.MinTextSize = 10
 		nameConstraint.Parent = petName
 
 		local rarityBadge = Instance.new("TextLabel")
 		rarityBadge.Name = "RarityBadge"
 		rarityBadge.AnchorPoint = Vector2.new(0, 0.5)
-		rarityBadge.Position = UDim2.fromScale(0.47, 0.5)
-		rarityBadge.Size = UDim2.fromScale(0.20, 0.72)
+		rarityBadge.Position = UDim2.fromScale(0.45, 0.5)
+		rarityBadge.Size = UDim2.fromScale(0.21, 0.74)
 		rarityBadge.BackgroundColor3 = rarityColor
 		rarityBadge.Font = Enum.Font.GothamBold
 		rarityBadge.Text = rarityInfo.Name
 		rarityBadge.TextColor3 = Color3.fromRGB(255, 255, 255)
 		rarityBadge.TextScaled = true
+		rarityBadge.TextTruncate = Enum.TextTruncate.AtEnd
 		rarityBadge.Parent = row
 		addCorner(rarityBadge, UDim.new(0, 6))
 
@@ -268,12 +298,13 @@ local function populateChancesList(eggDef: EggHelpers.EggDefLike)
 		local dmgLabel = Instance.new("TextLabel")
 		dmgLabel.Name = "DamageLabel"
 		dmgLabel.BackgroundTransparency = 1
-		dmgLabel.Position = UDim2.fromScale(0.68, 0)
-		dmgLabel.Size = UDim2.fromScale(0.18, 1)
+		dmgLabel.Position = UDim2.fromScale(0.67, 0)
+		dmgLabel.Size = UDim2.fromScale(0.19, 1)
 		dmgLabel.Font = Enum.Font.GothamMedium
 		dmgLabel.Text = `+{formatNumberText(entry.Multiplier)} Dano`
 		dmgLabel.TextColor3 = Color3.fromRGB(255, 214, 102)
 		dmgLabel.TextScaled = true
+		dmgLabel.TextTruncate = Enum.TextTruncate.AtEnd
 		dmgLabel.TextXAlignment = Enum.TextXAlignment.Right
 		dmgLabel.Parent = row
 
@@ -312,9 +343,8 @@ local function renderPrompt(
 		return
 	end
 
-	local currencyName = if eggDef.Currency == "Gems" then "Gemas" else "Moedas"
 	promptTitleLabel.Text = eggDef.Name
-	priceLabel.Text = `{EggHelpers.formatShortNumber(eggDef.Price)} {currencyName}`
+	priceLabel.Text = EggHelpers.formatPriceText(eggDef)
 
 	local unlocked = EggHelpers.isAreaUnlocked(data, eggDef.Area)
 	if unlocked then
@@ -334,6 +364,7 @@ local function renderPrompt(
 	end
 
 	local canBuy, errCode = EggHelpers.canPurchaseEgg(data, eggDef, GameConfig.MaxInventory, eggId)
+	buyButton.AutoButtonColor = not isBusy
 	if isBusy then
 		buyButton.Text = "Comprando..."
 		buyButton.BackgroundColor3 = Color3.fromRGB(122, 130, 150)
@@ -375,18 +406,22 @@ local function createEggsGui(playerGui: PlayerGui)
 	panel.Visible = false
 	panel.Parent = gui
 	promptPanel = panel
-	attachResponsiveScale(panel)
+	local pScale = Instance.new("UIScale")
+	pScale.Scale = 1
+	pScale.Parent = panel
+	promptScale = pScale
 	addCorner(panel, UDim.new(0, 16))
 	addStroke(panel, Color3.fromRGB(255, 168, 226), 2, 0.15)
 
 	local panelSizeConstraint = Instance.new("UISizeConstraint")
-	panelSizeConstraint.MinSize = Vector2.new(310, 220)
-	panelSizeConstraint.MaxSize = Vector2.new(580, 350)
+	panelSizeConstraint.MinSize = Vector2.new(310, 210)
+	panelSizeConstraint.MaxSize = Vector2.new(560, 330)
 	panelSizeConstraint.Parent = panel
+	promptSizeConstraint = panelSizeConstraint
 
 	local panelPadding = Instance.new("UIPadding")
-	panelPadding.PaddingTop = UDim.new(0.05, 0)
-	panelPadding.PaddingBottom = UDim.new(0.05, 0)
+	panelPadding.PaddingTop = UDim.new(0.04, 0)
+	panelPadding.PaddingBottom = UDim.new(0.04, 0)
 	panelPadding.PaddingLeft = UDim.new(0.04, 0)
 	panelPadding.PaddingRight = UDim.new(0.04, 0)
 	panelPadding.Parent = panel
@@ -397,6 +432,7 @@ local function createEggsGui(playerGui: PlayerGui)
 	header.Position = UDim2.fromScale(0, 0)
 	header.Size = UDim2.fromScale(1, 0.22)
 	header.Parent = panel
+	promptHeaderFrame = header
 
 	local title = Instance.new("TextLabel")
 	title.Name = "Title"
@@ -518,6 +554,7 @@ local function createEggsGui(playerGui: PlayerGui)
 	buyConstraint.MinSize = Vector2.new(150, 52)
 	buyConstraint.MaxSize = Vector2.new(360, 72)
 	buyConstraint.Parent = button
+	buySizeConstraint = buyConstraint
 
 	local buyTextConstraint = Instance.new("UITextSizeConstraint")
 	buyTextConstraint.MaxTextSize = 22
@@ -532,43 +569,6 @@ local function createEggsGui(playerGui: PlayerGui)
 			end
 		end)
 	)
-
-	local toast = Instance.new("Frame")
-	toast.Name = "EggToastBanner"
-	toast.AnchorPoint = Vector2.new(0.5, 0)
-	toast.Position = UDim2.fromScale(0.5, 0.13)
-	toast.Size = UDim2.fromScale(0.46, 0.07)
-	toast.BackgroundColor3 = Color3.fromRGB(45, 32, 70)
-	toast.BorderSizePixel = 0
-	toast.Visible = false
-	toast.Active = false
-	toast.Parent = gui
-	toastFrame = toast
-	attachResponsiveScale(toast)
-	addCorner(toast, UDim.new(0, 12))
-	addStroke(toast, Color3.fromRGB(255, 184, 108), 2, 0.1)
-
-	local toastConstraint = Instance.new("UISizeConstraint")
-	toastConstraint.MinSize = Vector2.new(260, 44)
-	toastConstraint.MaxSize = Vector2.new(540, 66)
-	toastConstraint.Parent = toast
-
-	local toastText = Instance.new("TextLabel")
-	toastText.Name = "ToastMessage"
-	toastText.BackgroundTransparency = 1
-	toastText.Position = UDim2.fromScale(0.04, 0.1)
-	toastText.Size = UDim2.fromScale(0.92, 0.8)
-	toastText.Font = Enum.Font.GothamBold
-	toastText.Text = ""
-	toastText.TextColor3 = Color3.fromRGB(255, 255, 255)
-	toastText.TextScaled = true
-	toastText.Parent = toast
-	toastLabel = toastText
-
-	local toastTextConstraint = Instance.new("UITextSizeConstraint")
-	toastTextConstraint.MaxTextSize = 18
-	toastTextConstraint.MinTextSize = 11
-	toastTextConstraint.Parent = toastText
 end
 
 local function createHatchGui(playerGui: PlayerGui)
@@ -613,7 +613,10 @@ local function createHatchGui(playerGui: PlayerGui)
 	card.ZIndex = 2
 	card.Parent = overlay
 	hatchCard = card
-	attachResponsiveScale(card)
+	local hScale = Instance.new("UIScale")
+	hScale.Scale = computeResponsiveScale()
+	hScale.Parent = card
+	hatchScale = hScale
 	addCorner(card, UDim.new(0, 20))
 	addStroke(card, Color3.fromRGB(255, 200, 107), 3, 0)
 
@@ -777,7 +780,6 @@ end
 
 local function clearGuiResources()
 	hatchToken += 1
-	toastToken += 1
 	cancelActiveTweens()
 
 	if currentCameraConnection then
@@ -792,7 +794,6 @@ local function clearGuiResources()
 		conn:Disconnect()
 	end
 	table.clear(connections)
-	table.clear(uiScales)
 
 	if eggsGui then
 		eggsGui:Destroy()
@@ -804,16 +805,19 @@ local function clearGuiResources()
 	end
 
 	promptPanel = nil
+	promptScale = nil
+	promptSizeConstraint = nil
+	promptHeaderFrame = nil
 	promptTitleLabel = nil
 	priceLabel = nil
 	areaBadgeLabel = nil
 	inventoryLabel = nil
 	chancesListFrame = nil
 	buyButton = nil
-	toastFrame = nil
-	toastLabel = nil
+	buySizeConstraint = nil
 	hatchOverlay = nil
 	hatchCard = nil
+	hatchScale = nil
 	hatchEggBody = nil
 	hatchFlashFrame = nil
 	hatchRevealGroup = nil
@@ -894,25 +898,12 @@ function EggUI.IsPromptVisible(): boolean
 	return promptPanel ~= nil and promptPanel.Visible
 end
 
+function EggUI.IsHatchOverlayVisible(): boolean
+	return hatchOverlay ~= nil and hatchOverlay.Visible
+end
+
 function EggUI.ShowToast(message: string, isError: boolean?)
-	if not toastFrame or not toastLabel then
-		return
-	end
-	toastToken += 1
-	local token = toastToken
-
-	toastLabel.Text = message
-	local stroke = toastFrame:FindFirstChildOfClass("UIStroke")
-	if stroke then
-		stroke.Color = if isError then Color3.fromRGB(255, 118, 118) else Color3.fromRGB(110, 231, 183)
-	end
-	toastFrame.Visible = true
-
-	task.delay(TOAST_DURATION_SECONDS, function()
-		if token == toastToken and toastFrame then
-			toastFrame.Visible = false
-		end
-	end)
+	HudController.Toast(message, if isError then "error" else "reward")
 end
 
 function EggUI.ShowHatchResult(petId: string, petDef: EggHelpers.PetDefLike?)
