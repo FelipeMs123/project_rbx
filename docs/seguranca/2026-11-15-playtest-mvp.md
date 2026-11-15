@@ -110,3 +110,55 @@ Nenhum bug funcional foi observado no ciclo individual exercitado. Não houve �
 6. Stop, esperar pelo menos 12 s, Play, comparar todos os campos de GetData, verificar console e encerrar com Stop.
 
 O perfil terminou com um rebirth: **o próximo rebirth custa 25.000 moedas** pela configuração atual. Repetir o roteiro altera dados reais e deve considerar esse estado.
+
+## Complemento multiplayer (2 jogadores)
+
+Executado em 15/11/2026, como complemento do I1 solicitado pela Squad B no PR #20. Local Server já aberto pelo humano, com main informada por ele. Checkout local do relatório: `a/mvp-fechado`; não se trocou branch nem conexão Rojo. Nenhum `src/` editado, commit, Kick, Stop ou fechamento de janela. Operações de jogo exclusivamente pelos Clients (`FireServer`, `InvokeServer`, `Character:PivotTo`); servidor consultado somente para leitura. Instrumentação temporária em `PlayerGui.MultiplayerTestEvidence`, sem alterar dados diretamente.
+
+Instâncias identificadas por `list_roblox_studios` e `get_studio_state`: servidor `4b36a8f7-dd12-49cc-9745-2198952428e3`, Player1 `5bfda9a2-31a1-4c1e-8e48-4628d347a793`, Player2 `a2ff03f3-bfc6-477e-bb37-1ce675225e4d`. As três estavam em Play; foco Server/Client/Client respectivamente. Instância Edit separada preservada. Salvamento real confirmado pelo log do ProfileStore; não houve reconexão para comprovar persistência nesta rodada.
+
+Snapshots iniciais de `GetData`:
+
+| Campo | Player1 | Player2 |
+|---|---|---|
+| Coins / Gems / Rebirths | 35 / 0 / 0 | 25 / 0 / 0 |
+| Inventory | `f359e03f-bf15-4909-a32f-abca458329a3: BearGummy` | vazio |
+| Equipped | `[f359e03f-bf15-4909-a32f-abca458329a3]` | vazio |
+| UnlockedAreas | `[CandyPlaza]` | `[CandyPlaza]` |
+| TutorialStep | 5 | 0 |
+| Daily | `{LastClaimDay=0, Streak=0}` | `{LastClaimDay=0, Streak=0}` |
+
+| Passo | Resultado | Números e evidências |
+|---|---|---|
+| 1. Instâncias, dados e console inicial | ✅ | Servidor com exatamente Player1 e Player2 e **9 services**, confirmado pelo Output e número de módulos. API disponível para salvar. Cada console tinha duas ocorrências do asset conhecido `203785492`; nenhum erro novo de script observado. |
+| 2. Divisão com danos diferentes | ✅ | LollipopBlock `25743ea6-5ad5-4948-bca0-552dfa5df065`, posição `(28,3,-24)`, HP 35, 22 moedas. Clientes posicionados a 5 studs (offsets `(0,0,5)` e `(3,0,4)`). Cliques alternados a aproximadamente 0,2 s: **Player1 9×3=27**, **Player2 8×1=8**; HP final 0. Coins **35→51 (+16)** e **25→30 (+5)**, exatamente `floor(22×27/35)=16` e `floor(22×8/35)=5`; soma **21≤22**. Notify REWARD e textos reais dos toasts: somente `+16 moedas` no Player1 e `+5 moedas` no Player2. O último golpe desta primeira quebra foi exato (3 HP). |
+| 3. Pet visível no outro Client | ✅ | No Client de Player2, atributo de Player1 `EquippedPets="BearGummy"` e modelo `Workspace.ClientPets.Player1_Pet_1_BearGummy`. Antes: dono `(28,3,1075,-18,9998)`, pet aproximadamente `(28,2,7233,-14,7998)`, distância **4,2175** studs. Depois de mover Player1 para outro bloco: dono `(10,3,2075,-7)`, pet `(9,9942,2,7723,-2,8069)`, distância **4,2223**. Modelo acompanhou o dono no cliente observador. Coordenadas com vírgula decimal; vetores são aproximações. |
+| 4. Compras simultâneas e sequência | ✅ | Após farm separado por 50 s: P1 **675**, P2 **358** moedas; inventários 1 e 0. Ambos perto de CandyEgg. Primeiros InvokeServer em `GetServerTimeNow` **1794777525,005824** e **1794777525,008877** (diferença **3,053 ms**); mais três pedidos seguidos por cliente, sem espera intencional, terminando os envios em 7525,106435/7525,108248. P1: **4 sucessos**, Coins **675→275**, Inventory **1→5**. P2: **3 sucessos + NOT_ENOUGH_COINS**, Coins **358→58**, Inventory **0→3**. Sete UUIDs novos distintos, todos presentes somente no inventário correto; pet antigo de P1 preservado. Pedido recusado não cobrou. |
+| 5. Isolamento de equipagem e área | ✅ | EquipPet em P1 para `ba8669ca…` e `580c5af3…` retornou ok: equipados **1→3**. GetData de P2 manteve exatamente os três pets comprados, Equipped vazio, Coins 58, Gems/Rebirths 0, TutorialStep 3, Daily `{0,0}` e `[CandyPlaza]`. Após farm, P1 tinha **1.819** moedas; UnlockArea ChocolateFalls retornou ok, Coins **1.819→19** e áreas `[CandyPlaza,ChocolateFalls]`. No Client de P1, as cinco peças do Gate ficaram **Transparency=1, CanCollide=false**. P2 manteve `[CandyPlaza]`; Core continuou **0,25/true**, BarNorth, BarSouth, FrameTopBeam e CaramelStripeCenter **0/true**. P2 tinha então 63 moedas: os +5 anteriores vieram de REWARD em **1794777607,106207**, antes do desbloqueio, compatíveis com contribuição restante do farm em bloco terminado por P1. Nenhum crédito foi atribuído ao UnlockArea. |
+| 6. Diária individual | ⚠️ | ClaimDaily de ambos retornou **`{ok=false,err="NOT_IMPLEMENTED"}`**. P1 permaneceu com 675 moedas, P2 com 358 (chamadas feitas antes das compras); Gems 0 e Daily `{0,0}` nos dois. Não foi possível validar crédito nem DAILY_NOT_READY nessa main em execução. |
+| 7. Tutorial isolado | ✅ | Na quebra compartilhada, Player2 recebeu seu próprio REWARD de 5 e avançou **0→1**. Em seguida Player1 sozinho quebrou um GummyBlock próximo (Player1 **51→59**, +8); Player2 ficou com **30 moedas e TutorialStep 1**, sem avanço pela quebra alheia. Player1 ficou no passo 5. Só depois do farm próprio Player2 avançou para 2, e da compra própria para 3. |
+| 8. Consoles finais e sessão | ⚠️ | Console relido nas três instâncias: **0 erros novos de script/DataStore**; permaneceram somente as **2 ocorrências por instância** do asset conhecido `rbxassetid://203785492` e os prints de diagnóstico antigos em P1. get_studio_state final confirmou **Play nas três**, foco Server/Client/Client. Não houve Stop, Kick ou fechamento. |
+
+**Rodada adicional do passo 2, com overkill real:** LollipopBlock `5db441b6-8c5e-45b5-b883-38d6ee34a844`, `(38,3,10)`, HP 35. Agora P1 equipado com BearGummy + CottonCat + BearGummy: dano nominal medido **6,5**; P2 continuou com **1**. P2 iniciou, alternância de aproximadamente 0,2 s, cinco golpes cada. HP antes do último golpe: **4**; BlockHit mostrou damage 6,5 e HP 0. Dano efetivo P1 **4×6,5+4=30**, P2 **5×1=5**. Recompensas **floor(22×30/35)=18** e **floor(22×5/35)=3**, soma **21≤22**, em vez de contar os 2,5 de excesso. GetData **P1 19→37**, **P2 63→66**; Notify e toasts exclusivos **+18 moedas / +3 moedas**. Resultado: ✅.
+
+Compras de Player1: CottonCat `ba8669ca-f776-4bad-b964-e26c90b149bd`, CottonCat `bcced3e7-1dbe-4e39-9044-09f6ed985627`, BearGummy `580c5af3-94aa-4963-8c6a-ab1daed266f5`, CottonCat `0d927915-fe60-4576-95e7-ba538dfc8a99`. Compras de Player2: BearGummy `73f41bd6-3e59-4c44-9eca-d50e0e844db1`, CottonCat `2e1e9a54-b438-49bb-8f28-8472161eef99`, CottonCat `fcde0d36-112f-46e6-bcdc-f42be8e46a7f`.
+
+**Estado final:** Player1 Coins **37**, Gems **0**, Rebirths **0**, Inventory **5**, Equipped **3**, duas áreas e TutorialStep **5**; Player2 Coins **66**, Gems **0**, Rebirths **0**, Inventory **3**, Equipped **0**, somente CandyPlaza e TutorialStep **3**. Daily permaneceu `{LastClaimDay=0, Streak=0}` em ambos. Dados reais dos perfis de teste foram alterados pelas ações acima.
+
+### Bugs
+
+- Nenhum bug funcional observado nos fluxos multiplayer de combate, compra, equipagem, área e tutorial exercitados.
+- **Diária indisponível no runtime testado:** dois retornos NOT_IMPLEMENTED, em vez de prêmio/DAILY_NOT_READY. O contrato prevê esse fallback para handler ausente; não se atribui a falha à implementação da A8 sem testar sua versão. Revalidar o passo 6 com DailyService integrado. A execução tinha 9 services e nenhum crédito diário.
+- Asset incompatível `203785492`: mesmo achado já registrado no teste individual, sem novas ocorrências nos consoles durante este complemento.
+
+### Não testado
+
+- Resgate diário efetivo, DAILY_NOT_READY e isolamento de crédito diário, bloqueados pelo NOT_IMPLEMENTED.
+- Persistência após saída/reentrada dos dois perfis: salvamento real habilitado, porém Play foi preservado conforme pedido.
+- Distribuição de gemas entre contribuidores: LollipopBlock não pagou gemas; não houve teste de empate em bloco com gemas.
+- Quarta compra bem-sucedida de P2: saldo insuficiente; foram exercitados os quatro pedidos, com três entregas e uma recusa sem cobrança. Sem teste de inventário cheio, retries idempotentes ou mais de dois clientes.
+- Tutorial isolado observado no passo 1, além da preservação do passo 3 durante equipagens/farm alheios; não foi reiniciado perfil nem coberta toda combinação de passos.
+- Cliques manuais, hatch visual, mobile e demais itens fora deste complemento.
+- `lune run check` tentado nesta rodada: **ERROR home directory not found** antes das etapas. Conforme docs/LICOES.md, o líder deve executar o portão no ambiente dele; não se declara TUDO OK.
+
+Para repetir no Studio: (1) humano abre Local Server com dois clientes na main e coleta GetData; (2) ambos a 5 studs de Lollipop inteiro, alternam cliques a 0,2 s e comparam dano efetivo/recompensas/toasts; (3) observador acompanha ClientPets antes/depois de mover o dono; (4) cada um com saldo ≥100, perto do CandyEgg, agenda primeiro pedido no mesmo GetServerTimeNow e mais três seguidos, comparando UUIDs e débitos; (5) equipa e compra área só em um, comparando GetData e as cinco peças do Gate nos dois; (6) chama ClaimDaily em cada um; (7) quebra sem contribuição do observador e compara TutorialStep; (8) relê os três consoles. Repetir altera os perfis reais de teste; encerramento permanece a cargo do humano.
