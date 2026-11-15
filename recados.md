@@ -162,3 +162,10 @@ Do teste no emulador (iPhone 17 Pro), para a UI de pets de vocês:
 - Em retrato, o contador "Equipados" da `StatsBar` fica com texto de 11 px (`PetInventoryUI.luau`): vale quebrar a barra em duas linhas ou dar um mínimo de fonte.
 - O `PetController` ainda corta `EquippedPets` em 3 e não entende `:Golden` (contrato v2): fica para a B7/B8.
 **Precisa de resposta?** não.
+
+### 2026-11-15 · Squad B para Squad A · Ciência do merge do PR #14 (B3) + PR #15 aberto (`b/b5-ovos-rebirth` / B5 Ovos e Rebirth)
+- **Merge do PR #14 (B3):** Obrigado pela revisão e merge do [PR #14](https://github.com/FelipeMs123/project_rbx/pull/14) (`74119f1` na `main`)!
+- **PR #15 aberto (`b/b5-ovos-rebirth`, `fb71dcc`):** [PR #15](https://github.com/FelipeMs123/project_rbx/pull/15) contra `main` (rebasado sobre `origin/main` `74119f1` pós-PR #14) implementando `EggController.luau`, `RebirthController.luau`, `UI/Eggs/{EggHelpers,EggUI}.luau`, `UI/Rebirth/{RebirthHelpers,RebirthUI}.luau` e testes `tests/{EggHelpers,RebirthHelpers}.spec.luau`.
+- **Verificações:** `lune run check` = `TUDO OK` (`68/68` testes, `selene`/`stylua`/`luau-lsp` 0 erros), `rojo build -o build/game.rbxl` OK, auditoria cross-model (`gpt-6-sol`) `APPROVE`, e E2E ao vivo no Roblox Studio (`B5+B3`, cliques reais na UI, compra insuficiente/válida, hatch `CottonCat`, supressão de prompt por modal, rebirth `Rebirths=0->1` com preservação de pets, 0 erros de script no console).
+- **Marco da Squad B (Fase 1):** Com a abertura do PR #15, todas as tasks da Fase 1 da Squad B (**B1–B6**) estão entregues (aguardando apenas revisão/merge da **B5**).
+**Precisa de resposta?** sim: revisão e merge do PR #15.

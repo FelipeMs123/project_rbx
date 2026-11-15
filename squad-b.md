@@ -7,13 +7,21 @@
 |---|---|---|---|---|
 | B1 Lógica pura | ✅ pronto | Antigravity gemini-4-hydrogen-high / Codex gpt-6.1-sol | `b/b1-logica-pura` #8 | Mesclado na `main` (`36e389a`) |
 | B2 PetService | ✅ pronto | Codex / Antigravity | `b/b2-pet-service` #12 | Mesclado na `main` (`16ba206`) |
-| B3 EggService + RebirthService | ✅ pronto | Codex / Antigravity | `b/b3-ovos-rebirth` #14 | PR #14 aberto (`cd14095`), validado (`58/58` + `12/12` Studio E2E) e pronto para revisão/merge |
+| B3 EggService + RebirthService | ✅ pronto | Codex / Antigravity | `b/b3-ovos-rebirth` #14 | Mesclado na `main` (`74119f1`) |
 | B4 Pets e inventário | ✅ pronto | Codex gpt-6-sol (`rbx-client`) + revisão Codex gpt-6-luna | `b/b4-pets-ui` #9 | Mesclado na `main` (`3bf697e`) |
-| B5 Ovos e rebirth | 🟡 em andamento | Antigravity gemini-4-hydrogen-high + revisão Codex gpt-6.1-sol | `b/b5-ovos-rebirth` | Etapa B5 (`EggController` + `RebirthController` + UIs) iniciada pela Squad B |
+| B5 Ovos e rebirth | ✅ pronto | Antigravity gemini-4-hydrogen-high + revisão Codex gpt-6-sol | `b/b5-ovos-rebirth` #15 | PR #15 aberto (`fb71dcc`), validado (`68/68` + Studio E2E `B5+B3`) — todas as tasks B1–B6 entregues; aguardando apenas merge da B5 |
 | B6 Studio: Cascata de Chocolate | ✅ pronto | Codex / Antigravity | `b/b6-cascata` #13 | Mesclado na `main` (`0b56317`) |
 
 ## Registro
 (entrada mais nova em cima)
+
+### 2026-11-15 · Rodada 11: merge do PR #14 (B3) e abertura do PR #15 (`b/b5-ovos-rebirth`, `fb71dcc`) — Fase 1 da Squad B (B1–B6) entregue
+- **O que foi feito:** Rebase de `b/b5-ovos-rebirth` sobre `origin/main` pós-PR #14 (`74119f1` -> `fb71dcc`), push da branch, abertura do **PR #15 (`feat(squad-b): B5 EggController, RebirthController e UIs`)** contra `main` ([PR #15](https://github.com/FelipeMs123/project_rbx/pull/15)), e atualização de `recados.md` e `squad-b.md` registrando o merge do PR #14 (B3) e a conclusão da entrega de todas as tasks da Fase 1 da Squad B (**B1–B6**, aguardando apenas o merge da B5).
+- **Como:** Rebase de `b/b5-ovos-rebirth` sobre `origin/main`, validação com `lune run check` e `rojo build -o build/game.rbxl`, `git push -u origin b/b5-ovos-rebirth`, criação do PR #15 via `gh pr create` e registro no diário em `wt-diario`.
+- **Decisões:** Marcar **B3** como mesclada na `main` (`74119f1`) e **B5** como pronta com o **PR #15** aberto para revisão/merge final da Fase 1 (B1–B6).
+- **Problemas e soluções:** Nenhum bloqueio.
+- **Testes:** `lune run check` = `TUDO OK` (`68 testes passaram, 0 falharam`, `selene`/`stylua`/`luau-lsp` 0 erros), `rojo build -o build/game.rbxl` OK, auditoria cross-model (`gpt-6-sol`) `APPROVE` / Studio: E2E ao vivo (`B5+B3`, cliques reais na UI, compra insuficiente/válida, hatch `CottonCat`, supressão de prompt por modal, rebirth `Rebirths=0->1` com preservação de pets, `0` erros de script no console).
+- **Próximo passo:** Aguardar revisão e merge do PR #15 pela Squad A / `@FelipeMs123` para fechar 100% da Fase 1 (B1–B6) na `main` e avançar para a Fase 2 (B7, B8, B9).
 
 ### 2026-11-15 · Rodada 10: abertura do PR #14 (`b/b3-ovos-rebirth`, `cd14095`) e início da B5
 - **O que foi feito:** Push da branch `b/b3-ovos-rebirth` (`cd14095`), abertura do **PR #14 (`feat(squad-b): B3 EggService e RebirthService`)** contra `main` ([PR #14](https://github.com/FelipeMs123/project_rbx/pull/14)), e registro em `recados.md` e `squad-b.md` da validação completa da B3 e do início da etapa **B5** (`EggController` + `RebirthController` + UIs).
