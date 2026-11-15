@@ -60,8 +60,25 @@ local function spawnBlock(spawn: BasePart, areaId: string)
 	local templates = ServerStorage:FindFirstChild("BlockTemplates")
 	local template = templates and templates:FindFirstChild(blockType)
 	local model: Model
-	if template and template:IsA("Model") and template.PrimaryPart then
+	if template and template:IsA("Model") then
 		model = template:Clone()
+		-- O sync ao vivo do Rojo não preenche PrimaryPart; busca o filho 'Core' como fallback
+		if not model.PrimaryPart then
+			local core = model:FindFirstChild("Core")
+			if core and core:IsA("BasePart") then
+				model.PrimaryPart = core
+			end
+		end
+		if not model.PrimaryPart then
+			model:Destroy()
+			model = Instance.new("Model")
+			local part = Instance.new("Part")
+			part.Size = Vector3.new(4, 4, 4)
+			part.Anchored = true
+			part.Color = colors[blockType] or Color3.fromRGB(255, 255, 255)
+			part.Parent = model
+			model.PrimaryPart = part
+		end
 	else
 		model = Instance.new("Model")
 		local part = Instance.new("Part")

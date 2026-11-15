@@ -183,7 +183,7 @@ return {
 			Name = "BaseFloor",
 			Shape = "Block",
 			Size = { 140, 2, 140 },
-			Position = { 0, -1, 0 },
+			Position = { 0, -0.9, 0 }, -- topo em 0.1: evita z-fighting com o Baseplate do Studio
 			Rotation = { 0, 0, 0 },
 			Color = { 255, 182, 213 },
 			Material = "SmoothPlastic",
