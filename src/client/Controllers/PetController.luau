@@ -11,6 +11,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local GameConfig = require(Shared.Config.Game)
 local PetsConfig = require(Shared.Config.Pets)
+local Inventory = require(Shared.Logic.Inventory)
 local Types = require(Shared.Types)
 
 local DataController = require(script.Parent.DataController)
@@ -35,6 +36,8 @@ type PlayerPetState = {
 }
 
 local DEFAULT_RARITY_COLOR = Color3.fromRGB(255, 184, 210)
+local GOLDEN_COLOR = Color3.fromRGB(255, 215, 70)
+local GOLDEN_OUTLINE_COLOR = Color3.fromRGB(255, 240, 140)
 
 local RARITY_COLORS: { [string]: Color3 } = {
 	Common = DEFAULT_RARITY_COLOR,
@@ -58,6 +61,8 @@ local petsFolder: Folder? = nil
 local pendingRequests: { [string]: boolean } = {}
 local requestTokens: { [string]: number } = {}
 local nextRequestToken = 0
+local fusePending = false
+local fuseRequestToken = 0
 
 local function getOrCreatePetsFolder(): Folder
 	if petsFolder and petsFolder.Parent then
@@ -75,24 +80,9 @@ local function getOrCreatePetsFolder(): Folder
 	return folder
 end
 
-local function parseEquippedCsv(raw: any): { string }
-	if typeof(raw) ~= "string" or raw == "" then
-		return {}
-	end
-	local result: { string } = {}
-	for _, token in string.split(raw, ",") do
-		local trimmed = string.gsub(token, "^%s*(.-)%s*$", "%1")
-		if trimmed ~= "" and PetsConfig[trimmed] ~= nil then
-			table.insert(result, trimmed)
-			if #result >= GameConfig.MaxEquipped then
-				break
-			end
-		end
-	end
-	return result
-end
-
 local function enforceNoPhysics(model: Model)
+	local corePart = model:FindFirstChild("Core")
+	local fallbackPart: BasePart? = if corePart and corePart:IsA("BasePart") then corePart else nil
 	local firstPart: BasePart? = nil
 	for _, desc in model:GetDescendants() do
 		if desc:IsA("BasePart") then
@@ -106,8 +96,8 @@ local function enforceNoPhysics(model: Model)
 			end
 		end
 	end
-	if not model.PrimaryPart and firstPart then
-		model.PrimaryPart = firstPart
+	if not model.PrimaryPart then
+		model.PrimaryPart = fallbackPart or firstPart
 	end
 end
 
@@ -162,6 +152,8 @@ local function isToggleableEffect(inst: Instance): boolean
 		or inst:IsA("Trail")
 		or inst:IsA("Beam")
 		or inst:IsA("BillboardGui")
+		or inst:IsA("PointLight")
+		or inst:IsA("Highlight")
 end
 
 local function captureOriginalEffectStates(model: Model)
@@ -185,7 +177,76 @@ local function setEffectsEnabled(model: Model, enabled: boolean)
 	end
 end
 
-local function createPetModel(petId: string): Model?
+local function applyGoldenVisuals(model: Model, def: Types.PetDef, isPlaceholder: boolean)
+	for _, desc in model:GetDescendants() do
+		if desc:IsA("BasePart") then
+			if isPlaceholder then
+				desc.Color = GOLDEN_COLOR
+				desc.Reflectance = math.max(desc.Reflectance, 0.25)
+			elseif not string.find(desc.Name, "Eye", 1, true) then
+				desc.Color = desc.Color:Lerp(GOLDEN_COLOR, 0.72)
+				desc.Reflectance = math.max(desc.Reflectance, 0.22)
+			end
+		end
+	end
+
+	local highlight = Instance.new("Highlight")
+	highlight.Name = "GoldenHighlight"
+	highlight.FillColor = GOLDEN_COLOR
+	highlight.FillTransparency = 0.76
+	highlight.OutlineColor = GOLDEN_OUTLINE_COLOR
+	highlight.OutlineTransparency = 0.1
+	highlight.DepthMode = Enum.HighlightDepthMode.Occluded
+	highlight.Enabled = true
+	highlight.Parent = model
+
+	local primary = model.PrimaryPart
+	if primary then
+		local sparkles = Instance.new("Sparkles")
+		sparkles.Name = "GoldenSparkles"
+		sparkles.SparkleColor = GOLDEN_COLOR
+		sparkles.Enabled = true
+		sparkles.Parent = primary
+
+		local light = Instance.new("PointLight")
+		light.Name = "GoldenGlow"
+		light.Color = GOLDEN_COLOR
+		light.Range = 8
+		light.Brightness = 1.5
+		light.Enabled = true
+		light.Parent = primary
+
+		local existingTag = primary:FindFirstChild("NameTag")
+		if existingTag and existingTag:IsA("BillboardGui") then
+			local textLabel = existingTag:FindFirstChildWhichIsA("TextLabel")
+			if textLabel then
+				textLabel.Text = `DOURADO · {def.Name}`
+				textLabel.TextColor3 = GOLDEN_COLOR
+			end
+		else
+			local badge = Instance.new("BillboardGui")
+			badge.Name = "GoldenBadge"
+			badge.Size = UDim2.fromOffset(110, 24)
+			badge.StudsOffset = Vector3.new(0, 1.85, 0)
+			badge.AlwaysOnTop = false
+			badge.MaxDistance = 45
+			badge.Enabled = true
+			badge.Parent = primary
+
+			local badgeLabel = Instance.new("TextLabel")
+			badgeLabel.Size = UDim2.fromScale(1, 1)
+			badgeLabel.BackgroundTransparency = 1
+			badgeLabel.Font = Enum.Font.GothamBold
+			badgeLabel.Text = "DOURADO"
+			badgeLabel.TextColor3 = GOLDEN_COLOR
+			badgeLabel.TextStrokeTransparency = 0.2
+			badgeLabel.TextScaled = true
+			badgeLabel.Parent = badge
+		end
+	end
+end
+
+local function createPetModel(petId: string, variant: string?): Model?
 	local def = PetsConfig[petId]
 	if not def then
 		return nil
@@ -199,6 +260,9 @@ local function createPetModel(petId: string): Model?
 				local clone = template:Clone()
 				enforceNoPhysics(clone)
 				if clone.PrimaryPart then
+					if variant == "Golden" then
+						applyGoldenVisuals(clone, def, false)
+					end
 					captureOriginalEffectStates(clone)
 					return clone
 				end
@@ -210,6 +274,9 @@ local function createPetModel(petId: string): Model?
 				partClone.Parent = wrapper
 				wrapper.PrimaryPart = partClone
 				enforceNoPhysics(wrapper)
+				if variant == "Golden" then
+					applyGoldenVisuals(wrapper, def, false)
+				end
 				captureOriginalEffectStates(wrapper)
 				return wrapper
 			end
@@ -217,6 +284,9 @@ local function createPetModel(petId: string): Model?
 	end
 
 	local placeholder = createPlaceholderModel(petId, def)
+	if variant == "Golden" then
+		applyGoldenVisuals(placeholder, def, true)
+	end
 	captureOriginalEffectStates(placeholder)
 	return placeholder
 end
@@ -242,8 +312,8 @@ local function rebuildPlayerPets(player: Player)
 		return
 	end
 
-	local petIds = parseEquippedCsv(player:GetAttribute("EquippedPets"))
-	if #petIds == 0 then
+	local equippedTokens = Inventory.parseEquippedAttribute(player:GetAttribute("EquippedPets"), PetsConfig :: any)
+	if #equippedTokens == 0 then
 		return
 	end
 
@@ -253,10 +323,11 @@ local function rebuildPlayerPets(player: Player)
 	local baseCFrame = if hasRoot then (rootPart :: BasePart).CFrame else CFrame.new()
 	state.culled = not hasRoot
 
-	for index, petId in petIds do
-		local model = createPetModel(petId)
+	for index, token in equippedTokens do
+		local model = createPetModel(token.petId, token.variant)
 		if model then
-			model.Name = `{player.Name}_Pet_{index}_{petId}`
+			local variantSuffix = if token.variant ~= nil then `_{token.variant}` else ""
+			model.Name = `{player.Name}_Pet_{index}_{token.petId}{variantSuffix}`
 			if hasRoot then
 				model:PivotTo(baseCFrame)
 				model.Parent = folder
@@ -264,7 +335,7 @@ local function rebuildPlayerPets(player: Player)
 				setEffectsEnabled(model, false)
 			end
 			table.insert(state.pets, {
-				petId = petId,
+				petId = token.petId,
 				model = model,
 				currentCFrame = baseCFrame,
 				initialized = false,
@@ -329,7 +400,7 @@ end
 local function computeSlotOffset(index: number, count: number, clockTime: number, phaseOffset: number): CFrame
 	local centerOffset = index - (count + 1) / 2
 	local lateral = centerOffset * LATERAL_SPACING
-	local depth = BACK_DISTANCE + (if count == 3 and index == 2 then 0.9 else 0)
+	local depth = BACK_DISTANCE + (if count >= 3 and index > 1 and index < count then 0.9 else 0)
 	local bobY = -0.35 + math.sin(clockTime * BOB_FREQUENCY + phaseOffset) * BOB_AMPLITUDE
 	local tiltZ = math.cos(clockTime * (BOB_FREQUENCY * 0.5) + phaseOffset) * math.rad(6)
 	return CFrame.new(lateral, bobY, depth) * CFrame.Angles(0, 0, tiltZ)
@@ -471,6 +542,48 @@ local function handleTogglePet(uuid: string, currentlyEquipped: boolean)
 	end)
 end
 
+function PetController.RequestFuse(uuids: { string })
+	if fusePending or PetInventoryUI.IsFusePending() then
+		return
+	end
+
+	fuseRequestToken += 1
+	local token = fuseRequestToken
+	fusePending = true
+	PetInventoryUI.SetFusePending(true)
+
+	task.delay(REQUEST_TIMEOUT_SECONDS, function()
+		if fuseRequestToken ~= token then
+			return
+		end
+		fusePending = false
+		PetInventoryUI.SetFusePending(false)
+		showFeedback(TIMEOUT_MESSAGE, true)
+		PetInventoryUI.Refresh(DataController.Get())
+	end)
+
+	task.spawn(function()
+		local result = NetClient.Invoke("FusePets", uuids)
+		if fuseRequestToken ~= token then
+			return
+		end
+		fusePending = false
+		PetInventoryUI.SetFusePending(false)
+
+		if result.ok then
+			local payload = result.data
+			local petId = if type(payload) == "table" then payload.petId else nil
+			local petDef = if type(petId) == "string" then PetsConfig[petId] else nil
+			local petName = if petDef ~= nil then petDef.Name else "Pet"
+			showFeedback(`Fusão concluída! {petName} Dourado!`, false)
+		else
+			showFeedback(PetInventoryUI.TranslateError(result.err), true)
+		end
+
+		PetInventoryUI.Refresh(DataController.Get())
+	end)
+end
+
 function PetController.Init()
 	for _, player in Players:GetPlayers() do
 		setupPlayer(player)
@@ -482,7 +595,7 @@ function PetController.Init()
 end
 
 function PetController.Start()
-	PetInventoryUI.Mount(handleTogglePet)
+	PetInventoryUI.Mount(handleTogglePet, PetController.RequestFuse)
 	PetInventoryUI.Refresh(DataController.Get())
 
 	DataController.Observe("Inventory", function()
@@ -490,6 +603,10 @@ function PetController.Start()
 	end)
 
 	DataController.Observe("Equipped", function()
+		PetInventoryUI.Refresh(DataController.Get())
+	end)
+
+	DataController.Observe("Gems", function()
 		PetInventoryUI.Refresh(DataController.Get())
 	end)
 end

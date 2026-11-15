@@ -282,6 +282,7 @@ local function loadEggServiceHarness(options: {
 	local typesNode = makeNode("Types", "src/shared/Types.luau")
 	local errorCodesNode = makeNode("ErrorCodes", "src/shared/ErrorCodes.luau")
 	local gameConfigNode = makeNode("Game", "src/shared/Config/Game.luau")
+	local fusionConfigNode = makeNode("Fusion", "src/shared/Config/Fusion.luau")
 	local petsConfigNode = makeNode("Pets", "src/shared/Config/Pets.luau")
 	local eggsConfigNode = makeNode("Eggs", "src/shared/Config/Eggs.luau")
 	local economyLogicNode = makeNode("Economy", "src/shared/Logic/Economy.luau")
@@ -297,6 +298,7 @@ local function loadEggServiceHarness(options: {
 
 	configNode.Parent = sharedNode
 	configNode.Game = gameConfigNode
+	configNode.Fusion = fusionConfigNode
 	configNode.Pets = petsConfigNode
 	configNode.Eggs = eggsConfigNode
 
@@ -311,6 +313,7 @@ local function loadEggServiceHarness(options: {
 	typesNode.Parent = sharedNode
 	errorCodesNode.Parent = sharedNode
 	gameConfigNode.Parent = configNode
+	fusionConfigNode.Parent = configNode
 	petsConfigNode.Parent = configNode
 	eggsConfigNode.Parent = configNode
 	economyLogicNode.Parent = logicNode

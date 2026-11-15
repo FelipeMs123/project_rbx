@@ -147,7 +147,9 @@ local function loadPetServiceHarness()
 	local typesNode = makeNode("Types", "src/shared/Types.luau")
 	local errorCodesNode = makeNode("ErrorCodes", "src/shared/ErrorCodes.luau")
 	local gameConfigNode = makeNode("Game", "src/shared/Config/Game.luau")
+	local fusionConfigNode = makeNode("Fusion", "src/shared/Config/Fusion.luau")
 	local petsConfigNode = makeNode("Pets", "src/shared/Config/Pets.luau")
+	local economyLogicNode = makeNode("Economy", "src/shared/Logic/Economy.luau")
 	local inventoryNode = makeNode("Inventory", "src/shared/Logic/Inventory.luau")
 	local signalNode = makeNode("Signal", "src/shared/Util/Signal.luau")
 
@@ -159,9 +161,11 @@ local function loadPetServiceHarness()
 
 	configNode.Parent = sharedNode
 	configNode.Game = gameConfigNode
+	configNode.Fusion = fusionConfigNode
 	configNode.Pets = petsConfigNode
 
 	logicNode.Parent = sharedNode
+	logicNode.Economy = economyLogicNode
 	logicNode.Inventory = inventoryNode
 
 	utilNode.Parent = sharedNode
@@ -170,7 +174,9 @@ local function loadPetServiceHarness()
 	typesNode.Parent = sharedNode
 	errorCodesNode.Parent = sharedNode
 	gameConfigNode.Parent = configNode
+	fusionConfigNode.Parent = configNode
 	petsConfigNode.Parent = configNode
+	economyLogicNode.Parent = logicNode
 	inventoryNode.Parent = logicNode
 	signalNode.Parent = utilNode
 
@@ -179,6 +185,7 @@ local function loadPetServiceHarness()
 	local netNode = makeNode("Net")
 	local petServiceNode = makeNode("PetService", "src/server/Services/PetService.luau")
 	local dataServiceNode = makeNode("DataService")
+	local economyServiceNode = makeNode("EconomyService", "src/server/Services/EconomyService.luau")
 	local netServerNode = makeNode("NetServer")
 
 	serverNode.Services = servicesNode
@@ -186,10 +193,12 @@ local function loadPetServiceHarness()
 	servicesNode.Parent = serverNode
 	servicesNode.PetService = petServiceNode
 	servicesNode.DataService = dataServiceNode
+	servicesNode.EconomyService = economyServiceNode
 	netNode.Parent = serverNode
 	netNode.NetServer = netServerNode
 	petServiceNode.Parent = servicesNode
 	dataServiceNode.Parent = servicesNode
+	economyServiceNode.Parent = servicesNode
 	netServerNode.Parent = netNode
 
 	moduleCache[dataServiceNode] = mockDataService
@@ -537,6 +546,52 @@ return function(t)
 
 			h.removePlayer(p1)
 			h.removePlayer(p2)
+		end
+	)
+
+	t.test(
+		"Saneamento preserva Variant Golden mesmo ao limpar outras entradas e remove variantes inválidas",
+		function()
+			local h = loadPetServiceHarness()
+			h.PetService.Init()
+
+			local p1 = h.makePlayer(1, "Alice")
+			h.setLoadedData(p1, {
+				Version = 1,
+				Coins = 25,
+				Gems = 0,
+				Rebirths = 0,
+				UnlockedAreas = { "CandyPlaza" },
+				Inventory = {
+					golden1 = { Id = "BearGummy", Variant = "Golden" },
+					normal1 = { Id = "CottonCat" },
+					badVariant = { Id = "LollipopBunny", Variant = "Rainbow" },
+					removed = { Id = "DeletedPetId" },
+				},
+				Equipped = { "golden1", "normal1", "badVariant" },
+			})
+
+			local data = h.getData(p1)
+			t.eq(data.Inventory.removed, nil, "pet inexistente removido")
+			t.ok(data.Inventory.golden1 ~= nil, "pet dourado preservado")
+			t.eq(data.Inventory.golden1.Variant, "Golden", "Variant Golden deve ser preservada")
+			t.eq(data.Inventory.normal1.Variant, nil)
+			t.ok(data.Inventory.badVariant ~= nil, "pet com variante inválida mantido como normal")
+			t.eq(data.Inventory.badVariant.Variant, nil, "variante inválida limpa para nil")
+
+			-- Multiplicador 2x para BearGummy Golden (2*2=4) + CottonCat (1.5) + LollipopBunny (3) = 8.5
+			t.eq(p1:GetAttribute("EquippedPets"), "BearGummy:Golden,CottonCat,LollipopBunny")
+			t.eq(h.PetService.GetDamageBonus(p1), 8.5)
+
+			-- AddPet aceita Golden opcional e recusa variante inválida
+			local gUuid, gErr = h.PetService.AddPet(p1, "CottonCat", "Golden")
+			t.ok(type(gUuid) == "string" and #gUuid > 0)
+			t.eq(gErr, nil)
+			t.eq(data.Inventory[gUuid].Variant, "Golden")
+
+			local badUuid, badErr = h.PetService.AddPet(p1, "CottonCat", "Rainbow")
+			t.eq(badUuid, nil)
+			t.eq(badErr, "INVALID_ARGS")
 		end
 	)
 end
