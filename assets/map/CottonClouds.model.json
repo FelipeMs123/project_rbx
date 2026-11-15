@@ -1,0 +1,3237 @@
+{
+  "Children": [
+    {
+      "ClassName": "Part",
+      "Name": "Bounds",
+      "Properties": {
+        "Anchored": true,
+        "CFrame": {
+          "CFrame": {
+            "orientation": [
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                0,
+                1,
+                -0.0
+              ],
+              [
+                0,
+                0,
+                1
+              ]
+            ],
+            "position": [
+              284,
+              160,
+              0
+            ]
+          }
+        },
+        "CanCollide": false,
+        "CanQuery": false,
+        "CanTouch": false,
+        "Color": [
+          1,
+          1,
+          1
+        ],
+        "Material": "SmoothPlastic",
+        "Shape": "Block",
+        "Size": [
+          136,
+          480,
+          140
+        ],
+        "Transparency": 1
+      }
+    },
+    {
+      "ClassName": "SpawnLocation",
+      "Name": "SpawnLocation",
+      "Properties": {
+        "Anchored": true,
+        "CFrame": {
+          "CFrame": {
+            "orientation": [
+              [
+                6.123233995736766e-17,
+                -0.0,
+                -1
+              ],
+              [
+                0,
+                1,
+                -0.0
+              ],
+              [
+                1,
+                0,
+                6.123233995736766e-17
+              ]
+            ],
+            "position": [
+              230,
+              0.5,
+              0
+            ]
+          }
+        },
+        "CanCollide": true,
+        "Color": [
+          1,
+          0.9019607843137255,
+          0.37254901960784315
+        ],
+        "Enabled": false,
+        "Material": "SmoothPlastic",
+        "Neutral": true,
+        "Shape": "Block",
+        "Size": [
+          8,
+          1,
+          8
+        ],
+        "Transparency": 0
+      }
+    },
+    {
+      "Children": [
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Choco_01",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  250,
+                  3,
+                  -20
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "ChocoBlock"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Choco_02",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  250,
+                  3,
+                  20
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "ChocoBlock"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Choco_03",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  266,
+                  3,
+                  -12
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "ChocoBlock"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Choco_04",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  266,
+                  3,
+                  12
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "ChocoBlock"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Cloud_01",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  298,
+                  3,
+                  -12
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "CloudBlock"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Cloud_02",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  298,
+                  3,
+                  12
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "CloudBlock"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Cloud_03",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  314,
+                  3,
+                  -24
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "CloudBlock"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Cloud_04",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  314,
+                  3,
+                  24
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "CloudBlock"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Cloud_05",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  330,
+                  3,
+                  -12
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "CloudBlock"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Spawn_Cloud_06",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  330,
+                  3,
+                  12
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1,
+              1,
+              1
+            ],
+            "Transparency": 1
+          },
+          "attributes": {
+            "BlockType": "CloudBlock"
+          }
+        }
+      ],
+      "ClassName": "Folder",
+      "Name": "BlockSpawns"
+    },
+    {
+      "Children": [
+        {
+          "ClassName": "Part",
+          "Name": "Core",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  212,
+                  4.5,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "Glass",
+            "Shape": "Block",
+            "Size": [
+              1.2,
+              9,
+              16
+            ],
+            "Transparency": 0.25
+          },
+          "attributes": {
+            "Rojo_Id": "CottonCloudsGateCore"
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudTopBeam",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  212,
+                  9.5,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.6,
+              1.4,
+              16.4
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "NeonStripeCenter",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  212,
+                  5,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.5686274509803921,
+              0.8627450980392157,
+              1
+            ],
+            "Material": "Neon",
+            "Shape": "Block",
+            "Size": [
+              1.4,
+              1,
+              16.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "PuffColumnNorth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  212,
+                  4.6,
+                  -4
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              9,
+              0.9,
+              0.9
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "PuffColumnSouth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  212,
+                  4.6,
+                  4
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              9,
+              0.9,
+              0.9
+            ],
+            "Transparency": 0
+          }
+        }
+      ],
+      "ClassName": "Model",
+      "Name": "Gate",
+      "attributes": {
+        "Rojo_Target_PrimaryPart": "CottonCloudsGateCore"
+      }
+    },
+    {
+      "ClassName": "Folder",
+      "Name": "Eggs"
+    },
+    {
+      "Children": [
+        {
+          "ClassName": "Part",
+          "Name": "BaseFloor",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  282,
+                  -0.9,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9019607843137255,
+              0.8235294117647058,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              140,
+              2,
+              140
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EntranceBridge",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  218,
+                  0.1,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              16,
+              0.2,
+              14
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CenterCloudDisc",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  282,
+                  0.12,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              0.2,
+              44,
+              44
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "PathWestEast",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  288,
+                  0.1,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              124,
+              0.2,
+              14
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "PathNorth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  282,
+                  0.1,
+                  -18
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              12,
+              0.2,
+              24
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "PathSouth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  282,
+                  0.1,
+                  18
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              12,
+              0.2,
+              24
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "WallNorth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  282,
+                  1,
+                  -69
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              140,
+              2,
+              2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "WallSouth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  282,
+                  1,
+                  69
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              140,
+              2,
+              2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "WallEast",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  351,
+                  1,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              2,
+              2,
+              140
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "WallWestNorth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  213,
+                  1,
+                  -39
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              2,
+              2,
+              62
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "WallWestSouth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  213,
+                  1,
+                  39
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              2,
+              2,
+              62
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CornerPostNW",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  216,
+                  3,
+                  -68
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.5686274509803921,
+              0.8627450980392157,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              6,
+              5,
+              5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CornerPostSW",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  216,
+                  3,
+                  68
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.5686274509803921,
+              0.8627450980392157,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              6,
+              5,
+              5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CornerPostNE",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  350,
+                  3,
+                  -68
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.5686274509803921,
+              0.8627450980392157,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              6,
+              5,
+              5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CornerPostSE",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  350,
+                  3,
+                  68
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.5686274509803921,
+              0.8627450980392157,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              6,
+              5,
+              5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EggPedestalBase",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  282,
+                  0.7,
+                  -28
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              1.4,
+              12,
+              12
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EggPedestalTop",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  282,
+                  2,
+                  -28
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              1.2,
+              9,
+              9
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EggPedestalRing",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  282,
+                  1.5,
+                  -28
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.5686274509803921,
+              0.8627450980392157,
+              1
+            ],
+            "Material": "Neon",
+            "Shape": "Cylinder",
+            "Size": [
+              0.4,
+              10,
+              10
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "SpawnPadRing",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  230,
+                  0.15,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.5686274509803921,
+              0.8627450980392157,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              0.3,
+              11,
+              11
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudNW_Center",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  236,
+                  4,
+                  -52
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              12,
+              8,
+              10
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudNW_Left",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  230,
+                  3,
+                  -50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              8,
+              6,
+              8
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudNW_Right",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  242,
+                  3.2,
+                  -51
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.5686274509803921,
+              0.8627450980392157,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              9,
+              6.5,
+              8
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudNW_Top",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  236,
+                  7.2,
+                  -52
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9019607843137255,
+              0.8235294117647058,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              7,
+              6,
+              7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudSW_Center",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  236,
+                  4,
+                  52
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              12,
+              8,
+              10
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudSW_Left",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  230,
+                  3,
+                  50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.5686274509803921,
+              0.8627450980392157,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              8,
+              6,
+              8
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudSW_Right",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  242,
+                  3.2,
+                  51
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              9,
+              6.5,
+              8
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudSW_Top",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  236,
+                  7.2,
+                  52
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              7,
+              6,
+              7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudNE_Center",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  328,
+                  4.2,
+                  -52
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              13,
+              8.5,
+              10
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudNE_Left",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  321,
+                  3,
+                  -50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              8.5,
+              6,
+              8
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudNE_Right",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  335,
+                  3.2,
+                  -51
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.9019607843137255,
+              0.8235294117647058,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              9,
+              6.5,
+              8.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudNE_Top",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  328,
+                  7.5,
+                  -52
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.5686274509803921,
+              0.8627450980392157,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              7.5,
+              6,
+              7.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudSE_Center",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  328,
+                  4.2,
+                  52
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.5686274509803921,
+              0.8627450980392157,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              13,
+              8.5,
+              10
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudSE_Left",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  321,
+                  3,
+                  50
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              8.5,
+              6,
+              8
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudSE_Right",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  335,
+                  3.2,
+                  51
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              9,
+              6.5,
+              8.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudSE_Top",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  328,
+                  7.5,
+                  52
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              7.5,
+              6,
+              7.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "RainbowBaseNorth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  342,
+                  3,
+                  -24
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              9,
+              6,
+              9
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "RainbowBaseSouth",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  342,
+                  3,
+                  24
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              9,
+              6,
+              9
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "RainbowSegNorthLow",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    -0.0,
+                    0
+                  ],
+                  [
+                    0,
+                    0.9271838545667874,
+                    0.374606593415912
+                  ],
+                  [
+                    -0.0,
+                    -0.374606593415912,
+                    0.9271838545667874
+                  ]
+                ],
+                "position": [
+                  342,
+                  9,
+                  -20
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.37254901960784315,
+              0.6352941176470588
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              2.5,
+              14,
+              3.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "RainbowSegNorthMid",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    -0.0,
+                    0
+                  ],
+                  [
+                    0,
+                    0.6156614753256583,
+                    0.788010753606722
+                  ],
+                  [
+                    -0.0,
+                    -0.788010753606722,
+                    0.6156614753256583
+                  ]
+                ],
+                "position": [
+                  342,
+                  18.5,
+                  -11.5
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              2.5,
+              14,
+              3.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "RainbowSegTop",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  342,
+                  22.5,
+                  0
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.9019607843137255,
+              0.37254901960784315
+            ],
+            "Material": "Neon",
+            "Shape": "Block",
+            "Size": [
+              2.5,
+              3.5,
+              14
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "RainbowSegSouthMid",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    0.6156614753256583,
+                    -0.788010753606722
+                  ],
+                  [
+                    0,
+                    0.788010753606722,
+                    0.6156614753256583
+                  ]
+                ],
+                "position": [
+                  342,
+                  18.5,
+                  11.5
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              0.5686274509803921,
+              0.8627450980392157,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              2.5,
+              14,
+              3.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "RainbowSegSouthLow",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    0.9271838545667874,
+                    -0.374606593415912
+                  ],
+                  [
+                    0,
+                    0.374606593415912,
+                    0.9271838545667874
+                  ]
+                ],
+                "position": [
+                  342,
+                  9,
+                  20
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              2.5,
+              14,
+              3.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CottonConeS_Stick",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  282,
+                  4,
+                  52
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              8,
+              2.2,
+              2.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CottonConeS_Fluff",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  282,
+                  11.5,
+                  52
+                ]
+              }
+            },
+            "CanCollide": true,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              10,
+              12,
+              10
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "StarNeon_01",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.7071067811865476,
+                    0.5000000000000001,
+                    0.5000000000000001
+                  ],
+                  [
+                    0,
+                    0.7071067811865476,
+                    -0.7071067811865476
+                  ],
+                  [
+                    -0.7071067811865476,
+                    0.5000000000000001,
+                    0.5000000000000001
+                  ]
+                ],
+                "position": [
+                  236,
+                  12,
+                  -52
+                ]
+              }
+            },
+            "CanCollide": false,
+            "Color": [
+              1,
+              0.9019607843137255,
+              0.37254901960784315
+            ],
+            "Material": "Neon",
+            "Shape": "Block",
+            "Size": [
+              2.2,
+              2.2,
+              2.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "StarNeon_02",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.7071067811865476,
+                    0.5000000000000001,
+                    0.5000000000000001
+                  ],
+                  [
+                    0,
+                    0.7071067811865476,
+                    -0.7071067811865476
+                  ],
+                  [
+                    -0.7071067811865476,
+                    0.5000000000000001,
+                    0.5000000000000001
+                  ]
+                ],
+                "position": [
+                  236,
+                  12,
+                  52
+                ]
+              }
+            },
+            "CanCollide": false,
+            "Color": [
+              0.5686274509803921,
+              0.8627450980392157,
+              1
+            ],
+            "Material": "Neon",
+            "Shape": "Block",
+            "Size": [
+              2.2,
+              2.2,
+              2.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "StarNeon_03",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.7071067811865476,
+                    0.5000000000000001,
+                    0.5000000000000001
+                  ],
+                  [
+                    0,
+                    0.7071067811865476,
+                    -0.7071067811865476
+                  ],
+                  [
+                    -0.7071067811865476,
+                    0.5000000000000001,
+                    0.5000000000000001
+                  ]
+                ],
+                "position": [
+                  282,
+                  14,
+                  -52
+                ]
+              }
+            },
+            "CanCollide": false,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "Neon",
+            "Shape": "Block",
+            "Size": [
+              2.4,
+              2.4,
+              2.4
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "StarNeon_04",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.7071067811865476,
+                    0.5000000000000001,
+                    0.5000000000000001
+                  ],
+                  [
+                    0,
+                    0.7071067811865476,
+                    -0.7071067811865476
+                  ],
+                  [
+                    -0.7071067811865476,
+                    0.5000000000000001,
+                    0.5000000000000001
+                  ]
+                ],
+                "position": [
+                  282,
+                  19,
+                  52
+                ]
+              }
+            },
+            "CanCollide": false,
+            "Color": [
+              1,
+              0.9019607843137255,
+              0.37254901960784315
+            ],
+            "Material": "Neon",
+            "Shape": "Block",
+            "Size": [
+              2.4,
+              2.4,
+              2.4
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "StarNeon_05",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.7071067811865476,
+                    0.5000000000000001,
+                    0.5000000000000001
+                  ],
+                  [
+                    0,
+                    0.7071067811865476,
+                    -0.7071067811865476
+                  ],
+                  [
+                    -0.7071067811865476,
+                    0.5000000000000001,
+                    0.5000000000000001
+                  ]
+                ],
+                "position": [
+                  328,
+                  12.5,
+                  -52
+                ]
+              }
+            },
+            "CanCollide": false,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "Neon",
+            "Shape": "Block",
+            "Size": [
+              2.2,
+              2.2,
+              2.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "StarNeon_06",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.7071067811865476,
+                    0.5000000000000001,
+                    0.5000000000000001
+                  ],
+                  [
+                    0,
+                    0.7071067811865476,
+                    -0.7071067811865476
+                  ],
+                  [
+                    -0.7071067811865476,
+                    0.5000000000000001,
+                    0.5000000000000001
+                  ]
+                ],
+                "position": [
+                  328,
+                  12.5,
+                  52
+                ]
+              }
+            },
+            "CanCollide": false,
+            "Color": [
+              1,
+              0.9019607843137255,
+              0.37254901960784315
+            ],
+            "Material": "Neon",
+            "Shape": "Block",
+            "Size": [
+              2.2,
+              2.2,
+              2.2
+            ],
+            "Transparency": 0
+          }
+        }
+      ],
+      "ClassName": "Folder",
+      "Name": "Scenery"
+    }
+  ],
+  "ClassName": "Folder",
+  "Name": "CottonClouds"
+}
