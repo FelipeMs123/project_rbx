@@ -50,6 +50,16 @@ function HudController.Toast(text: string, kind: string)
 	end)
 end
 
+function HudController.SetTopReserve(pixels: number)
+	if pixels ~= pixels or math.abs(pixels) == math.huge then
+		return
+	end
+	local stack = toastStack
+	if stack then
+		stack.Position = UDim2.new(0.5, 0, 0, math.max(0, pixels))
+	end
+end
+
 function HudController.Init()
 	-- O registro fica em Start: NetClient.On pode esperar a replicação do remote.
 end
