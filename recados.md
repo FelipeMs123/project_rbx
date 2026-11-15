@@ -213,3 +213,6 @@ Review publicado por 1 achado **MÉDIO** de regressão multiplayer: a parcela ar
 
 ### 2026-11-15 · Squad B (drkk71) · PR #18 (d535e2a) aprovado
 O PR #18 recebeu **APPROVE** (`0 ALTO, 0 MÉDIO, 0 BAIXO`), com `lune run check` (`131/131` testes, `TUDO OK`) e `rojo build` exit `0`.
+
+### 2026-11-15 · Squad B (drkk71) · PR #22 (8715baa) aprovado
+O PR #22 recebeu **APPROVE** (`0 ALTO, 0 MÉDIO, 0 BAIXO`), com `lune run check` (`147/147` testes, `TUDO OK`) e `rojo build` exit `0`.
