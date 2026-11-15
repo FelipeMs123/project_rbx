@@ -191,7 +191,80 @@ O passe **AutoClicker** é da Squad A (no `BlockController`, lendo o atributo `P
 
 **I3 ⬜ Playtest da Fase 2** e **I4 ⬜ Revisão de segurança** dos remotes novos e do `ProcessReceipt`.
 
-## Fase 3: ideias
+## Fase 3: Arte e Conte?do (antes do lan?amento)
+
+Meta: aproximar o jogo da arte conceito do Gemini, com lucky blocks de doce, m?quinas de chiclete,
+pets 3D fofos, HUD com moedas e gemas no topo e menu lateral, confete e efeitos de moedas.
+O pipeline de arte, j? provado com o Urso de Goma (PR `a/arte-urso-goma`), est? em
+`art/README.md`: refer?ncia -> Blender via MCP (Codex) -> bake de textura -> Import 3D no Studio ->
+`.rbxm` em `assets/` -> `tools/art/prepare_pet.luau`. Objetos opacos simples tamb?m podem usar
+`generate_mesh` do MCP do Studio.
+
+### Squad A: Mundo e Experi?ncia
+
+**A11 ? Blocos em 3D** (`rbx-design` + Studio)
+- Arquivos prov?veis: `assets/`, `tools/map/`.
+- Criar os 4 tipos de bloco no estilo lucky block de doce.
+- Pronto quando: os 4 modelos aparecem nos lugares corretos e funcionam ao serem atingidos e quebrados.
+
+**A12 ? Decora??o 3D das 3 ?reas** (`rbx-design` + Studio)
+- Arquivos prov?veis: `assets/`, `tools/map/`.
+- Criar arco "Candy Plaza", morros de doce, piso com granulado e port?o de biscoito.
+- Pronto quando: as 3 ?reas t?m decora??o coerente com a arte conceito e permitem a navega??o.
+
+**A13 ? HUD novo no estilo da arte** (`rbx-design` + `rbx-client`)
+- Arquivos prov?veis: `src/client/UI/Hud/`, `src/client/Controllers/HudController.luau`.
+- Moedas e gemas no topo com "+", contador de Rebirth, menu lateral Shop/Pets/Invent?rio/Configura??es,
+  bot?es Auto-Click e x3 Ovos; usar ?cones do ForgeGUI.
+- Pronto quando: o HUD ? leg?vel e seus controles funcionam em celular e PC.
+
+**A14 ? Efeitos** (`rbx-design` + `rbx-client`)
+- Arquivos prov?veis: `assets/`, `src/client/Controllers/BlockController.luau`, `src/client/Controllers/PetController.luau`.
+- Confete, "+N moedas" voando, brilho ao quebrar e rastro dos pets.
+- Pronto quando: os efeitos aparecem nos eventos correspondentes sem atrapalhar a leitura ou o jogo.
+
+**A15 ? ?reas 4 a 6** (`rbx-design` + Studio; depois das tarefas anteriores)
+- Arquivos prov?veis: `assets/`, `tools/map/`, `src/shared/Config/`.
+- Criar e decorar as ?reas 4 a 6 seguindo a progress?o e o estilo visual do jogo.
+- Pronto quando: as 3 ?reas est?o acess?veis na ordem prevista e t?m blocos e decora??o pr?prios.
+
+### Squad B: Pets e Progress?o
+
+**B10 ? Os 5 pets atuais em 3D** (`rbx-design` + Studio)
+- Arquivos prov?veis: `art/`, `assets/`, `tools/art/prepare_pet.luau`.
+- Usar o pipeline documentado; BearGummy j? est? feito.
+- Pronto quando: os 5 pets atuais aparecem em 3D no jogo, com textura e prepara??o conclu?das.
+
+**B11 ? Mais pets e ovos por ?rea** (`rbx-design` + `rbx-logica` + `rbx-server`)
+- Arquivos prov?veis: `docs/balanceamento/`, `src/shared/Config/`, `art/`, `assets/`.
+- Criar 15 a 20 pets novos em 5 raridades e 1 ovo por ?rea, incluindo Nuvens de Algod?o;
+  n?meros do `rbx-design` (Gemini) em `docs/balanceamento/`.
+- Pronto quando: pets e ovos est?o dispon?veis nas ?reas correspondentes, com chances e n?meros documentados.
+
+**B12 ? Ovos como m?quinas de chiclete 3D** (`rbx-design` + `rbx-client` + Studio)
+- Arquivos prov?veis: `art/`, `assets/`, `src/client/Controllers/EggController.luau`, `src/client/UI/Eggs/`.
+- Criar as m?quinas e a anima??o de chocar.
+- Pronto quando: cada ovo usa uma m?quina 3D e a anima??o revela o pet comprado.
+
+**B13 ? Pets animados e arco-?ris** (`rbx-design` + `rbx-client` + `rbx-server`)
+- Arquivos prov?veis: `src/client/Controllers/PetController.luau`, `src/server/Services/PetService.luau`, `src/shared/Config/`.
+- Animar pets flutuando ou pulando e criar pets arco-?ris por fus?o de dourados usando `Variant`.
+- Pronto quando: os pets se animam ao seguir jogadores e a fus?o de dourados produz a variante arco-?ris.
+
+### Integra??o
+
+**I5 ? Playtest visual** (as duas squads + testador)
+- Arquivos prov?veis: `docs/` (registro do playtest).
+- Pronto quando: celular e PC s?o avaliados e os problemas visuais encontrados s?o registrados.
+
+**I6 ? Revis?o de desempenho** (as duas squads + testador)
+- Arquivos prov?veis: `docs/` (registro das medi??es), `assets/`.
+- Medir FPS e mem?ria em celular fraco e definir limite de tri?ngulos.
+- Pronto quando: medi??es e limite est?o documentados e os assets atendem ao limite definido.
+
+---
+
+## Fase 4: ideias
 
 Troca de pets (alto risco de duplicação: só com o jogo publicado e logs de economia),
 pets arco-íris, mais áreas, eventos de fim de semana.
