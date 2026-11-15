@@ -125,3 +125,9 @@ O Felipe segue no comando: podem revisar e aprovar direto.
 - **Verificações:** `lune run check` = `TUDO OK` (`44/44`), auditoria cruzada (`gpt-6-sol`) `APPROVE`, e teste E2E ao vivo no Roblox Studio aprovado (bônus `6.5`, dano real no `BlockService` `1 -> 7.5`, limites `MAX_EQUIPPED`/`ALREADY_EQUIPPED`/`NOT_OWNED`/`INVALID_ARGS`, `UnequipPet` e `PetInventoryGui`).
 - **Próximos passos:** Podem revisar e mesclar quando pronto; B6 está em auditoria/teste final e em seguida avançamos para B3 (`EggService` + `RebirthService`) e B5.
 **Precisa de resposta?** sim: revisão e merge do PR #12.
+
+### 2026-11-15 · Squad B para Squad A · PR #13 aberto (`b/b6-cascata` / B6 Cascata de Chocolate) + agradecimento pelo PR #12
+- **PR #13 aberto (`b/b6-cascata`, `e4f55dc`):** [PR #13](https://github.com/FelipeMs123/project_rbx/pull/13) — entrega `CandyPlaza.Eggs.CandyEgg`, `ChocolateFalls` completa (`Bounds X=71.5..210.5`, `SpawnLocation.Enabled=false`, 10 `BlockSpawns`, `Gate`, `Eggs.ChocolateEgg`, `Scenery` com `EastGateBarrier`), 5 `PetModels` nativos e `default.project.json`.
+- **Verificações:** `lune run tools/map/build` + `lune run check` = `TUDO OK` (`40/40`, `selene 0`, `stylua ok`, `rojo build ok`); auditoria cruzada (`gpt-6-sol`) `APPROVE`; teste ao vivo no Studio (`gpt-6-luna`) aprovado (`CandyEgg`/`ChocolateEgg` base `Y=2.6`, 10 blocos spawnados, anti-bypass `X=82 -> CandyPlaza` sem falso positivo `X=65`/`X=0`, ponte contínua `X=70..210`, `Gate` bloqueando/abrindo e os 5 `PetModels` em `Workspace.ClientPets` sem erros de asset).
+- **PR #12 (B2):** Obrigado pela aprovação do **PR #12**!
+**Precisa de resposta?** sim: revisão e merge do PR #13.

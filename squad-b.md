@@ -10,10 +10,18 @@
 | B3 EggService + RebirthService | ⬜ a fazer | — | `b/b3-egg-rebirth-service` | Desbloqueado o PR #8 (`36e389a`); depende de B2 |
 | B4 Pets e inventário | ✅ pronto | Codex gpt-6-sol (`rbx-client`) + revisão Codex gpt-6-luna | `b/b4-pets-ui` #9 | Mesclado na `main` (`3bf697e`) |
 | B5 Ovos e rebirth | 🟡 em andamento | Antigravity gemini-4-hydrogen-high + revisão Codex gpt-6.1-sol | `b/b5-ovos-rebirth` (local) | Implementado e revisado localmente; pronto para rebase na `main` e integração com B3/B6 |
-| B6 Studio: Cascata de Chocolate | 🔄 em andamento | Codex / Antigravity | `b/b6-cascata` | Em auditoria/teste final em `wt-b6` |
+| B6 Studio: Cascata de Chocolate | ✅ pronto | Codex / Antigravity | `b/b6-cascata` #13 | PR #13 aberto (`e4f55dc`), auditado e testado no Studio; pronto para revisão/merge |
 
 ## Registro
 (entrada mais nova em cima)
+
+### 2026-11-15 · Rodada 9: abertura do PR #13 (`b/b6-cascata`, `e4f55dc`)
+- **O que foi feito:** Registro em `recados.md` e `squad-b.md` da abertura do **PR #13 (`feat(squad-b): B6 Cascata de Chocolate, 5 PetModels e 2 Eggs`, `e4f55dc`)** e agradecimento à Squad A pela aprovação do PR #12.
+- **Como:** Verificação do push de `b/b6-cascata` (`e4f55dc`) e do PR #13 aberto contra `main`, seguida da atualização do diário em `wt-diario`.
+- **Decisões:** Marcar **B6** como pronta (PR #13 aberto) para revisão e merge pela Squad A / `@FelipeMs123`.
+- **Problemas e soluções:** Nenhum bloqueio em B6.
+- **Testes:** `lune run tools/map/build` + `lune run check` = `TUDO OK` (`40/40`, `selene 0`, `stylua ok`, `rojo build ok`); revisão cruzada (`gpt-6-sol`) `APPROVE` / Studio (`gpt-6-luna`): aprovado (`CandyEgg`/`ChocolateEgg` base `Y=2.6`, 10 blocos spawnados, anti-bypass `X=82 -> CandyPlaza` sem falso positivo `X=65`/`X=0`, ponte contínua `X=70..210`, `Gate` bloqueando/abrindo e os 5 `PetModels` em `Workspace.ClientPets` sem erros de asset).
+- **Próximo passo:** Aguardar revisão/merge do PR #13 pela Squad A e avançar para B3 (`EggService` + `RebirthService`) e B5.
 
 ### 2026-11-15 · Rodada 8: abertura do PR #12 (`b/b2-pet-service`, `15c7dcb`)
 - **O que foi feito:** Aviso à Squad A / `@FelipeMs123` em `recados.md` e atualização de `squad-b.md` com o status do **PR #12 (`feat(squad-b): B2 PetService`, `15c7dcb`)** aberto e pronto para revisão/merge.
