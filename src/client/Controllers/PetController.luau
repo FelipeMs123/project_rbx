@@ -401,6 +401,35 @@ local function stepAllPets(dt: number)
 	end
 end
 
+local function tryShowHudToast(message: string, isError: boolean): boolean
+	local controllersFolder = script.Parent
+	if not controllersFolder then
+		return false
+	end
+	local hudModule = controllersFolder:FindFirstChild("HudController")
+	if not hudModule or not hudModule:IsA("ModuleScript") then
+		return false
+	end
+	local okRequire, hudController = pcall(require :: any, hudModule)
+	if not okRequire or type(hudController) ~= "table" then
+		return false
+	end
+	local toastFn = (hudController :: { Toast: unknown }).Toast
+	if type(toastFn) ~= "function" then
+		return false
+	end
+	local kind = if isError then "error" else "info"
+	local okCall = pcall(toastFn :: (string, string) -> (), message, kind)
+	return okCall
+end
+
+local function showFeedback(message: string, isError: boolean)
+	local shownInHud = tryShowHudToast(message, isError)
+	if not shownInHud or PetInventoryUI.IsModalOpen() then
+		PetInventoryUI.ShowToast(message, isError)
+	end
+end
+
 local function handleTogglePet(uuid: string, currentlyEquipped: boolean)
 	if pendingRequests[uuid] or PetInventoryUI.IsPending(uuid) then
 		return
@@ -421,7 +450,7 @@ local function handleTogglePet(uuid: string, currentlyEquipped: boolean)
 		requestTokens[uuid] = nil
 		pendingRequests[uuid] = nil
 		PetInventoryUI.SetPending(uuid, false)
-		PetInventoryUI.ShowToast(TIMEOUT_MESSAGE, true)
+		showFeedback(TIMEOUT_MESSAGE, true)
 		PetInventoryUI.Refresh(DataController.Get())
 	end)
 
@@ -435,7 +464,7 @@ local function handleTogglePet(uuid: string, currentlyEquipped: boolean)
 		PetInventoryUI.SetPending(uuid, false)
 
 		if not result.ok then
-			PetInventoryUI.ShowToast(PetInventoryUI.TranslateError(result.err), true)
+			showFeedback(PetInventoryUI.TranslateError(result.err), true)
 		end
 
 		PetInventoryUI.Refresh(DataController.Get())

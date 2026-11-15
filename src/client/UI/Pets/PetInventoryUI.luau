@@ -60,15 +60,29 @@ local ERROR_MESSAGES: { [string]: string } = {
 	[ErrorCodes.NOT_IMPLEMENTED] = "Essa função estará disponível em breve!",
 }
 
+local MIN_TOUCH_PX = 44
+local SAFE_TOUCH_PX = 45
+local HEADER_HEIGHT_PX = 58
+local STATS_HEIGHT_PX = 40
+local SECTION_GAP_PX = 6
+local GRID_TOP_OFFSET_PX = HEADER_HEIGHT_PX + SECTION_GAP_PX + STATS_HEIGHT_PX + SECTION_GAP_PX
+local GRID_PADDING_PX = 10
+local GRID_GAP_PX = 10
+local SCROLLBAR_THICKNESS_PX = 8
+
 local screenGui: ScreenGui? = nil
 local uiScale: UIScale? = nil
+local modalFrame: Frame? = nil
 local bonusLabel: TextLabel? = nil
 local equippedCountLabel: TextLabel? = nil
 local inventoryCountLabel: TextLabel? = nil
 local toastLabel: TextLabel? = nil
 local gridFrame: ScrollingFrame? = nil
+local gridLayoutRef: UIGridLayout? = nil
 local emptyLabel: TextLabel? = nil
 local toggleButton: TextButton? = nil
+local openBtnConstraint: UISizeConstraint? = nil
+local closeBtnConstraint: UISizeConstraint? = nil
 
 local connections: { RBXScriptConnection } = {}
 local cardConnections: { RBXScriptConnection } = {}
@@ -81,6 +95,33 @@ local function formatNumber(n: number): string
 		return tostring(math.round(n))
 	end
 	return string.format("%.1f", n)
+end
+
+local function updateGridLayout()
+	local grid = gridFrame
+	local layout = gridLayoutRef
+	local scaleInst = uiScale
+	if not grid or not layout or not scaleInst then
+		return
+	end
+
+	local scale = math.max(scaleInst.Scale, 0.01)
+	local absWidth = grid.AbsoluteSize.X
+	if absWidth <= 0 then
+		return
+	end
+
+	-- AbsoluteSize já reflete UIScale; divide pela escala para calcular Offset no espaço local do grid
+	local unscaledWidth = absWidth / scale
+	local usableWidth = math.max(160, unscaledWidth - (GRID_PADDING_PX * 2) - SCROLLBAR_THICKNESS_PX - 4)
+	local columns = if usableWidth >= 340 then 3 else 2
+	local cellWidth = math.floor((usableWidth - GRID_GAP_PX * (columns - 1)) / columns)
+	local minTouch = math.max(MIN_TOUCH_PX, math.ceil(SAFE_TOUCH_PX / scale))
+	local cellHeight = math.max(minTouch, math.clamp(math.round(cellWidth * 0.85), 112, 152))
+
+	layout.FillDirectionMaxCells = columns
+	layout.CellPadding = UDim2.fromOffset(GRID_GAP_PX, GRID_GAP_PX)
+	layout.CellSize = UDim2.fromOffset(cellWidth, cellHeight)
 end
 
 local function updateResponsiveScale()
@@ -100,6 +141,17 @@ local function updateResponsiveScale()
 	-- Escala suave para celulares pequenos até telas grandes de PC
 	local computed = math.clamp(minAxis / 520, 0.78, 1.15)
 	scaleInst.Scale = computed
+
+	-- Compensa UIScale nos MinSize para manter área de toque >= 44 px reais em telas pequenas
+	local minTouch = math.max(MIN_TOUCH_PX, math.ceil(SAFE_TOUCH_PX / computed))
+	if openBtnConstraint then
+		openBtnConstraint.MinSize = Vector2.new(math.max(96, minTouch), minTouch)
+	end
+	if closeBtnConstraint then
+		closeBtnConstraint.MinSize = Vector2.new(minTouch, minTouch)
+	end
+
+	updateGridLayout()
 end
 
 local function clearCards()
@@ -170,6 +222,10 @@ function PetInventoryUI.IsPending(uuid: string): boolean
 	return pendingUuids[uuid] == true
 end
 
+function PetInventoryUI.IsModalOpen(): boolean
+	return modalFrame ~= nil and modalFrame.Visible
+end
+
 function PetInventoryUI.BuildSortedEntries(data: Types.PlayerData?): ({ PetEntry }, number, number, number)
 	if not data then
 		return {}, 0, 0, 0
@@ -230,10 +286,6 @@ local function createPetCard(entry: PetEntry, parent: ScrollingFrame)
 	card.BorderSizePixel = 0
 	card.Text = ""
 	card.AutoButtonColor = not isPending
-
-	local sizeConstraint = Instance.new("UISizeConstraint")
-	sizeConstraint.MinSize = Vector2.new(96, 110)
-	sizeConstraint.Parent = card
 
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0, 12)
@@ -354,6 +406,8 @@ function PetInventoryUI.Refresh(data: Types.PlayerData?)
 			card.LayoutOrder = index
 		end
 	end
+
+	updateGridLayout()
 end
 
 function PetInventoryUI.Mount(onToggle: TogglePetCallback)
@@ -378,11 +432,11 @@ function PetInventoryUI.Mount(onToggle: TogglePetCallback)
 	scale.Parent = gui
 	uiScale = scale
 
-	-- Botão flutuante mobile-first para abrir/fechar o inventário de Pets
+	-- Botão flutuante mobile-first para abrir/fechar o inventário de Pets (lateral direita, sem sobrepor moedas)
 	local openBtn = Instance.new("TextButton")
 	openBtn.Name = "PetsToggleButton"
-	openBtn.AnchorPoint = Vector2.new(0, 0.5)
-	openBtn.Position = UDim2.fromScale(0.02, 0.55)
+	openBtn.AnchorPoint = Vector2.new(1, 0.5)
+	openBtn.Position = UDim2.fromScale(0.98, 0.5)
 	openBtn.Size = UDim2.fromScale(0.14, 0.09)
 	openBtn.BackgroundColor3 = Color3.fromRGB(255, 107, 129)
 	openBtn.BorderSizePixel = 0
@@ -394,9 +448,10 @@ function PetInventoryUI.Mount(onToggle: TogglePetCallback)
 	toggleButton = openBtn
 
 	local openBtnMinSize = Instance.new("UISizeConstraint")
-	openBtnMinSize.MinSize = Vector2.new(88, 48)
+	openBtnMinSize.MinSize = Vector2.new(96, 58)
 	openBtnMinSize.MaxSize = Vector2.new(220, 76)
 	openBtnMinSize.Parent = openBtn
+	openBtnConstraint = openBtnMinSize
 
 	local openBtnCorner = Instance.new("UICorner")
 	openBtnCorner.CornerRadius = UDim.new(0, 14)
@@ -415,7 +470,7 @@ function PetInventoryUI.Mount(onToggle: TogglePetCallback)
 	openBtnPad.PaddingBottom = UDim.new(0.12, 0)
 	openBtnPad.Parent = openBtn
 
-	-- Modal principal
+	-- Modal principal (Active = true evita que cliques atravessem para o BlockController)
 	local modal = Instance.new("Frame")
 	modal.Name = "PetsModal"
 	modal.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -423,8 +478,10 @@ function PetInventoryUI.Mount(onToggle: TogglePetCallback)
 	modal.Size = UDim2.fromScale(0.76, 0.78)
 	modal.BackgroundColor3 = Color3.fromRGB(24, 27, 38)
 	modal.BorderSizePixel = 0
+	modal.Active = true
 	modal.Visible = false
 	modal.Parent = gui
+	modalFrame = modal
 
 	local modalSizeConstraint = Instance.new("UISizeConstraint")
 	modalSizeConstraint.MinSize = Vector2.new(280, 260)
@@ -450,14 +507,15 @@ function PetInventoryUI.Mount(onToggle: TogglePetCallback)
 	-- Cabeçalho
 	local header = Instance.new("Frame")
 	header.Name = "Header"
-	header.Size = UDim2.fromScale(1, 0.13)
-	header.Position = UDim2.fromScale(0, 0)
+	header.Size = UDim2.new(1, 0, 0, HEADER_HEIGHT_PX)
+	header.Position = UDim2.fromOffset(0, 0)
 	header.BackgroundTransparency = 1
+	header.Active = true
 	header.Parent = modal
 
 	local title = Instance.new("TextLabel")
 	title.Name = "Title"
-	title.Size = UDim2.fromScale(0.8, 1)
+	title.Size = UDim2.new(1, -72, 1, 0)
 	title.Position = UDim2.fromScale(0, 0)
 	title.BackgroundTransparency = 1
 	title.Font = Enum.Font.GothamBold
@@ -471,7 +529,7 @@ function PetInventoryUI.Mount(onToggle: TogglePetCallback)
 	closeBtn.Name = "CloseButton"
 	closeBtn.AnchorPoint = Vector2.new(1, 0.5)
 	closeBtn.Position = UDim2.fromScale(1, 0.5)
-	closeBtn.Size = UDim2.fromScale(0.12, 0.9)
+	closeBtn.Size = UDim2.new(0.12, 0, 0, HEADER_HEIGHT_PX)
 	closeBtn.BackgroundColor3 = Color3.fromRGB(235, 77, 75)
 	closeBtn.BorderSizePixel = 0
 	closeBtn.Font = Enum.Font.GothamBold
@@ -481,9 +539,10 @@ function PetInventoryUI.Mount(onToggle: TogglePetCallback)
 	closeBtn.Parent = header
 
 	local closeMinSize = Instance.new("UISizeConstraint")
-	closeMinSize.MinSize = Vector2.new(44, 44)
+	closeMinSize.MinSize = Vector2.new(58, 58)
 	closeMinSize.MaxSize = Vector2.new(64, 64)
 	closeMinSize.Parent = closeBtn
+	closeBtnConstraint = closeMinSize
 
 	local closeCorner = Instance.new("UICorner")
 	closeCorner.CornerRadius = UDim.new(0, 10)
@@ -492,10 +551,11 @@ function PetInventoryUI.Mount(onToggle: TogglePetCallback)
 	-- Barra de status (Bônus, Equipados, Inventário)
 	local statsBar = Instance.new("Frame")
 	statsBar.Name = "StatsBar"
-	statsBar.Size = UDim2.fromScale(1, 0.11)
-	statsBar.Position = UDim2.fromScale(0, 0.14)
+	statsBar.Size = UDim2.new(1, 0, 0, STATS_HEIGHT_PX)
+	statsBar.Position = UDim2.fromOffset(0, HEADER_HEIGHT_PX + SECTION_GAP_PX)
 	statsBar.BackgroundColor3 = Color3.fromRGB(34, 39, 54)
 	statsBar.BorderSizePixel = 0
+	statsBar.Active = true
 	statsBar.Parent = modal
 
 	local statsCorner = Instance.new("UICorner")
@@ -547,22 +607,35 @@ function PetInventoryUI.Mount(onToggle: TogglePetCallback)
 	invLabel.Parent = statsBar
 	inventoryCountLabel = invLabel
 
-	-- Banner de feedback/erro amigável
+	-- Banner de feedback/erro amigável (fallback caso HudController não esteja disponível)
 	local toast = Instance.new("TextLabel")
 	toast.Name = "ToastBanner"
 	toast.AnchorPoint = Vector2.new(0.5, 0)
-	toast.Position = UDim2.fromScale(0.5, 0.26)
-	toast.Size = UDim2.fromScale(0.92, 0.08)
+	toast.Position = UDim2.new(0.5, 0, 0, GRID_TOP_OFFSET_PX + 6)
+	toast.Size = UDim2.new(0.92, 0, 0, 48)
 	toast.BackgroundColor3 = Color3.fromRGB(235, 77, 75)
 	toast.BorderSizePixel = 0
 	toast.Font = Enum.Font.GothamBold
 	toast.Text = ""
 	toast.TextColor3 = Color3.fromRGB(255, 255, 255)
 	toast.TextScaled = true
+	toast.TextWrapped = true
+	toast.Active = true
 	toast.Visible = false
 	toast.ZIndex = 5
 	toast.Parent = modal
 	toastLabel = toast
+
+	local toastTextConstraint = Instance.new("UITextSizeConstraint")
+	toastTextConstraint.MaxTextSize = 18
+	toastTextConstraint.Parent = toast
+
+	local toastPadding = Instance.new("UIPadding")
+	toastPadding.PaddingLeft = UDim.new(0, 10)
+	toastPadding.PaddingRight = UDim.new(0, 10)
+	toastPadding.PaddingTop = UDim.new(0, 4)
+	toastPadding.PaddingBottom = UDim.new(0, 4)
+	toastPadding.Parent = toast
 
 	local toastCorner = Instance.new("UICorner")
 	toastCorner.CornerRadius = UDim.new(0, 8)
@@ -571,14 +644,15 @@ function PetInventoryUI.Mount(onToggle: TogglePetCallback)
 	-- Grade rolável de pets
 	local scrolling = Instance.new("ScrollingFrame")
 	scrolling.Name = "PetGrid"
-	scrolling.Size = UDim2.fromScale(1, 0.72)
-	scrolling.Position = UDim2.fromScale(0, 0.28)
+	scrolling.Size = UDim2.new(1, 0, 1, -GRID_TOP_OFFSET_PX)
+	scrolling.Position = UDim2.fromOffset(0, GRID_TOP_OFFSET_PX)
 	scrolling.BackgroundColor3 = Color3.fromRGB(19, 22, 31)
 	scrolling.BorderSizePixel = 0
-	scrolling.ScrollBarThickness = 8
+	scrolling.ScrollBarThickness = SCROLLBAR_THICKNESS_PX
 	scrolling.CanvasSize = UDim2.fromScale(0, 0)
 	scrolling.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	scrolling.ScrollingDirection = Enum.ScrollingDirection.Y
+	scrolling.Active = true
 	scrolling.Parent = modal
 	gridFrame = scrolling
 
@@ -587,30 +661,34 @@ function PetInventoryUI.Mount(onToggle: TogglePetCallback)
 	scrollCorner.Parent = scrolling
 
 	local scrollPadding = Instance.new("UIPadding")
-	scrollPadding.PaddingTop = UDim.new(0.02, 0)
-	scrollPadding.PaddingBottom = UDim.new(0.02, 0)
-	scrollPadding.PaddingLeft = UDim.new(0.02, 0)
-	scrollPadding.PaddingRight = UDim.new(0.02, 0)
+	scrollPadding.PaddingTop = UDim.new(0, GRID_PADDING_PX)
+	scrollPadding.PaddingBottom = UDim.new(0, GRID_PADDING_PX)
+	scrollPadding.PaddingLeft = UDim.new(0, GRID_PADDING_PX)
+	scrollPadding.PaddingRight = UDim.new(0, GRID_PADDING_PX)
 	scrollPadding.Parent = scrolling
 
 	local gridLayout = Instance.new("UIGridLayout")
 	gridLayout.Name = "GridLayout"
-	gridLayout.CellSize = UDim2.fromScale(0.3, 0.36)
-	gridLayout.CellPadding = UDim2.fromScale(0.03, 0.04)
+	gridLayout.CellSize = UDim2.fromOffset(140, 128)
+	gridLayout.CellPadding = UDim2.fromOffset(GRID_GAP_PX, GRID_GAP_PX)
 	gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
 	gridLayout.FillDirectionMaxCells = 3
 	gridLayout.Parent = scrolling
+	gridLayoutRef = gridLayout
+
+	table.insert(connections, scrolling:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateGridLayout))
 
 	local empty = Instance.new("TextLabel")
 	empty.Name = "EmptyStateLabel"
 	empty.AnchorPoint = Vector2.new(0.5, 0.5)
-	empty.Position = UDim2.fromScale(0.5, 0.64)
-	empty.Size = UDim2.fromScale(0.8, 0.16)
+	empty.Position = UDim2.new(0.5, 0, 0.5, GRID_TOP_OFFSET_PX * 0.5)
+	empty.Size = UDim2.fromScale(0.8, 0.2)
 	empty.BackgroundTransparency = 1
 	empty.Font = Enum.Font.GothamBold
 	empty.Text = "Você ainda não tem nenhum pet!\nCompre um ovo na Praça dos Doces para chocar seu primeiro amigo!"
 	empty.TextColor3 = Color3.fromRGB(165, 177, 194)
 	empty.TextScaled = true
+	empty.TextWrapped = true
 	empty.Visible = true
 	empty.Parent = modal
 	emptyLabel = empty
@@ -620,6 +698,9 @@ function PetInventoryUI.Mount(onToggle: TogglePetCallback)
 		connections,
 		openBtn.Activated:Connect(function()
 			modal.Visible = not modal.Visible
+			if modal.Visible then
+				updateGridLayout()
+			end
 		end)
 	)
 
@@ -666,13 +747,17 @@ function PetInventoryUI.Destroy()
 		screenGui = nil
 	end
 	uiScale = nil
+	modalFrame = nil
 	bonusLabel = nil
 	equippedCountLabel = nil
 	inventoryCountLabel = nil
 	toastLabel = nil
 	gridFrame = nil
+	gridLayoutRef = nil
 	emptyLabel = nil
 	toggleButton = nil
+	openBtnConstraint = nil
+	closeBtnConstraint = nil
 	onToggleCallback = nil
 end
 
