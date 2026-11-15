@@ -1,11 +1,14 @@
 --!strict
--- Workspace.Areas.CandyPlaza e ServerStorage.BlockTemplates | Squad A | Gera modelos Rojo 7.
+-- Workspace.Areas.{CandyPlaza,ChocolateFalls}, ServerStorage.BlockTemplates e ReplicatedStorage.PetModels
+-- Dono: Squad A (A6) / Squad B (B6) | Gera modelos Rojo 7.
 -- Execute na raiz: lune run tools/map/build
 -- PrimaryPart via atributos Rojo_Id / Rojo_Target_PrimaryPart (resolvidos pelo Rojo no build).
 local fs = require("@lune/fs")
 local serde = require("@lune/serde")
 local plaza = require("./CandyPlaza")
+local falls = require("./ChocolateFalls")
 local templates = require("./BlockTemplates")
+local petModelsData = require("./PetModels")
 
 local partCount = 0
 local function makePart(data: any): any
@@ -36,7 +39,7 @@ local function makePart(data: any): any
 	if data.Shape ~= "Wedge" then
 		properties.Shape = data.Shape
 	end
-	for _, key in { "CanQuery", "CanTouch", "Neutral" } do
+	for _, key in { "CanQuery", "CanTouch", "Neutral", "Enabled" } do
 		if data[key] ~= nil then
 			properties[key] = data[key]
 		end
@@ -47,7 +50,7 @@ local function makePart(data: any): any
 		Properties = properties,
 	}
 	if next(data.Attributes) ~= nil then
-		result.attributes = data.Attributes
+		result.attributes = table.clone(data.Attributes)
 	end
 	partCount += 1
 	return result
@@ -69,34 +72,82 @@ local function folder(name: string, children: { any }): any
 	return result
 end
 
-local candyPlaza = folder("CandyPlaza", {
-	makePart(plaza.SpawnLocation),
-	folder("BlockSpawns", makeParts(plaza.BlockSpawns)),
-	folder("Eggs", {}),
-	folder("Scenery", makeParts(plaza.Scenery)),
-})
-assert(#plaza.Scenery == 54 and #plaza.BlockSpawns == 10 and partCount == 65, "Contagem da praça incorreta")
-
-local models = {}
-local expectedCounts: { [string]: number } = { GummyBlock = 6, LollipopBlock = 6, ChocoBlock = 7, CloudBlock = 6 }
-for _, template in templates do
-	assert(#template.Parts == expectedCounts[template.Name], "Contagem do template incorreta")
-	assert(template.Parts[1].Name == "Core", "Template sem Core")
+local function makeModel(template: any, idPrefix: string?): any
+	assert(template.Parts and #template.Parts >= 1, `Model {template.Name} sem Parts`)
+	assert(template.Parts[1].Name == "Core", `Model {template.Name} sem Core na 1ª posição`)
 	local children = makeParts(template.Parts)
-	local coreId = template.Name .. "Core"
+	local coreId = (idPrefix or "") .. template.Name .. "Core"
 	children[1].attributes = children[1].attributes or {}
 	children[1].attributes.Rojo_Id = coreId
-	table.insert(models, {
+	return {
 		ClassName = "Model",
 		Name = template.Name,
 		Children = children,
 		attributes = { Rojo_Target_PrimaryPart = coreId },
-	})
+	}
 end
-assert(#models == 4 and partCount == 90, "Contagem total incorreta")
+
+local function makeModels(list: { any }, idPrefix: string?): { any }
+	local result = {}
+	for _, item in list do
+		table.insert(result, makeModel(item, idPrefix))
+	end
+	return result
+end
+
+local candyPlaza = folder("CandyPlaza", {
+	makePart(plaza.SpawnLocation),
+	folder("BlockSpawns", makeParts(plaza.BlockSpawns)),
+	folder("Eggs", makeModels(plaza.Eggs)),
+	folder("Scenery", makeParts(plaza.Scenery)),
+})
+assert(#plaza.Scenery == 54 and #plaza.BlockSpawns == 10 and #plaza.Eggs == 1, "Contagem da CandyPlaza incorreta")
+
+local blockModels = {}
+local expectedCounts: { [string]: number } = { GummyBlock = 6, LollipopBlock = 6, ChocoBlock = 7, CloudBlock = 6 }
+for _, template in templates do
+	assert(#template.Parts == expectedCounts[template.Name], "Contagem do template incorreta")
+	table.insert(blockModels, makeModel(template))
+end
+assert(#blockModels == 4, "Contagem de BlockTemplates incorreta")
+
+local chocolateFalls = folder("ChocolateFalls", {
+	makePart(falls.Bounds),
+	makePart(falls.SpawnLocation),
+	folder("BlockSpawns", makeParts(falls.BlockSpawns)),
+	makeModel(falls.Gate, "ChocolateFalls"),
+	folder("Eggs", makeModels(falls.Eggs)),
+	folder("Scenery", makeParts(falls.Scenery)),
+})
+assert(
+	#falls.Scenery == 48 and #falls.BlockSpawns == 10 and #falls.Eggs == 1 and #falls.Gate.Parts == 5,
+	"Contagem da ChocolateFalls incorreta"
+)
+
+local expectedPets: { [string]: number } = {
+	CottonCat = 9,
+	BearGummy = 9,
+	LollipopBunny = 10,
+	JellyUnicorn = 10,
+	ChocolateDragon = 12,
+}
+local petModels = {}
+for _, petTemplate in petModelsData do
+	assert(expectedPets[petTemplate.Name] ~= nil, `Pet desconhecido: {petTemplate.Name}`)
+	assert(#petTemplate.Parts == expectedPets[petTemplate.Name], `Contagem incorreta no pet {petTemplate.Name}`)
+	table.insert(petModels, makeModel(petTemplate, "Pet_"))
+end
+assert(#petModels == 5, "Contagem de PetModels incorreta")
 
 fs.writeDir("assets/map")
 fs.writeFile("assets/map/CandyPlaza.model.json", serde.encode("json", candyPlaza, true) .. "\n")
-fs.writeFile("assets/BlockTemplates.model.json", serde.encode("json", folder("BlockTemplates", models), true) .. "\n")
-print("Geradas 90 Parts: CandyPlaza = 65 (54 cenário + 10 marcadores + 1 spawn); templates = 25.")
-print("PrimaryPart definida nos 4 templates (Core).")
+fs.writeFile("assets/map/ChocolateFalls.model.json", serde.encode("json", chocolateFalls, true) .. "\n")
+fs.writeFile(
+	"assets/BlockTemplates.model.json",
+	serde.encode("json", folder("BlockTemplates", blockModels), true) .. "\n"
+)
+fs.writeFile("assets/PetModels.model.json", serde.encode("json", folder("PetModels", petModels), true) .. "\n")
+print(
+	`Geradas {partCount} Parts totais: CandyPlaza (54 cenário + 10 spawns + 1 spawn + CandyEgg 8), ChocolateFalls (48 cenário + 10 spawns + 1 spawn + 1 bounds + Gate 5 + ChocolateEgg 8), BlockTemplates (4 modelos = 25), PetModels (5 modelos = 50).`
+)
+print("PrimaryPart definida em todos os blocos, ovos, portão e 5 pets (Core).")
