@@ -2,7 +2,7 @@
 
 Seleção em 15/11/2026 para Candy Smash Simulator (8–14 anos), baseada na seção A9 de [balanceamento](balanceamento/2026-11-15-fase2.md). Dono: Squad A / rbx-design.
 
-Foram preenchidas 12 das 13 chaves de `src/shared/Config/Sounds.luau`, mantendo todos os volumes e o contrato. `BlockBreakRare` permanece vazio. As justificativas abaixo são escolhas de design a partir dos nomes e descrições do catálogo, sem avaliação auditiva. São aproximações da direção sonora, não confirmação de todas as camadas da referência.
+Foram preenchidas 12 das 13 chaves de `src/shared/Config/Sounds.luau`, mantendo todos os volumes e o contrato. `BlockBreakRare` usa o som da quebra comum como reserva. As justificativas abaixo são escolhas de design a partir dos nomes e descrições do catálogo, sem avaliação auditiva. São aproximações da direção sonora, não confirmação de todas as camadas da referência.
 
 ## Origem e uso
 
