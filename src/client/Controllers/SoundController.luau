@@ -205,13 +205,6 @@ local function rootPart(): BasePart?
 	return if root and root:IsA("BasePart") then root else nil
 end
 
-local function breakSound(blockType: string)
-	local key = Rules.breakSound(blockType)
-	if key then
-		sfx(key)
-	end
-end
-
 function SoundController.Init()
 	-- NetClient.On e criação da interface podem esperar replicação: ficam em Start.
 end
@@ -297,19 +290,13 @@ function SoundController.Start()
 		inventory = table.clone(value)
 	end)
 	local recentHits: { [string]: number } = {}
-	local playedBreaks: { [string]: number } = {}
+	local playedBreaks: { [string]: boolean } = {}
 	local function playBreakOnce(id: string, blockType: string)
-		if playedBreaks[id] then
-			return
+		local key, blockId = Rules.breakFromReward({ blockId = id, blockType = blockType }, playedBreaks)
+		if key and blockId then
+			playedBreaks[blockId] = true
+			sfx(key)
 		end
-		local now = os.clock()
-		playedBreaks[id] = now
-		task.delay(10, function()
-			if playedBreaks[id] == now then
-				playedBreaks[id] = nil
-			end
-		end)
-		breakSound(blockType)
 	end
 	NetClient.On("BlockHit", function(id: string, _hp: number, _max: number, _damage: number, attacker: Player)
 		if attacker == Players.LocalPlayer and type(id) == "string" then
@@ -341,9 +328,10 @@ function SoundController.Start()
 		if type(payload) ~= "table" then
 			return
 		end
-		-- Um ID permite deduplicar com BlockBroken sem adivinhar por tipo.
-		if type(payload.blockId) == "string" and type(payload.blockType) == "string" then
-			playBreakOnce(payload.blockId, payload.blockType)
+		local key, blockId = Rules.breakFromReward(payload, playedBreaks)
+		if key and blockId then
+			playedBreaks[blockId] = true
+			sfx(key)
 		end
 		if type(payload.coins) == "number" and payload.coins > 0 then
 			sfx("CoinsCollect")

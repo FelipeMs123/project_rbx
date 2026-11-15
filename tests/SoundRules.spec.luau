@@ -10,6 +10,40 @@ return function(t)
 		t.eq(Rules.breakSound("CloudBlock"), "BlockBreakEpic")
 		t.eq(Rules.breakSound("Unknown"), nil)
 	end)
+	t.test("recompensa escolhe o som de cada bloco mesmo com zero moedas", function()
+		for blockType, expected in
+			{
+				GummyBlock = "BlockBreakCommon",
+				LollipopBlock = "BlockBreakCommon",
+				ChocoBlock = "BlockBreakRare",
+				CloudBlock = "BlockBreakEpic",
+			}
+		do
+			local key, id = Rules.breakFromReward({ blockId = "block-1", blockType = blockType, coins = 0 }, {})
+			t.eq(key, expected)
+			t.eq(id, "block-1")
+		end
+	end)
+	t.test("recompensa inválida ou bloco já tocado não produz som", function()
+		for _, payload in
+			{
+				{ blockId = "block-1", blockType = "Unknown" },
+				{ blockType = "GummyBlock", coins = 5 },
+				{ blockId = "block-1", blockType = 1 },
+				"inválido",
+				false,
+			}
+		do
+			local key, id = Rules.breakFromReward(payload, {})
+			t.eq(key, nil)
+			t.eq(id, nil)
+		end
+		local key, id = Rules.breakFromReward({ blockId = "block-1", blockType = "GummyBlock" }, {
+			["block-1"] = true,
+		})
+		t.eq(key, nil)
+		t.eq(id, nil)
+	end)
 	local box = { id = "CandyPlaza", min = { X = 0, Y = 0, Z = 0 }, max = { X = 10, Y = 10, Z = 10 } }
 	t.test("caixa inclui centro e bordas", function()
 		for _, n in { 0, 5, 10 } do

@@ -16,6 +16,17 @@ function SoundRules.breakSound(blockType: string): string?
 	return breakSounds[blockType]
 end
 
+function SoundRules.breakFromReward(payload: any, alreadyPlayed: { [string]: boolean }): (string?, string?)
+	if type(payload) ~= "table" or type(payload.blockId) ~= "string" or type(payload.blockType) ~= "string" then
+		return nil, nil
+	end
+	local key = breakSounds[payload.blockType]
+	if not key or alreadyPlayed[payload.blockId] then
+		return nil, nil
+	end
+	return key, payload.blockId
+end
+
 -- A ordem das caixas resolve sobreposições de forma determinística no chamador.
 function SoundRules.areaAt(boxes: { Box }, point: Point): string?
 	for _, box in boxes do
