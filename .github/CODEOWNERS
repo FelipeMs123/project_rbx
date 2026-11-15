@@ -5,9 +5,13 @@
 *                                              @FelipeMs123 @drkk71
 
 # Squad A: Blocos e Mundo
+/assets/map/CandyPlaza.model.json              @FelipeMs123
+/assets/BlockTemplates.model.json              @FelipeMs123
+/tools/map/                                   @FelipeMs123
 /src/shared/Config/Blocks.luau                 @FelipeMs123
 /src/shared/Config/Areas.luau                  @FelipeMs123
 /src/shared/Logic/Formulas.luau                @FelipeMs123
+/src/shared/Logic/Areas.luau                   @FelipeMs123
 /src/server/Services/BlockService.luau         @FelipeMs123
 /src/server/Services/AreaService.luau          @FelipeMs123
 /src/client/Controllers/BlockController.luau   @FelipeMs123
@@ -15,6 +19,7 @@
 /src/client/Controllers/AreaController.luau    @FelipeMs123
 /src/client/UI/Hud/                            @FelipeMs123
 /tests/Formulas.spec.luau                      @FelipeMs123
+/tests/Areas.spec.luau                         @FelipeMs123
 
 # Squad B: Pets e Progressão
 /src/shared/Config/Pets.luau                   @drkk71

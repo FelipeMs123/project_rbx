@@ -20,7 +20,7 @@ ProfileStore `PlayerData_v1`, chave `Player_<UserId>`.
 | Campo | Tipo | Padrão | Dono |
 |---|---|---|---|
 | `Version` | number | 1 | fundação |
-| `Coins` | number | 100 | fundação (via EconomyService) |
+| `Coins` | number | 25 (`StartingCoins`) | fundação (via EconomyService) |
 | `Gems` | number | 0 | fundação (via EconomyService) |
 | `Rebirths` | number | 0 | B |
 | `UnlockedAreas` | `{string}` | `{"CandyPlaza"}` | A |
@@ -71,7 +71,7 @@ Validações obrigatórias no servidor:
 | `DataChanged` | Event | `key: string, value: any` | dono dos dados |
 | `BlockHit` | UnreliableEvent | `blockId, hp, maxHp, damage, attacker: Player` | jogadores a até `EffectsRadius` |
 | `BlockBroken` | Event | `blockId, position: Vector3, blockType: string` | jogadores a até `EffectsRadius` |
-| `Notify` | Event | `code: string, payload: any?` | um jogador (ex.: recompensa, erro) |
+| `Notify` | Event | `code: string, payload: any?` | um jogador. `code` é um `ErrorCodes` ou `REWARD` com `payload = { coins, gems }` (já creditados) |
 
 ### Estado replicado por atributos (sem remote)
 
@@ -126,6 +126,8 @@ Até a tarefa ficar pronta, cada Service tem um stub com a mesma assinatura (ver
 |---|---|---|
 | `Workspace.Areas.<AreaId>.BlockSpawns` | Parts invisíveis onde nascem blocos. Atributo opcional `BlockType`. | quem constrói a área (CandyPlaza = A, ChocolateFalls = B) |
 | `Workspace.Areas.<AreaId>.Gate` | Portão que some quando a área é liberada (lógica no cliente: A). | quem constrói a área |
+| `Workspace.Areas.<AreaId>.Bounds` | Part opcional invisível, sem rotação e com CanCollide false, define a caixa da área. Sem ela, usa a AABB das Parts da pasta, exceto Gate e descendentes, com +50 studs no topo. | quem constrói a área |
+| `Workspace.Areas.<AreaId>.SpawnLocation` | SpawnLocation opcional, filho direto da pasta. O `AreaService` devolve para cá quem entra numa área bloqueada depois desta; sem ela, usa o da CandyPlaza. | quem constrói a área |
 | `Workspace.Areas.<AreaId>.Eggs.<EggId>` | Model do ovo para comprar (com `PrimaryPart`). | B |
 | `Workspace.Blocks` | Criado pelo servidor; blocos vivos. | A |
 | `ServerStorage.BlockTemplates.<BlockType>` | Model do bloco (com `PrimaryPart`). | A |
