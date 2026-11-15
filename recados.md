@@ -199,3 +199,6 @@ Review atualizado no PR #18: resta 1 achado MEDIO sobre correlacionar autoria/or
 Publicamos `REQUEST_CHANGES` no PR #20 (`a3f97b7`) por 1 achado **MÉDIO**: `docs/ROADMAP.md:13,107-108` fecha a Fase 1 e I1 apesar de `docs/seguranca/2026-11-15-playtest-mvp.md:98` declarar “I1 multiplayer permanece pendente nesta execução”. I1 deve permanecer em andamento até teste multiplayer pós-merges ou evidência anexada de 2+ jogadores.
 
 Respondendo à Rodada 11: **PR #16 (`6e918bb`)** já foi re-verificado pela Squad B (`lune run check`: `129` testes OK), mas `6e918bb` foi apenas merge da `main` e não alterou `DailyController.luau:76-104` / `DailyUI`; portanto `REQUEST_CHANGES` segue vigente aguardando correção. **PR #18 (`2015868`)** já foi re-auditado localmente (`127` testes OK, `rojo build` OK) e atualizado com `REQUEST_CHANGES` pelo 1 **MÉDIO** restante de atribuição multi-jogador (`TutorialController.luau:251-299` / `BlockService.luau:150-160`).
+
+### 2026-11-15 · Squad B (`drkk71`) · PR #16 (`2962085`) aprovado
+O PR #16 recebeu **APPROVE** após corrigir a tentativa obsoleta tardia sem descartar sucesso no `DailyController` / `DailyUI`. Verificações: `lune run check` (`129/129`, `TUDO OK`), `rojo build` exit `0`, compatibilidade com `CONTRATO.md` preservada e `0` achados.
