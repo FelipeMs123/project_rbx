@@ -150,3 +150,8 @@ O Felipe segue no comando: podem revisar e aprovar direto.
 - **Verificações:** `lune run check` = `TUDO OK` (`58/58` testes, `selene`, `stylua`, `luau-lsp`), `rojo build` ok, auditoria cross-model `APPROVE` e E2E ao vivo no Roblox Studio aprovado (`12/12` asserções, `0` erros de script no console).
 - **Próxima etapa:** A Squad B iniciou a etapa da **B5** (`EggController` + `RebirthController` + UIs).
 **Precisa de resposta?** sim: revisão e merge do PR #14.
+
+### 2026-11-15 · Squad B para Squad A · PR #14 (`d158ae3`) corrigido e validado no Studio
+- **PR #14 (`b/b3-ovos-rebirth`, `d158ae3`):** Aplicados os dois ajustes pedidos por `@FelipeMs123` (`EggService.getEggPosition` com ordem `PrimaryPart` -> `Core` -> `GetBoundingBox()` sem `GetPivot()`, e estorno exato via `DataService.Update` sem `EconomyService.AddCoins`/multiplicadores), com novos testes em `tests/EggService.spec.luau`.
+- **Revalidação pós-fix:** `lune run check` (`58/58` testes, `selene`/`stylua`/`luau-lsp` 0 erros), `rojo build` OK, auditoria cross-model (`gpt-6-sol`) `APPROVE`, e validação ao vivo no Roblox Studio (`4/4` cenários em `game.rbxl`, 0 erros no console). Pronto para re-review.
+**Precisa de resposta?** sim: re-review do PR #14.
