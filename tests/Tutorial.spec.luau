@@ -5,7 +5,7 @@ return function(t)
 	t.test("valida avanço inteiro, finito e dentro do total", function()
 		t.ok(Tutorial.isValidAdvance(0, 1, 5))
 		t.ok(Tutorial.isValidAdvance(1, 5, 5))
-		for _, step in { 0, -1, 2.5, 0 / 0, math.huge, -math.huge, 6, "2", false } do
+		for _, step in { 0, -1, 2.5, 0 / 0, math.huge, -math.huge, 1e15, -1e15, 6, "2", false } do
 			t.eq(Tutorial.isValidAdvance(1, step, 5), false)
 		end
 		t.eq(Tutorial.isValidAdvance(2, 2, 5), false)
@@ -63,6 +63,16 @@ return function(t)
 			value, target = Tutorial.progress(step, snapshot)
 			t.eq(value, target)
 			t.ok(Tutorial.isStepSatisfied(step, snapshot))
+		end
+	end)
+
+	t.test("progresso nunca fica negativo", function()
+		local snapshot = { Coins = -5, InventoryCount = -1, EquippedCount = -1 }
+		for _, step in { { Id = "Reach100Coins", TargetCoins = 100 }, { Id = "BuyCandyEgg" }, { Id = "EquipPet" } } do
+			local value, target = Tutorial.progress(step, snapshot)
+			t.eq(value, 0)
+			t.eq(target, if step.Id == "Reach100Coins" then 100 else 1)
+			t.eq(Tutorial.isStepSatisfied(step, snapshot), false)
 		end
 	end)
 

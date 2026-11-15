@@ -20,7 +20,11 @@ local current: number? = nil
 local inFlight = false
 local confirmed: number? = nil
 local blockSatisfied: number? = nil
-local hits: { [string]: { blockType: string, time: number } } = {}
+local hits: { [string]: number } = {}
+local pendingBreaks: { [string]: { time: number, step: number } } = {}
+local retryScheduled = false
+local petsModal: GuiObject? = nil
+local modalConnection: RBXScriptConnection? = nil
 local connections: { any } = {} -- mistura RBXScriptConnection e as conexões do DataController.Observe
 local symbols: { [string]: string } = {
 	BreakFirstBlock = "🍬",
@@ -55,10 +59,27 @@ local function updateGuide()
 		UI.Highlight(nil)
 		return
 	end
-	-- Start dos Controllers roda em paralelo; reaplica se o HUD montou depois.
-	HudController.SetTopReserve(UI.Height + 8)
 	local playerGui = Players.LocalPlayer:FindFirstChildOfClass("PlayerGui")
 	local pets = if playerGui then playerGui:FindFirstChild("PetInventoryGui") else nil
+	local modal = if pets then pets:FindFirstChild("PetsModal", true) else nil
+	local nextModal = if modal and modal:IsA("GuiObject") then modal else nil
+	if nextModal ~= petsModal then
+		if modalConnection then
+			modalConnection:Disconnect()
+			modalConnection = nil
+		end
+		petsModal = nextModal
+		if nextModal then
+			modalConnection = nextModal:GetPropertyChangedSignal("Visible"):Connect(function()
+				local hidden = nextModal.Visible
+				UI.SetBannerVisible(not hidden)
+				HudController.SetTopReserve(if hidden then 0 else UI.Height + 8)
+			end)
+		end
+	end
+	local hidden = nextModal ~= nil and nextModal.Visible
+	UI.SetBannerVisible(not hidden)
+	HudController.SetTopReserve(if hidden then 0 else UI.Height + 8)
 	local button = if pets and step.Id == "EquipPet" then pets:FindFirstChild("PetsToggleButton", true) else nil
 	UI.Highlight(if button and button:IsA("GuiObject") then button else nil)
 	local target: BasePart? = nil
@@ -100,7 +121,7 @@ end
 local refresh: () -> ()
 
 local function advance(step: number)
-	if inFlight or confirmed == step then
+	if inFlight or retryScheduled or confirmed == step then
 		return
 	end
 	inFlight = true
@@ -115,7 +136,20 @@ local function advance(step: number)
 				refresh()
 			end
 		elseif current == step then
-			HudController.Toast(Messages.message(result.err), "error")
+			if result.err ~= "RATE_LIMITED" then
+				HudController.Toast(Messages.message(result.err), "error")
+			end
+			if not retryScheduled then
+				retryScheduled = true
+				task.delay(1.5, function()
+					retryScheduled = false
+					if current == step then
+						advance(step)
+					else
+						refresh()
+					end
+				end)
+			end
 		end
 	end)
 end
@@ -132,9 +166,14 @@ refresh = function()
 		confirmed = nil
 		blockSatisfied = nil
 		table.clear(hits)
+		table.clear(pendingBreaks)
 	end
 	if Tutorial.isDone(stepNumber, total) then
 		UI.Hide()
+		if modalConnection then
+			modalConnection:Disconnect()
+			modalConnection = nil
+		end
 		HudController.SetTopReserve(0)
 		if previous and not Tutorial.isDone(previous, total) and previous == total - 1 then
 			HudController.Toast("Muito bem! Agora é com você! 🎉", "reward")
@@ -190,33 +229,55 @@ function TutorialController.Start()
 				if attacker ~= Players.LocalPlayer or current == nil or Tutorial.isDone(current, total) then
 					return
 				end
-				local blocks = Workspace:FindFirstChild("Blocks")
-				if blocks then
-					for _, model in blocks:GetChildren() do
-						if model:IsA("Model") and model:GetAttribute("BlockId") == blockId then
-							local blockType = model:GetAttribute("BlockType")
-							if typeof(blockType) == "string" then
-								hits[blockId] = { blockType = blockType, time = os.clock() }
-							end
-							break
-						end
-					end
-				end
+				hits[blockId] = os.clock()
 			end
 		)
 	)
 	table.insert(
 		connections,
-		NetClient.On("BlockBroken", function(blockId: string, _position: Vector3, blockType: string)
+		NetClient.On("BlockBroken", function(blockId: string, position: Vector3, blockType: string)
+			local now = os.clock()
 			local hit = hits[blockId]
 			hits[blockId] = nil
+			pendingBreaks[blockId] = nil
 			local index = if current then Tutorial.currentIndex(current, total) else nil
 			local step = if index then Config[index] else nil
-			if
-				hit
-				and step
-				and (step.Id == "BreakFirstBlock" or (step.Id == "BreakLollipop" and blockType == step.BlockId))
-			then
+			if not step or not current then
+				return
+			end
+			if step.Id ~= "BreakFirstBlock" and (step.Id ~= "BreakLollipop" or blockType ~= step.BlockId) then
+				return
+			end
+			if hit and now - hit <= 10 then
+				blockSatisfied = current
+				refresh()
+				return
+			end
+			local character = Players.LocalPlayer.Character
+			local root = if character then character:FindFirstChild("HumanoidRootPart") else nil
+			if root and root:IsA("BasePart") and (root.Position - position).Magnitude <= 30 then
+				pendingBreaks[blockId] = { time = now, step = current }
+			end
+		end)
+	)
+	table.insert(
+		connections,
+		NetClient.On("Notify", function(code: any, payload: any)
+			if code ~= "REWARD" or type(payload) ~= "table" or type(payload.coins) ~= "number" then
+				return
+			end
+			if not (payload.coins > 0) then
+				return
+			end
+			local now = os.clock()
+			local satisfied = false
+			for id, pending in pendingBreaks do
+				if now - pending.time <= 1.5 and pending.step == current then
+					satisfied = true
+				end
+				pendingBreaks[id] = nil
+			end
+			if satisfied then
 				blockSatisfied = current
 				refresh()
 			end
@@ -228,8 +289,13 @@ function TutorialController.Start()
 			task.wait(0.5)
 			local now = os.clock()
 			for id, hit in hits do
-				if now - hit.time > 300 then
+				if now - hit > 10 then
 					hits[id] = nil
+				end
+			end
+			for id, pending in pendingBreaks do
+				if now - pending.time > 1.5 then
+					pendingBreaks[id] = nil
 				end
 			end
 			updateGuide()

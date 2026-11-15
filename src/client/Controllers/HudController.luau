@@ -12,6 +12,7 @@ local Messages = require(script.Parent.Parent.UI.Hud.Messages)
 local HudController = {}
 local gui: ScreenGui? = nil
 local toastStack: Frame? = nil
+local topReserve = 0
 local pending: { { text: string, kind: string } } = {}
 local colors =
 	{ info = Color3.fromRGB(50, 70, 110), error = Color3.fromRGB(165, 45, 65), reward = Color3.fromRGB(30, 115, 80) }
@@ -54,9 +55,10 @@ function HudController.SetTopReserve(pixels: number)
 	if pixels ~= pixels or math.abs(pixels) == math.huge then
 		return
 	end
+	topReserve = math.max(0, pixels)
 	local stack = toastStack
 	if stack then
-		stack.Position = UDim2.new(0.5, 0, 0, math.max(0, pixels))
+		stack.Position = UDim2.new(0.5, 0, 0, topReserve)
 	end
 end
 
@@ -128,7 +130,7 @@ function HudController.Start()
 	stack.BackgroundTransparency = 1
 	stack.AnchorPoint = Vector2.new(0.5, 0)
 	-- Topo central, estreito o bastante para não encostar no chat (canto superior esquerdo).
-	stack.Position = UDim2.fromScale(0.5, 0)
+	stack.Position = UDim2.new(0.5, 0, 0, topReserve)
 	stack.Size = UDim2.fromScale(0.5, 0.6)
 	stack.Parent = root
 	local stackLimit = Instance.new("UISizeConstraint")

@@ -36,11 +36,11 @@ end
 function Tutorial.progress(stepDef: StepDefinition, snapshot: Snapshot): (number, number)
 	if stepDef.Id == "Reach100Coins" then
 		local target = stepDef.TargetCoins or 0
-		return math.min(snapshot.Coins, target), target
+		return math.max(0, math.min(snapshot.Coins, target)), target
 	elseif stepDef.Id == "BuyCandyEgg" then
-		return math.min(snapshot.InventoryCount, 1), 1
+		return math.max(0, math.min(snapshot.InventoryCount, 1)), 1
 	elseif stepDef.Id == "EquipPet" then
-		return math.min(snapshot.EquippedCount, 1), 1
+		return math.max(0, math.min(snapshot.EquippedCount, 1)), 1
 	end
 	return 0, 1
 end

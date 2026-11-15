@@ -4,7 +4,7 @@
 
 local TweenService = game:GetService("TweenService")
 local TutorialUI = {}
-TutorialUI.Height = 64
+TutorialUI.Height = 72
 
 local screen: ScreenGui? = nil
 local title: TextLabel? = nil
@@ -13,7 +13,8 @@ local progressLabel: TextLabel? = nil
 local track: Frame? = nil
 local fill: Frame? = nil
 local arrow: BillboardGui? = nil
-local stroke: UIStroke? = nil
+local highlight: Frame? = nil
+local bannerFrame: Frame? = nil
 local pulse: Tween? = nil
 
 local function label(parent: Instance, name: string): TextLabel
@@ -51,6 +52,7 @@ function TutorialUI.Mount(playerGui: PlayerGui)
 	banner.BorderSizePixel = 0
 	banner.Active = false
 	banner.Parent = gui
+	bannerFrame = banner
 	local size = Instance.new("UISizeConstraint")
 	size.MaxSize = Vector2.new(420, TutorialUI.Height)
 	size.Parent = banner
@@ -63,12 +65,12 @@ function TutorialUI.Mount(playerGui: PlayerGui)
 	icon = symbol
 	local text = label(banner, "StepText")
 	text.Position = UDim2.fromOffset(48, 4)
-	text.Size = UDim2.new(1, -56, 0, 36)
+	text.Size = UDim2.new(1, -56, 0, 32)
 	text.TextWrapped = true
 	title = text
 	local progress = label(banner, "Progress")
-	progress.Position = UDim2.fromOffset(48, 36)
-	progress.Size = UDim2.new(1, -56, 0, 18)
+	progress.Position = UDim2.fromOffset(48, 38)
+	progress.Size = UDim2.new(1, -56, 0, 20)
 	progressLabel = progress
 	local bar = Instance.new("Frame")
 	bar.Name = "ProgressBar"
@@ -96,7 +98,7 @@ function TutorialUI.Show(text: string, symbol: string, value: number, target: nu
 	end
 	if title then
 		title.Text = text
-		title.Size = UDim2.new(1, -56, 0, if suffix then 36 else 56)
+		title.Size = UDim2.new(1, -56, 0, if suffix then 32 else 56)
 	end
 	if icon then
 		icon.Text = symbol
@@ -110,6 +112,12 @@ function TutorialUI.Show(text: string, symbol: string, value: number, target: nu
 	end
 	if fill then
 		fill.Size = UDim2.fromScale(if target > 0 then math.clamp(value / target, 0, 1) else 0, 1)
+	end
+end
+
+function TutorialUI.SetBannerVisible(visible: boolean)
+	if bannerFrame then
+		bannerFrame.Visible = visible
 	end
 end
 
@@ -146,27 +154,34 @@ function TutorialUI.SetTarget(part: BasePart?)
 end
 
 function TutorialUI.Highlight(button: GuiObject?)
-	if stroke and stroke.Parent == button and button then
+	if highlight and highlight.Parent == button and button then
 		return
 	end
 	if pulse then
 		pulse:Cancel()
 		pulse = nil
 	end
-	if stroke then
-		stroke:Destroy()
-		stroke = nil
+	if highlight then
+		highlight:Destroy()
+		highlight = nil
 	end
 	if not button then
 		return
 	end
+	local frame = Instance.new("Frame")
+	frame.Name = "TutorialHighlight"
+	frame.Size = UDim2.fromScale(1, 1)
+	frame.BackgroundTransparency = 1
+	frame.BorderSizePixel = 0
+	frame.Active = false
+	frame.ZIndex = math.max(100, button.ZIndex + 1)
+	frame.Parent = button
+	highlight = frame
 	local outline = Instance.new("UIStroke")
-	outline.Name = "TutorialHighlight"
 	outline.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	outline.Color = Color3.fromRGB(255, 222, 85)
 	outline.Thickness = 4
-	outline.Parent = button
-	stroke = outline
+	outline.Parent = frame
 	local tween = TweenService:Create(
 		outline,
 		TweenInfo.new(0.65, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
