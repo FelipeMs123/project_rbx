@@ -167,6 +167,9 @@ function HudController.Start()
 		if code == "REWARD" and type(payload) == "table" then
 			local coins = if type(payload.coins) == "number" then payload.coins else 0
 			local gems = if type(payload.gems) == "number" then payload.gems else 0
+			if coins == 0 and gems == 0 then
+				return
+			end
 			HudController.Toast(
 				"+"
 					.. Format.abbreviate(coins)

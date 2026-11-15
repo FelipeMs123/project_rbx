@@ -2,6 +2,17 @@
 local Tutorial = require("../src/shared/Logic/Tutorial")
 
 return function(t)
+	t.test("recompensa zerada conclui os passos de participação em blocos", function()
+		t.ok(
+			Tutorial.rewardCompletesStep({ Id = "BreakFirstBlock" }, { coins = 0, gems = 0, blockType = "GummyBlock" })
+		)
+		t.ok(
+			Tutorial.rewardCompletesStep(
+				{ Id = "BreakLollipop", BlockId = "LollipopBlock" },
+				{ coins = 0, gems = 0, blockType = "LollipopBlock" }
+			)
+		)
+	end)
 	t.test("primeiro passo aceita recompensa de qualquer tipo de bloco", function()
 		for _, blockType in { "GummyBlock", "LollipopBlock", "ChocolateBlock", "CloudBlock" } do
 			t.ok(Tutorial.rewardCompletesStep({ Id = "BreakFirstBlock" }, { blockType = blockType }))
