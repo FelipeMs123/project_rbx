@@ -8,12 +8,14 @@ Studio com Upload -> Save to File em `assets/pets/BearGummy.rbxm` ->
 `lune run tools/art/prepare_pet` (na raiz do projeto).
 
 O script sobrescreve o `.rbxm`, preserva `BearBody` como PrimaryPart e acrescenta
-um `Core` invisível de reserva. O Rojo combina esse arquivo com os quatro pets
+um `Core` invisível de reserva na base. Ele ajusta a altura para cerca de 3 studs
+(cintura do personagem); para outra altura, use `lune run tools/art/prepare_pet 2.5`.
+O `PetController` faz os pets flutuarem um pouco de propósito. O Rojo combina esse arquivo com os quatro pets
 de Parts gerados por `lune run tools/map/build` em `assets/PetModels.model.json`.
 
 Pegadinhas:
 
-- O importador multiplicou a escala por 6: corrigir para a altura alvo de 4 studs.
+- O importador multiplicou a escala por 6: preparar o modelo para a altura alvo de 3 studs.
 - A cor cinza 0.639 do importador escurece a textura: usar Color branco nas meshes.
 - As bochechas precisam ficar dentro da silhueta da cabeça.
 - Exportar com a frente para -Z e preservar essa orientação na importação.
