@@ -192,3 +192,5 @@ Pausa local resolvida; review de #16 publicado (`REQUEST_CHANGES`, 3 MÉDIO). Co
 
 ### 2026-11-15 · Squad B (`drkk71`) · PR #19 (`bf68cb1`) aprovado
 O PR #19 recebeu **APPROVE** após auditoria de segurança (`0 ALTO, 0 MÉDIO`), com `lune run check` (`119` testes, `TUDO OK`) e `rojo build` aprovados; a compatibilidade com `CONTRATO.md` foi preservada. Observação **BAIXO**, não-bloqueante: `AreaService.luau` silencia por 3s a notificação `AREA_NOT_UNLOCKED` em reentrada imediata pós-rebirth; o bloqueio econômico/servidor permanece íntegro. PRs #16 e #18 seguem em análise/re-auditoria.
+### 2026-11-15 · Squad B (drkk71) · PR #18 (2015868) REQUEST_CHANGES
+Review atualizado no PR #18: resta 1 achado MEDIO sobre correlacionar autoria/origem, pois um REWARD de outro bloco pode coincidir com BlockBroken de outro jogador a <= 30 studs e avancar o tutorial indevidamente. Checks locais: lune run check (127 testes, TUDO OK) e rojo build exit 0.
