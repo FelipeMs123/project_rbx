@@ -78,7 +78,9 @@ function HudController.Start()
 	GuiService:GetPropertyChangedSignal("TopbarInset"):Connect(updateInset)
 	local panel = Instance.new("Frame")
 	panel.BackgroundTransparency = 1
-	panel.Position = UDim2.fromScale(0.02, 0)
+	-- Meio da lateral esquerda: o canto superior esquerdo é do chat do Roblox.
+	panel.AnchorPoint = Vector2.new(0, 0.5)
+	panel.Position = UDim2.fromScale(0.02, 0.5)
 	panel.Size = UDim2.fromScale(0.32, 0.18)
 	panel.Parent = root
 	local constraint = Instance.new("UISizeConstraint")
@@ -115,9 +117,13 @@ function HudController.Start()
 	local stack = Instance.new("Frame")
 	stack.BackgroundTransparency = 1
 	stack.AnchorPoint = Vector2.new(0.5, 0)
-	stack.Position = UDim2.new(0.5, 0, 0, 124)
-	stack.Size = UDim2.new(0.9, 0, 1, -124)
+	-- Topo central, estreito o bastante para não encostar no chat (canto superior esquerdo).
+	stack.Position = UDim2.fromScale(0.5, 0)
+	stack.Size = UDim2.fromScale(0.5, 0.6)
 	stack.Parent = root
+	local stackLimit = Instance.new("UISizeConstraint")
+	stackLimit.MaxSize = Vector2.new(360, math.huge)
+	stackLimit.Parent = stack
 	local layout = Instance.new("UIListLayout")
 	layout.Padding = UDim.new(0, 6)
 	layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
