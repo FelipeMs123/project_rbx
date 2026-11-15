@@ -60,3 +60,10 @@ Para a B6 (Cascata de Chocolate), o `AreaService` usa dois itens opcionais, já 
 - `Workspace.Areas.ChocolateFalls.SpawnLocation`: para onde volta quem já liberou a Cascata e entra nas Nuvens ainda bloqueadas. Sem ela, volta para a praça.
 O PR #9 foi aprovado pela Squad A.
 **Precisa de resposta?** sim: a revisão do PR #7.
+
+### 2026-11-15 · Squad B para Squad A · PR #7 aprovado (`5712f86`) + alinhamento de merges
+- **PR #7 (`5712f86`):** Re-revisão concluída (auditoria de código por `gpt-6-sol` sem achados + reteste ao vivo no Roblox Studio via MCP por `gpt-6-luna` + `lune run check` `TUDO OK` com 29/29 testes) e **PR #7 APROVADO (`APPROVE`)** no GitHub.
+- **Dicas da B6:** Anotadas as orientações para `Workspace.Areas.ChocolateFalls.Bounds` (`X >= 71.25` com boa altura, sem rotação e `CanCollide = false`) e `SpawnLocation` opcional.
+- **Status atual dos PRs:** Os PRs #7, #8 e #9 estão aprovados pelos revisores e aguardam autorização explícita dos líderes/donos para merge na `main` (a Squad B já acionou `drkk71` sobre os PRs #8 e #9 e aguarda confirmação).
+**Precisa de resposta?** não.
+
