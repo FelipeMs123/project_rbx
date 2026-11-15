@@ -94,6 +94,8 @@ local function loadRebirthServiceHarness()
 		end,
 	}
 
+	local baseUpdate = mockDataService.Update
+
 	local registeredInvokes = {}
 	local mockNetServer = {
 		OnInvoke = function(name, handler, options)
@@ -128,6 +130,7 @@ local function loadRebirthServiceHarness()
 	local gameConfigNode = makeNode("Game", "src/shared/Config/Game.luau")
 	local economyLogicNode = makeNode("Economy", "src/shared/Logic/Economy.luau")
 	local rebirthLogicNode = makeNode("Rebirth", "src/shared/Logic/Rebirth.luau")
+	local requestIdempotencyNode = makeNode("RequestIdempotency", "src/shared/Logic/RequestIdempotency.luau")
 
 	sharedNode.Config = configNode
 	sharedNode.Logic = logicNode
@@ -140,12 +143,14 @@ local function loadRebirthServiceHarness()
 	logicNode.Parent = sharedNode
 	logicNode.Economy = economyLogicNode
 	logicNode.Rebirth = rebirthLogicNode
+	logicNode.RequestIdempotency = requestIdempotencyNode
 
 	typesNode.Parent = sharedNode
 	errorCodesNode.Parent = sharedNode
 	gameConfigNode.Parent = configNode
 	economyLogicNode.Parent = logicNode
 	rebirthLogicNode.Parent = logicNode
+	requestIdempotencyNode.Parent = logicNode
 
 	local serverNode = makeNode("Server")
 	local servicesNode = makeNode("Services")
@@ -234,6 +239,18 @@ local function loadRebirthServiceHarness()
 		end,
 		advanceClock = function(seconds)
 			nowClock += seconds
+		end,
+		firePlayerRemoving = function(player)
+			playerRemovingSignal:Fire(player)
+		end,
+		setDataServiceUpdateHook = function(fn)
+			if fn then
+				mockDataService.Update = function(player, key, modifier)
+					return fn(baseUpdate, player, key, modifier)
+				end
+			else
+				mockDataService.Update = baseUpdate
+			end
 		end,
 	}
 end
@@ -388,4 +405,98 @@ return function(t)
 		t.eq(r5.ok, true)
 		t.eq(h.getData(p1).Rebirths, 2)
 	end)
+
+	t.test(
+		"RequestRebirth é idempotente por requestId: bloqueia inFlight, devolve cache, libera em falha e limpa no PlayerRemoving",
+		function()
+			local h = loadRebirthServiceHarness()
+			h.RebirthService.Init()
+
+			local p1 = h.makePlayer(1, "Alice")
+			h.setLoadedData(p1, {
+				Version = 1,
+				Coins = 50000,
+				Gems = 0,
+				Rebirths = 0,
+				UnlockedAreas = { "CandyPlaza", "ChocolateFalls" },
+				Inventory = {},
+				Equipped = {},
+			})
+
+			-- requestId inválido é recusado sem alterar dados
+			local badReq = h.invokeRemote("RequestRebirth", p1, string.rep("r", 65))
+			t.eq(badReq.ok, false)
+			t.eq(badReq.err, "INVALID_ARGS")
+			t.eq(h.getData(p1).Rebirths, 0)
+			t.eq(h.getData(p1).Coins, 50000)
+
+			-- Simula Update lento para validar bloqueio inFlight concorrente
+			local resumeSlowUpdate = nil
+			h.setDataServiceUpdateHook(function(original, player, key, modifier)
+				if key == "Rebirths" then
+					local co = coroutine.running()
+					resumeSlowUpdate = function()
+						task.spawn(co)
+					end
+					coroutine.yield()
+				end
+				return original(player, key, modifier)
+			end)
+
+			local firstRes = nil
+			task.spawn(function()
+				firstRes = h.invokeRemote("RequestRebirth", p1, "req-rebirth-1")
+			end)
+			t.ok(resumeSlowUpdate ~= nil)
+
+			local concurrentRes = h.invokeRemote("RequestRebirth", p1, "req-rebirth-1")
+			t.eq(concurrentRes.ok, false)
+			t.eq(concurrentRes.err, "RATE_LIMITED")
+			t.eq(h.getData(p1).Rebirths, 0)
+
+			h.setDataServiceUpdateHook(nil)
+			resumeSlowUpdate()
+			t.ok(firstRes ~= nil and firstRes.ok == true)
+			t.eq(firstRes.data.rebirths, 1)
+			t.eq(h.getData(p1).Rebirths, 1)
+			t.eq(h.getData(p1).Gems, 5)
+			t.eq(h.getSaveCount(), 1)
+
+			-- Retry pós-8s com mesmo requestId após conclusão devolve cache sem duplicar rebirth ou gemas
+			h.advanceClock(8)
+			h.getData(p1).Coins = 50000
+			local cachedRetry = h.invokeRemote("RequestRebirth", p1, "req-rebirth-1")
+			t.eq(cachedRetry.ok, true)
+			t.eq(cachedRetry.data.rebirths, 1)
+			t.eq(cachedRetry.data.gemsReward, 5)
+			t.eq(h.getData(p1).Rebirths, 1)
+			t.eq(h.getData(p1).Gems, 5)
+			t.eq(h.getData(p1).Coins, 50000)
+			t.eq(h.getSaveCount(), 1)
+
+			-- Falha de DataService.Update libera inFlight e não cacheia resultado
+			h.advanceClock(2)
+			h.setDataServiceUpdateHook(function()
+				error("falha simulada no Update")
+			end)
+			local failRes = h.invokeRemote("RequestRebirth", p1, "req-rebirth-2")
+			t.eq(failRes.ok, false)
+			t.eq(failRes.err, "INTERNAL")
+
+			h.setDataServiceUpdateHook(nil)
+			h.getData(p1).Coins = 50000
+			local recoveredRes = h.invokeRemote("RequestRebirth", p1, "req-rebirth-2")
+			t.eq(recoveredRes.ok, true)
+			t.eq(recoveredRes.data.rebirths, 2)
+			t.eq(h.getData(p1).Rebirths, 2)
+
+			-- PlayerRemoving limpa cache do jogador
+			h.firePlayerRemoving(p1)
+			h.advanceClock(2)
+			h.getData(p1).Coins = 100000
+			local afterReconnect = h.invokeRemote("RequestRebirth", p1, "req-rebirth-1")
+			t.eq(afterReconnect.ok, true)
+			t.eq(afterReconnect.data.rebirths, 3)
+		end
+	)
 end

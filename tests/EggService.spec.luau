@@ -286,6 +286,7 @@ local function loadEggServiceHarness(options: {
 	local eggsConfigNode = makeNode("Eggs", "src/shared/Config/Eggs.luau")
 	local economyLogicNode = makeNode("Economy", "src/shared/Logic/Economy.luau")
 	local inventoryNode = makeNode("Inventory", "src/shared/Logic/Inventory.luau")
+	local requestIdempotencyNode = makeNode("RequestIdempotency", "src/shared/Logic/RequestIdempotency.luau")
 	local weightedRollNode = makeNode("WeightedRoll", "src/shared/Logic/WeightedRoll.luau")
 	local signalNode = makeNode("Signal", "src/shared/Util/Signal.luau")
 
@@ -303,6 +304,7 @@ local function loadEggServiceHarness(options: {
 	logicNode.Parent = sharedNode
 	logicNode.Economy = economyLogicNode
 	logicNode.Inventory = inventoryNode
+	logicNode.RequestIdempotency = requestIdempotencyNode
 	logicNode.WeightedRoll = weightedRollNode
 
 	utilNode.Parent = sharedNode
@@ -315,6 +317,7 @@ local function loadEggServiceHarness(options: {
 	eggsConfigNode.Parent = configNode
 	economyLogicNode.Parent = logicNode
 	inventoryNode.Parent = logicNode
+	requestIdempotencyNode.Parent = logicNode
 	weightedRollNode.Parent = logicNode
 	signalNode.Parent = utilNode
 
@@ -437,6 +440,9 @@ local function loadEggServiceHarness(options: {
 		end,
 		advanceClock = function(seconds)
 			nowClock += seconds
+		end,
+		firePlayerRemoving = function(player)
+			playerRemovingSignal:Fire(player)
 		end,
 	}
 end
@@ -980,4 +986,74 @@ return function(t)
 		t.eq(recovered.ok, true)
 		t.eq(h.getData(p1).Coins, 300)
 	end)
+
+	t.test(
+		"PurchaseEgg é idempotente por requestId: bloqueia inFlight, devolve cache e limpa no PlayerRemoving",
+		function()
+			local h = loadEggServiceHarness({ randomValues = { 0.3 } })
+			h.PetService.Init()
+			h.EggService.Init()
+
+			local p1 = h.makePlayer(1, "Alice")
+			h.setLoadedData(p1, {
+				Version = 1,
+				Coins = 1000,
+				Gems = 0,
+				Rebirths = 0,
+				UnlockedAreas = { "CandyPlaza" },
+				Inventory = {},
+				Equipped = {},
+			})
+
+			-- requestId inválido é rejeitado sem cobrar
+			local badReq = h.invokeRemote("PurchaseEgg", p1, "CandyEgg", "")
+			t.eq(badReq.ok, false)
+			t.eq(badReq.err, "INVALID_ARGS")
+			t.eq(h.getData(p1).Coins, 1000)
+
+			-- Simula execução lenta (inFlight) para testar retry concorrente com mesmo requestId
+			local originalAddPet = h.PetService.AddPet
+			local resumeSlowAdd = nil
+			h.PetService.AddPet = function(player, petId)
+				local co = coroutine.running()
+				resumeSlowAdd = function()
+					task.spawn(co)
+				end
+				coroutine.yield()
+				return originalAddPet(player, petId)
+			end
+
+			local firstRes = nil
+			task.spawn(function()
+				firstRes = h.invokeRemote("PurchaseEgg", p1, "CandyEgg", "req-egg-1")
+			end)
+			t.ok(resumeSlowAdd ~= nil)
+
+			-- Retry concorrente enquanto a primeira ainda está em voo no servidor -> RATE_LIMITED sem cobrar de novo
+			local dupInFlight = h.invokeRemote("PurchaseEgg", p1, "CandyEgg", "req-egg-1")
+			t.eq(dupInFlight.ok, false)
+			t.eq(dupInFlight.err, "RATE_LIMITED")
+			t.eq(h.getData(p1).Coins, 900)
+
+			h.PetService.AddPet = originalAddPet
+			resumeSlowAdd()
+			t.ok(firstRes ~= nil and firstRes.ok == true)
+			t.eq(h.getData(p1).Coins, 900)
+			t.eq(h.getSaveCount(), 1)
+
+			-- Retry após conclusão devolve o mesmo resultado cacheado sem cobrar nem criar novo pet
+			local cachedRetry = h.invokeRemote("PurchaseEgg", p1, "CandyEgg", "req-egg-1")
+			t.eq(cachedRetry.ok, true)
+			t.eq(cachedRetry.data.uuid, firstRes.data.uuid)
+			t.eq(cachedRetry.data.petId, firstRes.data.petId)
+			t.eq(h.getData(p1).Coins, 900)
+			t.eq(h.getSaveCount(), 1)
+
+			-- PlayerRemoving limpa cache do jogador
+			h.firePlayerRemoving(p1)
+			local afterReconnect = h.invokeRemote("PurchaseEgg", p1, "CandyEgg", "req-egg-1")
+			t.eq(afterReconnect.ok, true)
+			t.eq(h.getData(p1).Coins, 800)
+		end
+	)
 end

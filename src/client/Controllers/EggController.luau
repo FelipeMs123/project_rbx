@@ -2,6 +2,7 @@
 -- EggController.luau (StarterPlayerScripts.Client.Controllers.EggController)
 -- Dono: Squad B. Controlador de ovos no cliente: placeholders, proximidade, compra segura e animação.
 
+local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -10,6 +11,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local AreasConfig = require(Shared.Config.Areas)
 local EggsConfig = require(Shared.Config.Eggs)
+local ErrorCodes = require(Shared.ErrorCodes)
 local GameConfig = require(Shared.Config.Game)
 local PetsConfig = require(Shared.Config.Pets)
 local RequestGuard = require(Shared.Logic.RequestGuard)
@@ -22,7 +24,7 @@ local EggUI = require(script.Parent.Parent.UI.Eggs.EggUI)
 local EGG_INTERACT_RANGE = 14
 local PROXIMITY_CHECK_INTERVAL = 0.1 -- ~10 Hz
 local PURCHASE_TIMEOUT_SECONDS = 8
-local TIMEOUT_WAIT_MESSAGE = "O servidor ainda está respondendo. Aguarde antes de tentar novamente."
+local TIMEOUT_WAIT_MESSAGE = "O servidor demorou para responder. Você já pode tentar novamente."
 local PLACEHOLDER_FOLDER_NAME = "ClientPlaceholderEggs"
 
 -- Coordenadas canônicas da B3/B6 para fallback do placeholder dentro dos 24 studs do servidor.
@@ -55,7 +57,11 @@ local function cancelTimeoutThread(handle: any)
 	end
 end
 
-local purchaseGuard = RequestGuard.new(cancelTimeoutThread)
+local function generateRequestId(): string
+	return HttpService:GenerateGUID(false)
+end
+
+local purchaseGuard = RequestGuard.new(cancelTimeoutThread, generateRequestId)
 
 local trackedEggs: { [string]: TrackedEgg } = {}
 local areaWatchConnections: { RBXScriptConnection } = {}
@@ -146,7 +152,7 @@ local function refreshActivePrompt()
 	end
 	local snapshot = DataController.Get() :: EggHelpers.PlayerDataLike?
 	local areaName = getAreaDisplayName(eggDef.Area)
-	EggUI.UpdatePrompt(activeEggId, eggDef, snapshot, areaName, purchaseGuard:IsInFlight())
+	EggUI.UpdatePrompt(activeEggId, eggDef, snapshot, areaName, purchaseGuard:IsBusy())
 end
 
 local function focusEggPrompt(eggId: string)
@@ -169,11 +175,11 @@ local function focusEggPrompt(eggId: string)
 
 	activeEggId = eggId
 	local snapshot = DataController.Get() :: EggHelpers.PlayerDataLike?
-	EggUI.ShowPrompt(eggId, eggDef, snapshot, getAreaDisplayName(eggDef.Area), purchaseGuard:IsInFlight())
+	EggUI.ShowPrompt(eggId, eggDef, snapshot, getAreaDisplayName(eggDef.Area), purchaseGuard:IsBusy())
 end
 
 local function requestPurchase(eggId: string)
-	if not EggHelpers.canTriggerPurchase(isStarted, purchaseGuard:IsInFlight(), isAnyModalOpen()) then
+	if not EggHelpers.canTriggerPurchase(isStarted, purchaseGuard:IsBusy(), isAnyModalOpen()) then
 		return
 	end
 
@@ -191,26 +197,37 @@ local function requestPurchase(eggId: string)
 		return
 	end
 
-	local snapshot = DataController.Get() :: EggHelpers.PlayerDataLike?
-	local canBuy, preErr = EggHelpers.canPurchaseEgg(snapshot, eggDef, GameConfig.MaxInventory, eggId)
-	if not canBuy then
-		HudController.Toast(EggHelpers.translateError(preErr), "error")
-		return
+	if not purchaseGuard:HasPending(eggId) then
+		local snapshot = DataController.Get() :: EggHelpers.PlayerDataLike?
+		local canBuy, preErr = EggHelpers.canPurchaseEgg(snapshot, eggDef, GameConfig.MaxInventory, eggId)
+		if not canBuy then
+			HudController.Toast(EggHelpers.translateError(preErr), "error")
+			return
+		end
 	end
 
-	local token = purchaseGuard:Begin()
-	if not token then
+	local token, requestId = purchaseGuard:Begin(eggId)
+	if not token or not requestId then
 		return
 	end
 	refreshActivePrompt()
 
 	purchaseGuard:ScheduleTimeout(token, PURCHASE_TIMEOUT_SECONDS, scheduleTimeoutThread, function()
+		refreshActivePrompt()
 		HudController.Toast(TIMEOUT_WAIT_MESSAGE, "error")
 	end)
 
 	task.spawn(function()
-		local result = NetClient.Invoke("PurchaseEgg", eggId)
-		local accepted = purchaseGuard:Resolve(token)
+		local result = NetClient.Invoke("PurchaseEgg", eggId, requestId)
+		if not result.ok and result.err == ErrorCodes.RATE_LIMITED then
+			if purchaseGuard:ResolveTransient(token, requestId) then
+				refreshActivePrompt()
+				HudController.Toast(EggHelpers.translateError(result.err), "error")
+			end
+			return
+		end
+
+		local accepted = purchaseGuard:ResolveDefinitive(token, requestId)
 		if not accepted then
 			return
 		end
@@ -560,13 +577,7 @@ local function updateProximity()
 			local eggDef = (EggsConfig :: any)[nearestId] :: EggHelpers.EggDefLike?
 			if eggDef then
 				local snapshot = DataController.Get() :: EggHelpers.PlayerDataLike?
-				EggUI.ShowPrompt(
-					nearestId,
-					eggDef,
-					snapshot,
-					getAreaDisplayName(eggDef.Area),
-					purchaseGuard:IsInFlight()
-				)
+				EggUI.ShowPrompt(nearestId, eggDef, snapshot, getAreaDisplayName(eggDef.Area), purchaseGuard:IsBusy())
 			end
 		else
 			EggUI.HidePrompt()

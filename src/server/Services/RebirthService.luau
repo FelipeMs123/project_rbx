@@ -9,6 +9,7 @@ local Shared = ReplicatedStorage.Shared
 local GameConfig = require(Shared.Config.Game)
 local ErrorCodes = require(Shared.ErrorCodes)
 local Rebirth = require(Shared.Logic.Rebirth)
+local RequestIdempotency = require(Shared.Logic.RequestIdempotency)
 local Types = require(Shared.Types)
 local NetServer = require(script.Parent.Parent.Net.NetServer)
 local DataService = require(script.Parent.DataService)
@@ -16,10 +17,14 @@ local EconomyService = require(script.Parent.EconomyService)
 
 local REQUEST_REBIRTH_RATE = 2
 local REQUEST_REBIRTH_BURST = 3
+local IDEMPOTENCY_CACHE_LIMIT = 8
+
+local rebirthIdempotency = RequestIdempotency.new(IDEMPOTENCY_CACHE_LIMIT)
+local playerRemovingConnected = false
 
 local RebirthService = {}
 
-local function handleRequestRebirth(player: Player): Types.Result
+local function executeRequestRebirth(player: Player): Types.Result
 	if player.Parent ~= Players or not DataService.IsLoaded(player) then
 		return { ok = false, err = ErrorCodes.DATA_NOT_LOADED }
 	end
@@ -39,8 +44,7 @@ local function handleRequestRebirth(player: Player): Types.Result
 		return { ok = false, err = ErrorCodes.NOT_ENOUGH_COINS }
 	end
 
-	DataService.Set(player, "Coins", GameConfig.StartingCoins)
-	local newRebirths = DataService.Update(player, "Rebirths", function(rebirths: number)
+	local updatedRebirths = DataService.Update(player, "Rebirths", function(rebirths: number)
 		local safeRebirths = if type(rebirths) == "number"
 				and rebirths == rebirths
 				and rebirths >= 0
@@ -48,6 +52,11 @@ local function handleRequestRebirth(player: Player): Types.Result
 			else 0
 		return safeRebirths + 1
 	end)
+	if updatedRebirths == nil then
+		return { ok = false, err = ErrorCodes.DATA_NOT_LOADED }
+	end
+
+	DataService.Set(player, "Coins", GameConfig.StartingCoins)
 	DataService.Set(player, "UnlockedAreas", { GameConfig.StartingArea })
 	EconomyService.AddGems(player, GameConfig.RebirthGemReward)
 	DataService.Save(player)
@@ -55,10 +64,16 @@ local function handleRequestRebirth(player: Player): Types.Result
 	return {
 		ok = true,
 		data = {
-			rebirths = newRebirths,
+			rebirths = updatedRebirths,
 			gemsReward = GameConfig.RebirthGemReward,
 		},
 	}
+end
+
+local function handleRequestRebirth(player: Player, requestId: any): Types.Result
+	return rebirthIdempotency:Execute(player, requestId, function()
+		return executeRequestRebirth(player)
+	end) :: Types.Result
 end
 
 function RebirthService.Init()
@@ -66,6 +81,12 @@ function RebirthService.Init()
 		rate = REQUEST_REBIRTH_RATE,
 		burst = REQUEST_REBIRTH_BURST,
 	})
+	if not playerRemovingConnected then
+		playerRemovingConnected = true
+		Players.PlayerRemoving:Connect(function(player)
+			rebirthIdempotency:Remove(player)
+		end)
+	end
 end
 
 function RebirthService.Start() end
