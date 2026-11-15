@@ -130,7 +130,7 @@ local function loadEggServiceHarness(options: {
 		})
 	end
 
-	local function setEggInWorkspace(areaId: string, eggId: string, eggInstance: any)
+	local function setEggInWorkspace(areaId: string, eggId: string?, eggInstance: any?)
 		local areasFolder = mockWorkspace._children.Areas
 		if not areasFolder then
 			areasFolder = makeInstance("Areas", "Folder", {})
@@ -146,7 +146,9 @@ local function loadEggServiceHarness(options: {
 			eggsFolder = makeInstance("Eggs", "Folder", {})
 			areaFolder._children.Eggs = eggsFolder
 		end
-		eggsFolder._children[eggId] = eggInstance
+		if eggId ~= nil then
+			eggsFolder._children[eggId] = eggInstance
+		end
 	end
 
 	local function clearWorkspaceAreas()
@@ -341,6 +343,7 @@ local function loadEggServiceHarness(options: {
 			warn = function() end,
 			task = task,
 			Random = mockRandom,
+			Vector3 = { new = makeVector3 },
 			require = loadModule,
 		}
 		setmetatable(env, { __index = _G })
@@ -511,6 +514,133 @@ return function(t)
 			res = h.invokeRemote("PurchaseEgg", p1, "CandyEgg")
 			t.eq(res.ok, true)
 			t.eq(h.getData(p1).Coins, 700)
+		end
+	)
+
+	t.test(
+		"PurchaseEgg aplica fallback canônico quando Eggs existe vazia e falha fechado em instância inválida",
+		function()
+			local h = loadEggServiceHarness({ randomValues = { 0.3 } })
+			h.PetService.Init()
+			h.EggService.Init()
+
+			local p1 = h.makePlayer(1, "Alice")
+			h.setLoadedData(p1, {
+				Version = 1,
+				Coins = 10000,
+				Gems = 0,
+				Rebirths = 0,
+				UnlockedAreas = { "CandyPlaza", "ChocolateFalls" },
+				Inventory = {},
+				Equipped = {},
+			})
+
+			-- Pasta CandyPlaza.Eggs existe, mas está vazia (cenário pré-B6)
+			h.setEggInWorkspace("CandyPlaza")
+
+			-- Sem Character -> TOO_FAR (não é fail-open)
+			local res = h.invokeRemote("PurchaseEgg", p1, "CandyEgg")
+			t.eq(res.ok, false)
+			t.eq(res.err, "TOO_FAR")
+			t.eq(h.getData(p1).Coins, 10000)
+
+			-- Character morto perto do pedestal -> TOO_FAR
+			h.setCharacterAt(p1, makeVector3(0, 2.6, -28), 0)
+			res = h.invokeRemote("PurchaseEgg", p1, "CandyEgg")
+			t.eq(res.ok, false)
+			t.eq(res.err, "TOO_FAR")
+			t.eq(h.getData(p1).Coins, 10000)
+
+			-- Character longe do pedestal (0, 2.6, -28) -> TOO_FAR (> 24 studs)
+			h.setCharacterAt(p1, makeVector3(0, 3, -3), 100)
+			res = h.invokeRemote("PurchaseEgg", p1, "CandyEgg")
+			t.eq(res.ok, false)
+			t.eq(res.err, "TOO_FAR")
+			t.eq(h.getData(p1).Coins, 10000)
+
+			-- Character vivo perto do pedestal (0, 2.6, -28) -> sucesso
+			h.advanceClock(2)
+			h.setCharacterAt(p1, makeVector3(0, 3, -14), 100)
+			res = h.invokeRemote("PurchaseEgg", p1, "CandyEgg")
+			t.eq(res.ok, true)
+			t.eq(h.getData(p1).Coins, 9900)
+
+			-- Character usando PrimaryPart (sem HumanoidRootPart) perto do pedestal -> sucesso
+			local humanoid = makeInstance("Humanoid", "Humanoid", nil, { Health = 100 })
+			local primary = makeInstance("Torso", "Part", nil, { Position = makeVector3(0, 3, -20) })
+			p1.Character = makeInstance("Character", "Model", {
+				Humanoid = humanoid,
+				Torso = primary,
+			}, { PrimaryPart = primary })
+			res = h.invokeRemote("PurchaseEgg", p1, "CandyEgg")
+			t.eq(res.ok, true)
+			t.eq(h.getData(p1).Coins, 9800)
+
+			-- ChocolateEgg também usa fallback canônico (140, 2.6, -28) quando ChocolateFalls ainda não está no mapa
+			res = h.invokeRemote("PurchaseEgg", p1, "ChocolateEgg")
+			t.eq(res.ok, false)
+			t.eq(res.err, "TOO_FAR")
+			t.eq(h.getData(p1).Coins, 9800)
+
+			h.setCharacterAt(p1, makeVector3(140, 3, -20), 100)
+			res = h.invokeRemote("PurchaseEgg", p1, "ChocolateEgg")
+			t.eq(res.ok, true)
+			t.eq(h.getData(p1).Coins, 7300)
+
+			-- Instância presente sem PrimaryPart/GetPivot/BasePart válida -> fail-closed mesmo em cima do pedestal
+			h.advanceClock(2)
+			h.setCharacterAt(p1, makeVector3(0, 2.6, -28), 100)
+			local emptyModelEgg = makeInstance("CandyEgg", "Model", {})
+			h.setEggInWorkspace("CandyPlaza", "CandyEgg", emptyModelEgg)
+			res = h.invokeRemote("PurchaseEgg", p1, "CandyEgg")
+			t.eq(res.ok, false)
+			t.eq(res.err, "TOO_FAR")
+			t.eq(h.getData(p1).Coins, 7300)
+
+			local folderEgg = makeInstance("CandyEgg", "Folder", {})
+			h.setEggInWorkspace("CandyPlaza", "CandyEgg", folderEgg)
+			res = h.invokeRemote("PurchaseEgg", p1, "CandyEgg")
+			t.eq(res.ok, false)
+			t.eq(res.err, "TOO_FAR")
+			t.eq(h.getData(p1).Coins, 7300)
+
+			-- Ovo sem instância e sem fallback canônico conhecido com Areas presente -> fail-closed
+			local hCustom = loadEggServiceHarness({
+				overrideEggs = {
+					UnknownPosEgg = {
+						Name = "Ovo Sem Posição",
+						Price = 10,
+						Currency = "Coins",
+						Area = "CandyPlaza",
+						Weights = { CottonCat = 100 },
+					},
+				},
+			})
+			hCustom.PetService.Init()
+			hCustom.EggService.Init()
+			local pCustom = hCustom.makePlayer(2, "Bob")
+			hCustom.setLoadedData(pCustom, {
+				Version = 1,
+				Coins = 100,
+				Gems = 0,
+				Rebirths = 0,
+				UnlockedAreas = { "CandyPlaza" },
+				Inventory = {},
+				Equipped = {},
+			})
+			hCustom.setEggInWorkspace("CandyPlaza")
+			hCustom.setCharacterAt(pCustom, makeVector3(0, 2.6, -28), 100)
+			local customRes = hCustom.invokeRemote("PurchaseEgg", pCustom, "UnknownPosEgg")
+			t.eq(customRes.ok, false)
+			t.eq(customRes.err, "TOO_FAR")
+			t.eq(hCustom.getData(pCustom).Coins, 100)
+
+			-- Exceção headless mantida quando Workspace.Areas inteiro está ausente
+			hCustom.clearWorkspaceAreas()
+			pCustom.Character = nil
+			customRes = hCustom.invokeRemote("PurchaseEgg", pCustom, "UnknownPosEgg")
+			t.eq(customRes.ok, true)
+			t.eq(hCustom.getData(pCustom).Coins, 90)
 		end
 	)
 

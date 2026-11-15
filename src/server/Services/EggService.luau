@@ -22,27 +22,45 @@ local PURCHASE_EGG_RATE = 4
 local PURCHASE_EGG_BURST = 6
 local MAX_EGG_DISTANCE = 24
 
+-- Posições canônicas dos pedestais para fallback server-side enquanto o modelo real não existir em Workspace.Areas.
+local FALLBACK_EGG_POSITIONS: { [string]: Vector3 } = {
+	CandyEgg = Vector3.new(0, 2.6, -28),
+	ChocolateEgg = Vector3.new(140, 2.6, -28),
+}
+
 local rng = Random.new()
 
 local EggService = {}
 
-local function findEggInstance(areaId: string, eggId: string): Instance?
-	local areasFolder = Workspace:FindFirstChild("Areas")
-	local areaFolder = areasFolder and areasFolder:FindFirstChild(areaId)
-	local eggsFolder = areaFolder and areaFolder:FindFirstChild("Eggs")
-	return eggsFolder and eggsFolder:FindFirstChild(eggId)
-end
-
 local function getEggPosition(eggInstance: Instance): Vector3?
 	if eggInstance:IsA("Model") then
-		if eggInstance.PrimaryPart then
-			return eggInstance.PrimaryPart.Position
+		local primary = eggInstance.PrimaryPart
+		if primary ~= nil and primary:IsA("BasePart") then
+			return primary.Position
 		end
-		return eggInstance:GetPivot().Position
+		local getPivot = (eggInstance :: any).GetPivot
+		if type(getPivot) == "function" then
+			local ok, pivot = pcall(getPivot, eggInstance)
+			if ok and pivot ~= nil and pivot.Position ~= nil then
+				return pivot.Position
+			end
+		end
+		return nil
 	elseif eggInstance:IsA("BasePart") then
 		return eggInstance.Position
 	end
 	return nil
+end
+
+local function resolveEggPosition(areasFolder: Instance, areaId: string, eggId: string): Vector3?
+	local areaFolder = areasFolder:FindFirstChild(areaId)
+	local eggsFolder = areaFolder and areaFolder:FindFirstChild("Eggs")
+	local eggInstance = eggsFolder and eggsFolder:FindFirstChild(eggId)
+	if eggInstance ~= nil then
+		-- Se a instância já existe no mapa, nunca faz fallback: instância inválida falha fechada.
+		return getEggPosition(eggInstance)
+	end
+	return FALLBACK_EGG_POSITIONS[eggId]
 end
 
 local function handlePurchaseEgg(player: Player, eggId: any): Types.Result
@@ -66,19 +84,21 @@ local function handlePurchaseEgg(player: Player, eggId: any): Types.Result
 		return { ok = false, err = ErrorCodes.AREA_LOCKED }
 	end
 
-	local eggInstance = findEggInstance(eggDef.Area, eggId)
-	if eggInstance ~= nil then
-		local eggPosition = getEggPosition(eggInstance)
-		if eggPosition ~= nil then
-			local character = player.Character
-			local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-			local root = character and character:FindFirstChild("HumanoidRootPart")
-			if not humanoid or humanoid.Health <= 0 or not root or not root:IsA("BasePart") then
-				return { ok = false, err = ErrorCodes.TOO_FAR }
-			end
-			if not ((root.Position - eggPosition).Magnitude <= MAX_EGG_DISTANCE) then
-				return { ok = false, err = ErrorCodes.TOO_FAR }
-			end
+	-- Exceção headless apenas quando Workspace.Areas não existe; com mapa presente, a validação é fail-closed.
+	local areasFolder = Workspace:FindFirstChild("Areas")
+	if areasFolder ~= nil then
+		local character = player.Character
+		local humanoid = if character then character:FindFirstChildOfClass("Humanoid") else nil
+		local rootPart: Instance? = if character
+			then (character:FindFirstChild("HumanoidRootPart") :: Instance? or character.PrimaryPart)
+			else nil
+		if not humanoid or not (humanoid.Health > 0) or not rootPart or not rootPart:IsA("BasePart") then
+			return { ok = false, err = ErrorCodes.TOO_FAR }
+		end
+
+		local eggPosition = resolveEggPosition(areasFolder, eggDef.Area, eggId)
+		if eggPosition == nil or not ((rootPart.Position - eggPosition).Magnitude <= MAX_EGG_DISTANCE) then
+			return { ok = false, err = ErrorCodes.TOO_FAR }
 		end
 	end
 
