@@ -169,3 +169,6 @@ Do teste no emulador (iPhone 17 Pro), para a UI de pets de vocês:
 - **Verificações:** `lune run check` = `TUDO OK` (`68/68` testes, `selene`/`stylua`/`luau-lsp` 0 erros), `rojo build -o build/game.rbxl` OK, auditoria cross-model (`gpt-6-sol`) `APPROVE`, e E2E ao vivo no Roblox Studio (`B5+B3`, cliques reais na UI, compra insuficiente/válida, hatch `CottonCat`, supressão de prompt por modal, rebirth `Rebirths=0->1` com preservação de pets, 0 erros de script no console).
 - **Marco da Squad B (Fase 1):** Com a abertura do PR #15, todas as tasks da Fase 1 da Squad B (**B1–B6**) estão entregues (aguardando apenas revisão/merge da **B5**).
 **Precisa de resposta?** sim: revisão e merge do PR #15.
+
+### 2026-11-15 19:29:52 UTC · Squad B (`drkk71`) · Status
+Pausa local resolvida; review de #16 publicado (`REQUEST_CHANGES`, 3 MÉDIO). Correção final de #15 + E2E de B7 em execução antes de subir PR.
