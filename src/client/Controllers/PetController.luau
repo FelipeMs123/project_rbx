@@ -53,7 +53,7 @@ local BOB_AMPLITUDE = 0.45
 local LATERAL_SPACING = 3.0
 local BACK_DISTANCE = 4.2
 local REQUEST_TIMEOUT_SECONDS = 8
-local TIMEOUT_MESSAGE = "O servidor demorou para responder. Tente novamente!"
+local SLOW_REQUEST_MESSAGE = "Ainda aguardando resposta do servidor..."
 local ORIGINAL_ENABLED_ATTR = "OriginalEnabled"
 
 local playerStates: { [Player]: PlayerPetState } = {}
@@ -61,7 +61,7 @@ local petsFolder: Folder? = nil
 local pendingRequests: { [string]: boolean } = {}
 local requestTokens: { [string]: number } = {}
 local nextRequestToken = 0
-local fusePending = false
+local fuseInFlight = false
 local fuseRequestToken = 0
 
 local function getOrCreatePetsFolder(): Folder
@@ -514,23 +514,33 @@ local function handleTogglePet(uuid: string, currentlyEquipped: boolean)
 
 	local remoteName = if currentlyEquipped then "UnequipPet" else "EquipPet"
 
-	task.delay(REQUEST_TIMEOUT_SECONDS, function()
-		if requestTokens[uuid] ~= token then
+	local timeoutThread: thread? = nil
+	timeoutThread = task.delay(REQUEST_TIMEOUT_SECONDS, function()
+		timeoutThread = nil
+		if not pendingRequests[uuid] or requestTokens[uuid] ~= token then
 			return
 		end
-		requestTokens[uuid] = nil
-		pendingRequests[uuid] = nil
-		PetInventoryUI.SetPending(uuid, false)
-		showFeedback(TIMEOUT_MESSAGE, true)
-		PetInventoryUI.Refresh(DataController.Get())
+		showFeedback(SLOW_REQUEST_MESSAGE, false)
 	end)
 
 	task.spawn(function()
-		local result = NetClient.Invoke(remoteName, uuid)
+		local okInvoke, invokeResult = pcall(NetClient.Invoke, remoteName, uuid)
 		if requestTokens[uuid] ~= token then
 			return
 		end
+
+		nextRequestToken += 1
 		requestTokens[uuid] = nil
+		if timeoutThread ~= nil then
+			local pendingThread = timeoutThread
+			timeoutThread = nil
+			pcall(task.cancel, pendingThread)
+		end
+
+		local result: Types.Result = if okInvoke and type(invokeResult) == "table"
+			then invokeResult
+			else { ok = false, err = "INTERNAL" }
+
 		pendingRequests[uuid] = nil
 		PetInventoryUI.SetPending(uuid, false)
 
@@ -543,31 +553,42 @@ local function handleTogglePet(uuid: string, currentlyEquipped: boolean)
 end
 
 function PetController.RequestFuse(uuids: { string })
-	if fusePending or PetInventoryUI.IsFusePending() then
+	if fuseInFlight or PetInventoryUI.IsFusePending() then
 		return
 	end
 
 	fuseRequestToken += 1
 	local token = fuseRequestToken
-	fusePending = true
+	fuseInFlight = true
 	PetInventoryUI.SetFusePending(true)
 
-	task.delay(REQUEST_TIMEOUT_SECONDS, function()
-		if fuseRequestToken ~= token then
+	local timeoutThread: thread? = nil
+	timeoutThread = task.delay(REQUEST_TIMEOUT_SECONDS, function()
+		timeoutThread = nil
+		if not fuseInFlight or fuseRequestToken ~= token then
 			return
 		end
-		fusePending = false
-		PetInventoryUI.SetFusePending(false)
-		showFeedback(TIMEOUT_MESSAGE, true)
-		PetInventoryUI.Refresh(DataController.Get())
+		showFeedback(SLOW_REQUEST_MESSAGE, false)
 	end)
 
 	task.spawn(function()
-		local result = NetClient.Invoke("FusePets", uuids)
+		local okInvoke, invokeResult = pcall(NetClient.Invoke, "FusePets", uuids)
 		if fuseRequestToken ~= token then
 			return
 		end
-		fusePending = false
+
+		fuseRequestToken += 1
+		if timeoutThread ~= nil then
+			local pendingThread = timeoutThread
+			timeoutThread = nil
+			pcall(task.cancel, pendingThread)
+		end
+
+		local result: Types.Result = if okInvoke and type(invokeResult) == "table"
+			then invokeResult
+			else { ok = false, err = "INTERNAL" }
+
+		fuseInFlight = false
 		PetInventoryUI.SetFusePending(false)
 
 		if result.ok then

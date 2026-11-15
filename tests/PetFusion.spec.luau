@@ -591,4 +591,293 @@ return function(t)
 		t.eq(recovered.ok, false)
 		t.eq(recovered.err, "FUSE_INVALID")
 	end)
+
+	t.test(
+		"PetController.RequestFuse e handleTogglePet cancelam timer ao responder, mantêm lock em voo e nunca disparam timeout falso pós-resposta",
+		function()
+			local moduleCache = {}
+			local scheduledDelays = {}
+			local cancelledThreads = {}
+			local toastLog = {}
+			local invokeCalls = {}
+			local refreshCount = 0
+			local currentData = {
+				Gems = 50,
+				Inventory = {},
+				Equipped = {},
+			}
+			local invokeBehavior: ((string, any) -> any)? = nil
+
+			local mockTask = {
+				delay = function(seconds, callback)
+					local handle = {
+						seconds = seconds,
+						callback = callback,
+						cancelled = false,
+						eventsAtCancel = nil,
+					}
+					table.insert(scheduledDelays, handle)
+					return handle
+				end,
+				cancel = function(handle)
+					assert(type(handle) == "table", "task.cancel esperava handle de timer")
+					handle.cancelled = true
+					handle.eventsAtCancel = {
+						toasts = #toastLog,
+						refreshes = refreshCount,
+					}
+					table.insert(cancelledThreads, handle)
+				end,
+				spawn = function(fn, ...)
+					local co = coroutine.create(fn)
+					local ok, err = coroutine.resume(co, ...)
+					if not ok then
+						error(err)
+					end
+					return co
+				end,
+			}
+
+			local function makeNode(name, path)
+				return { Name = name, _path = path }
+			end
+
+			local sharedNode = makeNode("Shared")
+			local configNode = makeNode("Config")
+			local logicNode = makeNode("Logic")
+			local typesNode = makeNode("Types", "src/shared/Types.luau")
+			local errorCodesNode = makeNode("ErrorCodes", "src/shared/ErrorCodes.luau")
+			local gameConfigNode = makeNode("Game", "src/shared/Config/Game.luau")
+			local fusionConfigNode = makeNode("Fusion", "src/shared/Config/Fusion.luau")
+			local petsConfigNode = makeNode("Pets", "src/shared/Config/Pets.luau")
+			local inventoryNode = makeNode("Inventory", "src/shared/Logic/Inventory.luau")
+
+			sharedNode.Config = configNode
+			sharedNode.Logic = logicNode
+			sharedNode.Types = typesNode
+			sharedNode.ErrorCodes = errorCodesNode
+			configNode.Parent = sharedNode
+			configNode.Game = gameConfigNode
+			configNode.Fusion = fusionConfigNode
+			configNode.Pets = petsConfigNode
+			logicNode.Parent = sharedNode
+			logicNode.Inventory = inventoryNode
+			typesNode.Parent = sharedNode
+			errorCodesNode.Parent = sharedNode
+			gameConfigNode.Parent = configNode
+			fusionConfigNode.Parent = configNode
+			petsConfigNode.Parent = configNode
+			inventoryNode.Parent = logicNode
+
+			local clientNode = makeNode("Client")
+			local controllersNode = makeNode("Controllers")
+			local netNode = makeNode("Net")
+			local uiNode = makeNode("UI")
+			local uiPetsNode = makeNode("Pets")
+			local dataControllerNode = makeNode("DataController")
+			local hudControllerNode = makeNode("HudController")
+			local netClientNode = makeNode("NetClient")
+			local petInventoryUINode = makeNode("PetInventoryUI", "src/client/UI/Pets/PetInventoryUI.luau")
+			local petControllerNode = makeNode("PetController", "src/client/Controllers/PetController.luau")
+
+			clientNode.Controllers = controllersNode
+			clientNode.Net = netNode
+			clientNode.UI = uiNode
+			controllersNode.Parent = clientNode
+			controllersNode.DataController = dataControllerNode
+			controllersNode.HudController = hudControllerNode
+			controllersNode.PetController = petControllerNode
+			controllersNode.FindFirstChild = function(_, name)
+				if name == "HudController" then
+					return hudControllerNode
+				end
+				return nil
+			end
+			hudControllerNode.IsA = function(_, className)
+				return className == "ModuleScript"
+			end
+			netNode.Parent = clientNode
+			netNode.NetClient = netClientNode
+			uiNode.Parent = clientNode
+			uiNode.Pets = uiPetsNode
+			uiPetsNode.Parent = uiNode
+			uiPetsNode.PetInventoryUI = petInventoryUINode
+			petInventoryUINode.Parent = uiPetsNode
+			petControllerNode.Parent = controllersNode
+
+			moduleCache[dataControllerNode] = {
+				Get = function()
+					return currentData
+				end,
+				Observe = function() end,
+			}
+
+			moduleCache[hudControllerNode] = {
+				Toast = function(message, kind)
+					table.insert(toastLog, { message = message, kind = kind })
+				end,
+			}
+
+			moduleCache[netClientNode] = {
+				Invoke = function(remoteName, payload)
+					table.insert(invokeCalls, { remote = remoteName, payload = payload })
+					if invokeBehavior then
+						return invokeBehavior(remoteName, payload)
+					end
+					return { ok = true, data = { uuid = "new-golden", petId = "CottonCat", variant = "Golden" } }
+				end,
+			}
+
+			local mockReplicatedStorage = {
+				Shared = sharedNode,
+				WaitForChild = function(_, name)
+					if name == "Shared" then
+						return sharedNode
+					end
+					error(`Filho não mockado: {name}`)
+				end,
+			}
+
+			local mockGame = {
+				GetService = function(_, serviceName)
+					if serviceName == "ReplicatedStorage" then
+						return mockReplicatedStorage
+					elseif serviceName == "Players" or serviceName == "RunService" or serviceName == "Workspace" then
+						return {}
+					end
+					error(`Serviço não mockado: {serviceName}`)
+				end,
+			}
+
+			local function loadModule(node)
+				if moduleCache[node] ~= nil then
+					return moduleCache[node]
+				end
+				local source = fs.readFile(node._path)
+				local bytecode = luau.compile(source)
+				local env = {
+					game = mockGame,
+					script = node,
+					typeof = type,
+					warn = function() end,
+					task = mockTask,
+					Color3 = {
+						fromRGB = function(r, g, b)
+							return { r = r, g = g, b = b }
+						end,
+					},
+					require = loadModule,
+				}
+				setmetatable(env, { __index = _G })
+				local fn = luau.load(bytecode, { debugName = node._path, environment = env })
+				local result = fn()
+				moduleCache[node] = result
+				return result
+			end
+
+			local PetInventoryUI = loadModule(petInventoryUINode)
+			local origRefresh = PetInventoryUI.Refresh
+			local mountedToggle: ((string, boolean) -> ())? = nil
+			PetInventoryUI.Refresh = function(data)
+				refreshCount += 1
+				return origRefresh(data)
+			end
+			PetInventoryUI.Mount = function(onToggle, _onFuse)
+				mountedToggle = onToggle
+			end
+
+			local PetController = loadModule(petControllerNode)
+			PetController.Start()
+			t.ok(type(mountedToggle) == "function", "PetController.Start deve registrar handleTogglePet")
+
+			-- 1) Resposta imediata de sucesso: cancela timer ANTES de toast/refresh e nunca dispara timeout depois
+			local batch = { "c1", "c2", "c3", "c4", "c5" }
+			PetController.RequestFuse(batch)
+			t.eq(#invokeCalls, 1)
+			t.eq(invokeCalls[1].remote, "FusePets")
+			t.eq(#scheduledDelays, 1)
+			t.eq(#cancelledThreads, 1)
+			t.eq(scheduledDelays[1].cancelled, true, "timer deve ser cancelado ao receber resposta")
+			t.eq(
+				scheduledDelays[1].eventsAtCancel.toasts,
+				0,
+				"timer deve ser cancelado antes de emitir feedback de conclusão"
+			)
+			t.eq(
+				scheduledDelays[1].eventsAtCancel.refreshes,
+				1,
+				"timer deve ser cancelado antes do Refresh pós-resposta (apenas o Refresh inicial do Start rodou)"
+			)
+			t.eq(PetInventoryUI.IsFusePending(), false)
+			t.eq(#toastLog, 1)
+			t.eq(toastLog[1].kind, "info")
+			t.ok(string.find(toastLog[1].message, "Fusão concluída!", 1, true) ~= nil)
+
+			-- Mesmo se o callback do timer antigo disparar depois de 8s, nada acontece
+			scheduledDelays[1].callback()
+			t.eq(#toastLog, 1, "callback de timeout não pode disparar após resposta de FusePets")
+
+			-- 2) Chamada lenta (>8s em voo): mantém lock contra duplo clique, avisa sem destruir lock e conclui no retorno real
+			local pendingResume: thread? = nil
+			invokeBehavior = function()
+				pendingResume = coroutine.running()
+				return coroutine.yield()
+			end
+
+			PetController.RequestFuse(batch)
+			t.eq(#invokeCalls, 2)
+			t.eq(PetInventoryUI.IsFusePending(), true, "lock deve permanecer ativo enquanto Invoke está em voo")
+			t.eq(#scheduledDelays, 2)
+			t.eq(scheduledDelays[2].cancelled, false)
+
+			-- Duplo clique enquanto em voo é bloqueado
+			PetController.RequestFuse(batch)
+			t.eq(#invokeCalls, 2, "duplo clique não deve disparar novo Invoke")
+
+			-- Passam-se 8s com a requisição ainda em voo -> feedback não-destrutivo mantendo lock ativo
+			scheduledDelays[2].callback()
+			t.eq(#toastLog, 2)
+			t.eq(toastLog[2].message, "Ainda aguardando resposta do servidor...")
+			t.eq(toastLog[2].kind, "info")
+			t.eq(PetInventoryUI.IsFusePending(), true, "lock deve continuar ativo após aviso de 8s")
+
+			-- Tentativa de clique após os 8s (ainda em voo) continua bloqueada
+			PetController.RequestFuse(batch)
+			t.eq(#invokeCalls, 2, "lock não deve liberar antes do retorno real do servidor")
+
+			-- Servidor finalmente responde com erro de negócio -> libera lock e atualiza UI
+			assert(pendingResume ~= nil, "coroutine em voo deveria existir")
+			local okResume, errResume = coroutine.resume(pendingResume, { ok = false, err = "NOT_ENOUGH_GEMS" })
+			t.eq(okResume, true, tostring(errResume))
+			t.eq(PetInventoryUI.IsFusePending(), false, "lock liberado após retorno real")
+			t.eq(#toastLog, 3)
+			t.eq(toastLog[3].kind, "error")
+
+			-- 3) Exceção em NetClient.Invoke (capturada por pcall): cancela timer, libera lock e trata como INTERNAL
+			invokeBehavior = function()
+				error("falha de rede simulada")
+			end
+			PetController.RequestFuse(batch)
+			t.eq(#invokeCalls, 3)
+			t.eq(scheduledDelays[3].cancelled, true, "timer deve ser cancelado mesmo quando Invoke lança erro")
+			t.eq(PetInventoryUI.IsFusePending(), false, "lock deve ser liberado após erro em pcall")
+			t.eq(#toastLog, 4)
+			t.eq(toastLog[4].kind, "error")
+			scheduledDelays[3].callback()
+			t.eq(#toastLog, 4, "timer pós-erro nunca deve disparar")
+
+			-- 4) EquipPet / UnequipPet (handleTogglePet) também cancela timer na resposta e não dispara timeout falso
+			invokeBehavior = function()
+				return { ok = true }
+			end
+			local toggleFn = mountedToggle :: (string, boolean) -> ()
+			toggleFn("u-1", false)
+			t.eq(#invokeCalls, 4)
+			t.eq(invokeCalls[4].remote, "EquipPet")
+			t.eq(scheduledDelays[4].cancelled, true)
+			t.eq(PetInventoryUI.IsPending("u-1"), false)
+			scheduledDelays[4].callback()
+			t.eq(#toastLog, 4, "EquipPet não deve mostrar timeout falso após resposta")
+		end
+	)
 end
