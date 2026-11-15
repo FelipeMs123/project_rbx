@@ -5,6 +5,9 @@
 *                                              @FelipeMs123 @drkk71
 
 # Squad A: Blocos e Mundo
+/assets/map/CandyPlaza.model.json              @FelipeMs123
+/assets/BlockTemplates.model.json              @FelipeMs123
+/tools/map/                                   @FelipeMs123
 /src/shared/Config/Blocks.luau                 @FelipeMs123
 /src/shared/Config/Areas.luau                  @FelipeMs123
 /src/shared/Logic/Formulas.luau                @FelipeMs123

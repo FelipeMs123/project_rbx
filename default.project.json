@@ -3,15 +3,38 @@
   "tree": {
     "$className": "DataModel",
     "ReplicatedStorage": {
-      "Shared": { "$path": "src/shared" }
+      "Shared": {
+        "$path": "src/shared"
+      }
     },
     "ServerScriptService": {
-      "Server": { "$path": "src/server" },
-      "ServerPackages": { "$path": "ServerPackages" }
+      "Server": {
+        "$path": "src/server"
+      },
+      "ServerPackages": {
+        "$path": "ServerPackages"
+      }
     },
     "StarterPlayer": {
       "StarterPlayerScripts": {
-        "Client": { "$path": "src/client" }
+        "Client": {
+          "$path": "src/client"
+        }
+      }
+    },
+    "Workspace": {
+      "$className": "Workspace",
+      "Areas": {
+        "$className": "Folder",
+        "CandyPlaza": {
+          "$path": "assets/map/CandyPlaza.model.json"
+        }
+      }
+    },
+    "ServerStorage": {
+      "$className": "ServerStorage",
+      "BlockTemplates": {
+        "$path": "assets/BlockTemplates.model.json"
       }
     }
   }
