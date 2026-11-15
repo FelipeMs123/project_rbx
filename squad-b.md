@@ -6,14 +6,22 @@
 | Tarefa | Status | Feito por (ferramenta e modelo) | Branch / PR | Bloqueio ou próximo passo |
 |---|---|---|---|---|
 | B1 Lógica pura | ✅ pronto | Antigravity gemini-4-hydrogen-high / Codex gpt-6.1-sol | `b/b1-logica-pura` #8 | Mesclado na `main` (`36e389a`) |
-| B2 PetService | ✅ pronto | Codex / Antigravity | `b/b2-pet-service` | Aprovado em revisão estática e em teste E2E final no Studio |
+| B2 PetService | ✅ pronto | Codex / Antigravity | `b/b2-pet-service` #12 | PR #12 aberto (`15c7dcb`), testado no Studio e pronto para revisão/merge |
 | B3 EggService + RebirthService | ⬜ a fazer | — | `b/b3-egg-rebirth-service` | Desbloqueado o PR #8 (`36e389a`); depende de B2 |
 | B4 Pets e inventário | ✅ pronto | Codex gpt-6-sol (`rbx-client`) + revisão Codex gpt-6-luna | `b/b4-pets-ui` #9 | Mesclado na `main` (`3bf697e`) |
 | B5 Ovos e rebirth | 🟡 em andamento | Antigravity gemini-4-hydrogen-high + revisão Codex gpt-6.1-sol | `b/b5-ovos-rebirth` (local) | Implementado e revisado localmente; pronto para rebase na `main` e integração com B3/B6 |
-| B6 Studio: Cascata de Chocolate | 🔄 em andamento | Codex / Antigravity | `b/b6-cascata` | Em finalização local em `wt-b6` |
+| B6 Studio: Cascata de Chocolate | 🔄 em andamento | Codex / Antigravity | `b/b6-cascata` | Em auditoria/teste final em `wt-b6` |
 
 ## Registro
 (entrada mais nova em cima)
+
+### 2026-11-15 · Rodada 8: abertura do PR #12 (`b/b2-pet-service`, `15c7dcb`)
+- **O que foi feito:** Aviso à Squad A / `@FelipeMs123` em `recados.md` e atualização de `squad-b.md` com o status do **PR #12 (`feat(squad-b): B2 PetService`, `15c7dcb`)** aberto e pronto para revisão/merge.
+- **Como:** Branch `b/b2-pet-service` (`15c7dcb`) publicado no PR #12 contra `main`, seguido da atualização do diário em `wt-diario`.
+- **Decisões:** Marcar **B2** como PR #12 aberto e testado para revisão/merge pela Squad A / `@FelipeMs123`, mantendo **B6** em auditoria/teste final e preparando o avanço para **B3** (`EggService` + `RebirthService`) e **B5**.
+- **Problemas e soluções:** Nenhum bloqueio em B2.
+- **Testes:** `lune run check` = `TUDO OK` (`44/44`), auditoria cruzada (`gpt-6-sol`) `APPROVE` / Studio: teste E2E ao vivo no Roblox Studio aprovado (bônus `6.5`, dano real no `BlockService` `1 -> 7.5`, limites `MAX_EQUIPPED`/`ALREADY_EQUIPPED`/`NOT_OWNED`/`INVALID_ARGS`, `UnequipPet` e `PetInventoryGui`).
+- **Próximo passo:** Aguardar revisão/merge do PR #12 pela Squad A, concluir auditoria/teste final de B6 e avançar para B3 (`EggService` + `RebirthService`) e B5.
 
 ### 2026-11-15 · Rodada 7: revisão do PR #11 (`9aba137`) + status de B2 e B6
 - **O que foi feito:** Validação local do PR #11 (`a/fase2-plano`, commit `9aba137`), publicação oficial de `REQUEST CHANGES` no GitHub ([review #5911797744](https://github.com/FelipeMs123/project_rbx/pull/11#pullrequestreview-5911797744)) e atualização de `recados.md` e `squad-b.md` com o parecer técnico e o status de B2 e B6.

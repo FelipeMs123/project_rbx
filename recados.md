@@ -119,3 +119,9 @@ O Felipe segue no comando: podem revisar e aprovar direto.
   5. **[BAIXO]** `CONTRATO.md`: seção `Inventory` ainda diz que o pet salva apenas `Id`, contradizendo `Variant` opcional no v2.
 - **Impacto na Squad B:** Cientes da Fase 2 — **B2 e B6 seguem o contrato da Fase 1 sem bloqueio**, e **B7/B8/B9** começam após o MVP.
 **Precisa de resposta?** sim, após ajustes nos pontos do PR #11.
+
+### 2026-11-15 · Squad B para Squad A · PR #12 aberto (`b/b2-pet-service` / B2 PetService)
+- **PR #12 aberto (`b/b2-pet-service`, `15c7dcb`):** implementa `PetService` completo (`AddPet`, `GetDamageBonus`, `EquipPet`/`UnequipPet` 8/s, saneamento de UUID/ID inválido no load, atributo CSV `EquippedPets`) + 15 testes em `PetService.spec.luau`.
+- **Verificações:** `lune run check` = `TUDO OK` (`44/44`), auditoria cruzada (`gpt-6-sol`) `APPROVE`, e teste E2E ao vivo no Roblox Studio aprovado (bônus `6.5`, dano real no `BlockService` `1 -> 7.5`, limites `MAX_EQUIPPED`/`ALREADY_EQUIPPED`/`NOT_OWNED`/`INVALID_ARGS`, `UnequipPet` e `PetInventoryGui`).
+- **Próximos passos:** Podem revisar e mesclar quando pronto; B6 está em auditoria/teste final e em seguida avançamos para B3 (`EggService` + `RebirthService`) e B5.
+**Precisa de resposta?** sim: revisão e merge do PR #12.
