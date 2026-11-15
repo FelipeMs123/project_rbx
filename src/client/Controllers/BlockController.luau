@@ -108,7 +108,8 @@ local function add(instance: Instance)
 	local model = instance
 	local gui = Instance.new("BillboardGui")
 	gui.Name = "BlockHealth"
-	gui.Size = UDim2.fromScale(5, 1.4)
+	-- Escala do mundo + mínimo em pixels: legível de perto e de longe
+	gui.Size = UDim2.new(6, 40, 1.2, 24)
 	gui.StudsOffsetWorldSpace = Vector3.new(0, 4, 0)
 	gui.MaxDistance = 60
 	gui.AlwaysOnTop = true
@@ -118,6 +119,10 @@ local function add(instance: Instance)
 	label.TextColor3 = Color3.new(1, 1, 1)
 	label.TextStrokeTransparency = 0.3
 	label.TextScaled = true
+	local textConstraint = Instance.new("UITextSizeConstraint")
+	textConstraint.MinTextSize = 12
+	textConstraint.MaxTextSize = 22
+	textConstraint.Parent = label
 	label.Parent = gui
 	local background = Instance.new("Frame")
 	background.Position = UDim2.fromScale(0, 0.65)

@@ -102,7 +102,8 @@ local function addGate(gate: Instance, areaId: string)
 	end
 	local billboard = Instance.new("BillboardGui")
 	billboard.Name = "CandyGatePrice"
-	billboard.Size = UDim2.fromScale(6, 2)
+	-- Escala do mundo + mínimo em pixels: legível de perto e de longe
+	billboard.Size = UDim2.new(6, 60, 2, 30)
 	billboard.StudsOffsetWorldSpace = Vector3.new(0, 4, 0)
 	billboard.MaxDistance = 65
 	billboard.AlwaysOnTop = true
