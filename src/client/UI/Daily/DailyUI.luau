@@ -3,6 +3,8 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DailyRewards = require(ReplicatedStorage.Shared.Config.DailyRewards)
+local GameConfig = require(ReplicatedStorage.Shared.Config.Game)
+local Economy = require(ReplicatedStorage.Shared.Logic.Economy)
 local Format = require(ReplicatedStorage.Shared.Logic.Format)
 
 local DailyUI = {}
@@ -227,7 +229,8 @@ function DailyUI.Refresh(
 	nextDay: number?,
 	claimed: number,
 	pending: boolean,
-	seconds: number
+	seconds: number,
+	rebirths: number
 )
 	if not screen then
 		return
@@ -236,11 +239,14 @@ function DailyUI.Refresh(
 		badge.Visible = available
 	end
 	for index, reward in DailyRewards.Days do
-		local selected = available and index == nextDay
+		local selected = loaded and index == nextDay
 		local collected = index <= claimed
 		cards[index].Text = `Dia {reward.Day}{if reward.Special then " ★ Especial" else ""}\n{Format.abbreviate(
-			reward.Coins
-		)} moedas\n{reward.Gems} gemas\n{if selected then "Sua vez!" elseif collected then "✓ Já pegou" else ""}`
+			Economy.applyCoinBonus(reward.Coins, rebirths, GameConfig.RebirthCoinBonus)
+		)} moedas\n{reward.Gems} gemas\n{if selected
+			then (if available then "Sua vez!" else "Amanhã")
+			elseif collected then "✓ Já pegou"
+			else ""}`
 		cards[index].BackgroundColor3 = if selected then Color3.fromRGB(40, 115, 85) else Color3.fromRGB(55, 45, 75)
 		strokes[index].Color = if selected
 			then Color3.fromRGB(100, 255, 175)

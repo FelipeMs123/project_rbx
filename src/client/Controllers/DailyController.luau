@@ -13,7 +13,9 @@ local DailyController = {}
 local started = false
 local openedAutomatically = false
 local pending = false
-local requestToken = 0
+local requestCount = 0
+local pendingRequest: number? = nil
+local rebirths = 0
 local confirmedDay: number? = nil
 local state: { LastClaimDay: number, Streak: number }? = nil
 
@@ -29,10 +31,25 @@ local function refresh()
 	-- A resposta pode chegar antes do DataChanged; não permite outro pedido nesse intervalo.
 	available = available and confirmedDay ~= today
 	local claimed = if current then current.Streak else 0
+	if current and not available then
+		local tomorrowState = current
+		if confirmedDay == today and current.LastClaimDay < today then
+			local _, confirmedStreak = Daily.evaluate(current, today, #DailyRewards.Days)
+			if confirmedStreak then
+				tomorrowState = { LastClaimDay = today, Streak = confirmedStreak }
+				claimed = confirmedStreak
+			end
+		end
+		local _, tomorrowStreak = Daily.evaluate(tomorrowState, today + 1, #DailyRewards.Days)
+		nextStreak = tomorrowStreak
+		if nextStreak == 1 then
+			claimed = 0
+		end
+	end
 	if available and nextStreak then
 		claimed = nextStreak - 1
 	end
-	DailyUI.Refresh(current ~= nil, available, nextStreak, claimed, pending, Daily.secondsUntilNext(now))
+	DailyUI.Refresh(current ~= nil, available, nextStreak, claimed, pending, Daily.secondsUntilNext(now), rebirths)
 	if current and available and not openedAutomatically then
 		openedAutomatically = true
 		DailyUI.SetOpen(true)
@@ -51,26 +68,30 @@ local function claim()
 		return
 	end
 	pending = true
-	requestToken += 1
-	local token = requestToken
+	requestCount += 1
+	local request = requestCount
+	pendingRequest = request
+	local completed = false
 	refresh()
 	task.delay(8, function()
-		if requestToken ~= token or not pending then
+		if completed or pendingRequest ~= request then
 			return
 		end
-		requestToken += 1
+		pendingRequest = nil
 		pending = false
-		local message = "Demorou um pouquinho. Tente de novo!"
-		HudController.Toast(message, "error")
-		DailyUI.ShowStatus(message)
+		DailyUI.ShowStatus("Ainda aguardando o servidor...")
 		refresh()
 	end)
 	task.spawn(function()
 		local result = NetClient.Invoke("ClaimDaily")
-		if token ~= requestToken then
+		if completed then
 			return
 		end
-		pending = false
+		completed = true
+		if pendingRequest == request then
+			pendingRequest = nil
+			pending = false
+		end
 		if result.ok then
 			confirmedDay = today
 			DailyUI.SetOpen(false)
@@ -96,6 +117,12 @@ function DailyController.Start()
 	DataController.Observe("Daily", function(value: any)
 		if type(value) == "table" then
 			state = value
+		end
+		refresh()
+	end)
+	DataController.Observe("Rebirths", function(value: any)
+		if type(value) == "number" then
+			rebirths = value
 		end
 		refresh()
 	end)
