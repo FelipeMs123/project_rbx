@@ -93,6 +93,8 @@ local function loadFusionHarness()
 	local loadedSignal = makeSignal()
 	local changedSignal = makeSignal()
 	local failNextInventoryUpdate = false
+	local throwNextInventoryUpdate = false
+	local throwNextInventorySync = false
 
 	local mockDataService = {
 		Loaded = loadedSignal,
@@ -121,8 +123,16 @@ local function loadFusionHarness()
 				failNextInventoryUpdate = false
 				return nil
 			end
+			if key == "Inventory" and throwNextInventoryUpdate then
+				throwNextInventoryUpdate = false
+				error("simulated DataService.Update failure")
+			end
 			local newValue = modifier(data[key])
 			data[key] = newValue
+			if key == "Inventory" and throwNextInventorySync then
+				throwNextInventorySync = false
+				error("simulated DataService.Update sync failure")
+			end
 			changedSignal:Fire(player, key, newValue)
 			return newValue
 		end,
@@ -329,6 +339,12 @@ local function loadFusionHarness()
 		end,
 		setFailNextInventoryUpdate = function(shouldFail)
 			failNextInventoryUpdate = shouldFail
+		end,
+		setThrowNextInventoryUpdate = function(shouldThrow)
+			throwNextInventoryUpdate = shouldThrow
+		end,
+		setThrowNextInventorySync = function(shouldThrow)
+			throwNextInventorySync = shouldThrow
 		end,
 	}
 end
@@ -1158,6 +1174,70 @@ return function(t)
 		t.eq(h.getData(p1).Gems, 75, "gemas gastas (50) devem ser reembolsadas integralmente")
 		t.eq(Inventory.count(h.getData(p1)), 5, "nenhum pet deve ser removido se Update falhar")
 		t.eq(h.getSaveCount(), 0, "Save não deve rodar quando Update falha")
+	end)
+
+	t.test("FusePets devolve gemas exatas e preserva inventário quando DataService.Update lança exceção", function()
+		local h = loadFusionHarness()
+		h.PetService.Init()
+
+		local p1 = h.makePlayer(1, "Alice")
+		h.setLoadedData(p1, {
+			Version = 1,
+			Coins = 0,
+			Gems = 75,
+			Rebirths = 0,
+			UnlockedAreas = { "CandyPlaza" },
+			Inventory = {
+				l1 = { Id = "ChocolateDragon" }, -- Legendary = 50 gemas
+				l2 = { Id = "ChocolateDragon" },
+				l3 = { Id = "ChocolateDragon" },
+				l4 = { Id = "ChocolateDragon" },
+				l5 = { Id = "ChocolateDragon" },
+			},
+			Equipped = {},
+		})
+
+		h.setThrowNextInventoryUpdate(true)
+		local res = h.invokeRemote("FusePets", p1, { "l1", "l2", "l3", "l4", "l5" })
+		t.eq(res.ok, false)
+		t.eq(res.err, "INTERNAL")
+		t.eq(h.getData(p1).Gems, 75, "gemas gastas (50) devem ser estornadas ao saldo anterior")
+		t.eq(Inventory.count(h.getData(p1)), 5, "inventário deve permanecer inalterado")
+		for _, id in { "l1", "l2", "l3", "l4", "l5" } do
+			local pet = h.getData(p1).Inventory[id]
+			t.ok(pet ~= nil and pet.Id == "ChocolateDragon" and pet.Variant == nil, `pet {id} deve permanecer intacto`)
+		end
+		t.eq(h.getSaveCount(), 0, "Save não deve rodar quando Update lança exceção antes da gravação")
+	end)
+
+	t.test("FusePets conclui Save sem estornar nem duplicar se sync lançar após mutação do inventário", function()
+		local h = loadFusionHarness()
+		h.PetService.Init()
+
+		local p1 = h.makePlayer(1, "Alice")
+		h.setLoadedData(p1, {
+			Version = 1,
+			Coins = 0,
+			Gems = 75,
+			Rebirths = 0,
+			UnlockedAreas = { "CandyPlaza" },
+			Inventory = {
+				l1 = { Id = "ChocolateDragon" }, -- Legendary = 50 gemas
+				l2 = { Id = "ChocolateDragon" },
+				l3 = { Id = "ChocolateDragon" },
+				l4 = { Id = "ChocolateDragon" },
+				l5 = { Id = "ChocolateDragon" },
+			},
+			Equipped = {},
+		})
+
+		h.setThrowNextInventorySync(true)
+		local res = h.invokeRemote("FusePets", p1, { "l1", "l2", "l3", "l4", "l5" })
+		t.eq(res.ok, true)
+		t.eq(h.getData(p1).Gems, 25, "gemas (50) não devem ser estornadas após mutação concluída")
+		t.eq(Inventory.count(h.getData(p1)), 1, "5 pets devem ter sido substituídos por 1 Golden")
+		t.eq(h.getData(p1).Inventory[res.data.uuid].Variant, "Golden")
+		t.eq(h.getSaveCount(), 1, "Save deve concluir mesmo se sync lançar após mutação")
 	end)
 
 	t.test(

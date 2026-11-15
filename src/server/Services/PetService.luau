@@ -221,22 +221,43 @@ local function fusePets(player: Player, uuids: any): Types.Result
 		newUuid = HttpService:GenerateGUID(false)
 	end
 
-	local updated = DataService.Update(player, "Inventory", function(inventory: { [string]: Types.PetInstance })
-		for _, uuid in uuids :: { string } do
-			inventory[uuid] = nil
+	local mutated = false
+	local updateOk, updatedInventory = pcall(
+		DataService.Update,
+		player,
+		"Inventory",
+		function(inventory: { [string]: Types.PetInstance })
+			while inventory[newUuid] ~= nil do
+				newUuid = HttpService:GenerateGUID(false)
+			end
+			for _, uuid in uuids :: { string } do
+				inventory[uuid] = nil
+			end
+			inventory[newUuid] = { Id = petId, Variant = "Golden" }
+			mutated = true
+			return inventory
 		end
-		while inventory[newUuid] ~= nil do
-			newUuid = HttpService:GenerateGUID(false)
+	)
+	if not mutated then
+		local refundOk, refundedGems = pcall(DataService.Update, player, "Gems", function(gems: number)
+			return (gems or 0) + gemCost
+		end)
+		if not refundOk or refundedGems == nil then
+			warn(`[PetService] Falha ao estornar {gemCost} gemas de {player.Name} após erro em FusePets`)
 		end
-		inventory[newUuid] = { Id = petId, Variant = "Golden" }
-		return inventory
-	end)
-	if updated == nil then
-		EconomyService.AddGems(player, gemCost)
-		return { ok = false, err = ErrorCodes.DATA_NOT_LOADED }
+		return {
+			ok = false,
+			err = if not updateOk then ErrorCodes.INTERNAL else ErrorCodes.DATA_NOT_LOADED,
+		}
+	end
+	if not updateOk or updatedInventory == nil then
+		warn(`[PetService] Sync de inventário falhou após fusão para {player.Name}`)
 	end
 
-	DataService.Save(player)
+	local saveOk = pcall(DataService.Save, player)
+	if not saveOk then
+		warn(`[PetService] Falha ao salvar fusão de {player.Name}`)
+	end
 	return {
 		ok = true,
 		data = {
