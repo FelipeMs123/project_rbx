@@ -6,14 +6,22 @@
 | Tarefa | Status | Feito por (ferramenta e modelo) | Branch / PR | Bloqueio ou próximo passo |
 |---|---|---|---|---|
 | B1 Lógica pura | ✅ pronto | Antigravity gemini-4-hydrogen-high / Codex gpt-6.1-sol | `b/b1-logica-pura` #8 | Mesclado na `main` (`36e389a`) |
-| B2 PetService | ⬜ a fazer | — | `b/b2-pet-service` | Desbloqueada pelo merge do PR #8 (`36e389a`) na `main`; pronta para iniciar |
+| B2 PetService | 🔄 em andamento | Codex / Antigravity | `b/b2-pet-service` | Iniciada em worktree `wt-b2` a partir de `origin/main` (`3bf697e`) |
 | B3 EggService + RebirthService | ⬜ a fazer | — | `b/b3-egg-rebirth-service` | Desbloqueado o PR #8 (`36e389a`); depende de B2 |
 | B4 Pets e inventário | ✅ pronto | Codex gpt-6-sol (`rbx-client`) + revisão Codex gpt-6-luna | `b/b4-pets-ui` #9 | Mesclado na `main` (`3bf697e`) |
 | B5 Ovos e rebirth | 🟡 em andamento | Antigravity gemini-4-hydrogen-high + revisão Codex gpt-6.1-sol | `b/b5-ovos-rebirth` (local) | Implementado e revisado localmente; pronto para rebase na `main` e integração com B3/B6 |
-| B6 Studio: Cascata de Chocolate | ⬜ a fazer | — | `b/b6-cascata-chocolate` | Desbloqueada pelo merge do PR #7 (`b195d08`) na `main`; pronta para iniciar |
+| B6 Studio: Cascata de Chocolate | 🔄 em andamento | Codex / Antigravity | `b/b6-cascata` | Iniciada em worktree `wt-b6` a partir de `origin/main` (`3bf697e`) |
 
 ## Registro
 (entrada mais nova em cima)
+
+### 2026-11-15 · Rodada 6: aprovação (`APPROVE`) do PR #10 (`2116cad`) + abertura de `wt-b2` e `wt-b6`
+- **O que foi feito:** Auditoria e verificação final do commit `2116cad` no PR #10 (`a/melhorias-time`), publicação de review oficial `APPROVE` no GitHub, criação dos worktrees isolados `wt-b2` (`b/b2-pet-service`) e `wt-b6` (`b/b6-cascata`) sobre `origin/main` (`3bf697e`) e atualização de `recados.md` e `squad-b.md`.
+- **Como:** Auditoria estática de `2116cad` por Codex (`gpt-6-sol`), bateria de testes em `wt-pr10` (`lune run check` e `sh.exe tools/ia/teste-delegar.sh`) por Antigravity (`Sonnet`), e publicação de `gh pr review 10 --approve` + abertura de worktrees e atualização do diário por Antigravity (`Gemini 4 Argon`).
+- **Decisões:** Aprovar (`APPROVE`) o PR #10 após confirmar a resolução dos 2 últimos pontos (`estado_arvore` cobrindo `git diff --cached` e `git hash-object --stdin-paths` para *untracked*, novos casos em `teste-delegar.sh` e restrição em `docs/LICOES.md:28` ao erro de sandbox), e iniciar imediatamente B2 e B6 a partir da `main` (`3bf697e`).
+- **Problemas e soluções:** Os 2 achados da rodada anterior no PR #10 foram resolvidos no commit `2116cad` sem novos achados `ALTO`/`MÉDIO`.
+- **Testes:** Em `wt-pr10` (`2116cad`): `lune run check` (`TUDO OK`, exit code `0`, `29/29` testes, `0` erros, `0` warnings) e `sh.exe tools/ia/teste-delegar.sh` (exit code `0`, `12/12 OK`) / Studio: não aplicável (PR #10 contém apenas docs e scripts de delegação).
+- **Próximo passo:** Implementar e testar B2 (`b/b2-pet-service` em `wt-b2`) e B6 (`b/b6-cascata` em `wt-b6`), seguidas de B3 e integração/rebase da B5.
 
 ### 2026-11-15 · Rodada 5: re-revisão e testes do PR #10 (`3cdcb59`) + ciência dos merges #8 (`36e389a`) e #9 (`3bf697e`)
 - **O que foi feito:** Re-revisão técnica do PR #10 (`a/melhorias-time`, commit `3cdcb59`) em `wt-pr10`, validação da suíte (`lune run check` e `tools/ia/teste-delegar.sh`), publicação de review oficial `REQUEST CHANGES` no GitHub e atualização de `recados.md` e `squad-b.md` registrando os merges dos PRs #8 e #9 na `main`.

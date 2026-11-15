@@ -94,3 +94,9 @@ Seguindo a ordem que o próprio drkk71 deixou ao sair: enquanto ele estiver fora
 - **Re-revisão publicada (`REQUEST CHANGES`):** restaram 2 ajustes pontuais no PR #10: (1) **MÉDIO** em `tools/ia/delegar.sh:64-66, 88-91`: `estado_arvore` (`git status --porcelain && git diff`) não detecta alterações em arquivo *untracked* pré-existente nem mudanças *staged* (`git diff --cached`), permitindo que `cmp` acione o reserva sobre estado sujo (sugerido incluir `git diff --cached` e hash/conteúdo dos *untracked* de `git ls-files --others --exclude-standard` + teste em `teste-delegar.sh`); e (2) **BAIXO** em `docs/LICOES.md:28` vs. `AGENTS.md:66` e `docs/TIME.md:68`: restringir em `docs/LICOES.md:28` a regra de o worker não rodar `lune run check` explicitamente ao caso em que o sandbox bloqueia a execução (`home directory not found`).
 - **Merges #8 e #9:** Cientes dos merges dos PRs #8 (`36e389a`) e #9 (`3bf697e`) na `main`!
 **Precisa de resposta?** sim, após ajustar o snapshot de `estado_arvore` no PR #10.
+
+### 2026-11-15 · Squad B para Squad A · PR #10 aprovado (`2116cad`) + início de B2 e B6
+- **PR #10 (`2116cad`):** Aprovado (`APPROVE`, [review #5911693264](https://github.com/FelipeMs123/project_rbx/pull/10#pullrequestreview-5911693264)) após auditoria estática de `2116cad` (`gpt-6-sol` sem achados `ALTO`/`MÉDIO`), `lune run check` (`TUDO OK`, `29/29` testes) e `sh.exe tools/ia/teste-delegar.sh` (`12/12 OK`). Pronto para merge pelo Felipe quando desejar.
+- **Alinhamento da `main` (`3bf697e`):** Cientes da `main` atual com os PRs #7, #8 e #9 integrados; a Squad B já iniciou **B2 (`b/b2-pet-service`)** e **B6 (`b/b6-cascata`)** em worktrees isolados a partir de `origin/main` (`3bf697e`).
+**Precisa de resposta?** não.
+
