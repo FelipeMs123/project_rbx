@@ -6,6 +6,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local GameConfig = require(Shared.Config.Game)
+local RequestGuard = require(Shared.Logic.RequestGuard)
 local NetClient = require(script.Parent.Parent.Net.NetClient)
 local DataController = require(script.Parent.DataController)
 local HudController = require(script.Parent.HudController)
@@ -13,13 +14,23 @@ local RebirthHelpers = require(script.Parent.Parent.UI.Rebirth.RebirthHelpers)
 local RebirthUI = require(script.Parent.Parent.UI.Rebirth.RebirthUI)
 
 local REBIRTH_TIMEOUT_SECONDS = 8
+local TIMEOUT_WAIT_MESSAGE = "O servidor ainda está respondendo. Aguarde antes de tentar novamente."
 
 local RebirthController = {}
 
+local function scheduleTimeoutThread(seconds: number, callback: () -> ()): any
+	return task.delay(seconds, callback)
+end
+
+local function cancelTimeoutThread(handle: any)
+	if typeof(handle) == "thread" and handle ~= coroutine.running() then
+		pcall(task.cancel, handle)
+	end
+end
+
 local connections: { RBXScriptConnection } = {}
 local isStarted = false
-local isRequesting = false
-local requestToken = 0
+local rebirthGuard = RequestGuard.new(cancelTimeoutThread)
 
 local currentCoins = 0
 local currentRebirths = 0
@@ -37,7 +48,7 @@ local function pushViewState()
 		Coins = currentCoins,
 		Rebirths = currentRebirths,
 		Gems = currentGems,
-		IsBusy = isRequesting,
+		IsBusy = rebirthGuard:IsInFlight(),
 	})
 end
 
@@ -52,7 +63,7 @@ local function syncFromSnapshot()
 end
 
 local function handleConfirmRebirth()
-	if isRequesting then
+	if rebirthGuard:IsInFlight() then
 		return
 	end
 
@@ -73,29 +84,23 @@ local function handleConfirmRebirth()
 		return
 	end
 
-	isRequesting = true
-	requestToken += 1
-	local token = requestToken
+	local token = rebirthGuard:Begin()
+	if not token then
+		return
+	end
 	pushViewState()
 
-	task.delay(REBIRTH_TIMEOUT_SECONDS, function()
-		if isRequesting and requestToken == token then
-			requestToken += 1
-			isRequesting = false
-			RebirthUI.ResetConfirmation()
-			pushViewState()
-			HudController.Toast("O servidor demorou para responder. Tente novamente!", "error")
-		end
+	rebirthGuard:ScheduleTimeout(token, REBIRTH_TIMEOUT_SECONDS, scheduleTimeoutThread, function()
+		HudController.Toast(TIMEOUT_WAIT_MESSAGE, "error")
 	end)
 
 	task.spawn(function()
 		local result = NetClient.Invoke("RequestRebirth")
-		if requestToken ~= token then
+		local accepted = rebirthGuard:Resolve(token)
+		if not accepted then
 			return
 		end
 
-		requestToken += 1
-		isRequesting = false
 		RebirthUI.ResetConfirmation()
 		pushViewState()
 
@@ -142,8 +147,7 @@ end
 
 function RebirthController.Destroy()
 	isStarted = false
-	requestToken += 1
-	isRequesting = false
+	rebirthGuard:Reset()
 
 	for _, conn in connections do
 		conn:Disconnect()

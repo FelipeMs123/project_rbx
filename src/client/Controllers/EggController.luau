@@ -12,6 +12,7 @@ local AreasConfig = require(Shared.Config.Areas)
 local EggsConfig = require(Shared.Config.Eggs)
 local GameConfig = require(Shared.Config.Game)
 local PetsConfig = require(Shared.Config.Pets)
+local RequestGuard = require(Shared.Logic.RequestGuard)
 local NetClient = require(script.Parent.Parent.Net.NetClient)
 local DataController = require(script.Parent.DataController)
 local HudController = require(script.Parent.HudController)
@@ -21,6 +22,7 @@ local EggUI = require(script.Parent.Parent.UI.Eggs.EggUI)
 local EGG_INTERACT_RANGE = 14
 local PROXIMITY_CHECK_INTERVAL = 0.1 -- ~10 Hz
 local PURCHASE_TIMEOUT_SECONDS = 8
+local TIMEOUT_WAIT_MESSAGE = "O servidor ainda está respondendo. Aguarde antes de tentar novamente."
 local PLACEHOLDER_FOLDER_NAME = "ClientPlaceholderEggs"
 
 -- Coordenadas canônicas da B3/B6 para fallback do placeholder dentro dos 24 studs do servidor.
@@ -40,10 +42,20 @@ local EggController = {}
 
 local localPlayer = Players.LocalPlayer
 local isStarted = false
-local isPurchasing = false
-local purchaseToken = 0
 local activeEggId: string? = nil
 local proximityAccumulator = 0
+
+local function scheduleTimeoutThread(seconds: number, callback: () -> ()): any
+	return task.delay(seconds, callback)
+end
+
+local function cancelTimeoutThread(handle: any)
+	if typeof(handle) == "thread" and handle ~= coroutine.running() then
+		pcall(task.cancel, handle)
+	end
+end
+
+local purchaseGuard = RequestGuard.new(cancelTimeoutThread)
 
 local trackedEggs: { [string]: TrackedEgg } = {}
 local areaWatchConnections: { RBXScriptConnection } = {}
@@ -134,7 +146,7 @@ local function refreshActivePrompt()
 	end
 	local snapshot = DataController.Get() :: EggHelpers.PlayerDataLike?
 	local areaName = getAreaDisplayName(eggDef.Area)
-	EggUI.UpdatePrompt(activeEggId, eggDef, snapshot, areaName, isPurchasing)
+	EggUI.UpdatePrompt(activeEggId, eggDef, snapshot, areaName, purchaseGuard:IsInFlight())
 end
 
 local function focusEggPrompt(eggId: string)
@@ -157,11 +169,11 @@ local function focusEggPrompt(eggId: string)
 
 	activeEggId = eggId
 	local snapshot = DataController.Get() :: EggHelpers.PlayerDataLike?
-	EggUI.ShowPrompt(eggId, eggDef, snapshot, getAreaDisplayName(eggDef.Area), isPurchasing)
+	EggUI.ShowPrompt(eggId, eggDef, snapshot, getAreaDisplayName(eggDef.Area), purchaseGuard:IsInFlight())
 end
 
 local function requestPurchase(eggId: string)
-	if not EggHelpers.canTriggerPurchase(isStarted, isPurchasing, isAnyModalOpen()) then
+	if not EggHelpers.canTriggerPurchase(isStarted, purchaseGuard:IsInFlight(), isAnyModalOpen()) then
 		return
 	end
 
@@ -186,28 +198,23 @@ local function requestPurchase(eggId: string)
 		return
 	end
 
-	isPurchasing = true
-	purchaseToken += 1
-	local token = purchaseToken
+	local token = purchaseGuard:Begin()
+	if not token then
+		return
+	end
 	refreshActivePrompt()
 
-	task.delay(PURCHASE_TIMEOUT_SECONDS, function()
-		if isPurchasing and purchaseToken == token then
-			purchaseToken += 1
-			isPurchasing = false
-			refreshActivePrompt()
-			HudController.Toast("O servidor demorou para responder. Tente novamente!", "error")
-		end
+	purchaseGuard:ScheduleTimeout(token, PURCHASE_TIMEOUT_SECONDS, scheduleTimeoutThread, function()
+		HudController.Toast(TIMEOUT_WAIT_MESSAGE, "error")
 	end)
 
 	task.spawn(function()
 		local result = NetClient.Invoke("PurchaseEgg", eggId)
-		if purchaseToken ~= token then
+		local accepted = purchaseGuard:Resolve(token)
+		if not accepted then
 			return
 		end
 
-		purchaseToken += 1
-		isPurchasing = false
 		refreshActivePrompt()
 
 		if result.ok then
@@ -553,7 +560,13 @@ local function updateProximity()
 			local eggDef = (EggsConfig :: any)[nearestId] :: EggHelpers.EggDefLike?
 			if eggDef then
 				local snapshot = DataController.Get() :: EggHelpers.PlayerDataLike?
-				EggUI.ShowPrompt(nearestId, eggDef, snapshot, getAreaDisplayName(eggDef.Area), isPurchasing)
+				EggUI.ShowPrompt(
+					nearestId,
+					eggDef,
+					snapshot,
+					getAreaDisplayName(eggDef.Area),
+					purchaseGuard:IsInFlight()
+				)
 			end
 		else
 			EggUI.HidePrompt()
@@ -619,8 +632,7 @@ end
 
 function EggController.Destroy()
 	isStarted = false
-	purchaseToken += 1
-	isPurchasing = false
+	purchaseGuard:Reset()
 	activeEggId = nil
 
 	for _, conn in mainConnections do
