@@ -10,10 +10,18 @@
 | B3 EggService + RebirthService | ⬜ a fazer | — | `b/b3-egg-rebirth-service` | Aguardando merge do PR #8 (B1) e B2 |
 | B4 Pets e inventário | ✅ pronto | Codex gpt-6-sol (`rbx-client`) + revisão Codex gpt-6-luna | `b/b4-pets-ui` #9 | Aprovado pela Squad A (`4870928`); aguardando autorização de merge na `main` |
 | B5 Ovos e rebirth | 🟡 em andamento | Antigravity gemini-4-hydrogen-high + revisão Codex gpt-6.1-sol | `b/b5-ovos-rebirth` (local) | Implementado e revisado localmente; aguardando B3/PR #8 e alinhamento do pedestal `CandyEgg` com B6 |
-| B6 Studio: Cascata de Chocolate | ⬜ a fazer | — | `b/b6-cascata-chocolate` | PR #7 aprovado (`5712f86`); aguardando merge do PR #7 na `main` |
+| B6 Studio: Cascata de Chocolate | ⬜ a fazer | — | `b/b6-cascata-chocolate` | Desbloqueada pelo merge do PR #7 (`b195d08`) na `main`; pronta para iniciar |
 
 ## Registro
 (entrada mais nova em cima)
+
+### 2026-11-15 · Rodada 4: revisão e testes do PR #10 (`2ff2019`) + ciência do merge do PR #7 (`b195d08`)
+- **O que foi feito:** Revisão técnica completa do PR #10 (`a/melhorias-time`, commit `2ff2019`) em worktree isolado (`wt-pr10`), execução de `lune run check` e `tools/ia/teste-delegar.sh`, publicação de review oficial `REQUEST CHANGES` no GitHub e atualização de `recados.md` e `squad-b.md` registrando o desbloqueio da B6 após o merge do PR #7 (`b195d08`).
+- **Como:** Pré-auditoria de código por Codex (`gpt-6-sol`), validação linha a linha, execução de `lune run check` + `sh tools/ia/teste-delegar.sh` em `wt-pr10`, publicação da review `REQUEST CHANGES` (`gh pr review 10 --request-changes`) e atualização do diário por Antigravity (`Gemini 4 Argon`).
+- **Decisões:** Pedir mudanças (`REQUEST CHANGES`) no PR #10 antes do merge para corrigir 3 pontos em `tools/ia/delegar.sh` e 1 ponto de alinhamento documental entre `AGENTS.md`, `docs/LICOES.md`, `docs/agentes/receitas/teste-studio.md`, `docs/TIME.md` e `docs/ROADMAP.md`. Manter os PRs #8 e #9 aguardando autorização explícita do dono (`drkk71`) conforme `AGENTS.md:69`.
+- **Problemas e soluções:** Confirmados 4 pontos objetivos no PR #10 (`2ff2019`): (1) **ALTO** em `tools/ia/delegar.sh:63-72`: fallback reexecuta o modelo reserva na mesma worktree suja se o primário esgotar cota após editar arquivos parcialmente; (2) **MÉDIO** em `tools/ia/delegar.sh:50-64`: `grep -Ei` em `stdout+stderr` completo pode disparar falso positivo de cota quando prompts/diffs mencionam `rate limit`, `quota` ou `429`; (3) **MÉDIO** em `tools/ia/delegar.sh:14-18,49-57,66-70`: flag `--mcp` é ignorada silenciosamente quando o primário é `agy` (`trivial`/`critico`); (4) **MÉDIO** documental: `AGENTS.md:23` e `docs/LICOES.md:3` mandam qualquer agente editar `docs/LICOES.md` (conflitando com `AGENTS.md:75` e as receitas), e `teste-studio.md` usa o MCP `Roblox_Studio` enquanto `AGENTS.md:68`, `TIME.md:78` e `ROADMAP.md:117` ainda dizem que agentes não abrem o Studio / MCP é Fase 2.
+- **Testes:** Em `wt-pr10` (`2ff2019`): `lune run check` (`TUDO OK`, exit code `0`, 0 erros/0 warnings, 29 testes passaram / 0 falharam, `rojo build` ok) e `sh tools/ia/teste-delegar.sh` (exit code `0`, 6/6 casos `OK: primário ok`, `OK: cota e reserva`, `OK: erro comum`, `OK: nível inválido`, `OK: reserva agy com MCP`, `OK: flag MCP do codex`) / Studio: não aplicável (PR #10 contém apenas docs e scripts de delegação).
+- **Próximo passo:** Iniciar B6 (`ChocolateFalls`) sobre `origin/main` (`b195d08`), aguardar ajustes da Squad A no PR #10 e aguardar confirmação de `drkk71` para merge dos PRs #8 e #9.
 
 ### 2026-11-15 · Rodada 3: re-revisão, reteste MCP no Studio e aprovação (`APPROVE`) do PR #7 (`5712f86`)
 - **O que foi feito:** Re-revisão completa do commit `5712f86` no PR #7 da Squad A (auditoria de código + bateria de playtest ao vivo no Roblox Studio via MCP), publicação de review `APPROVE` no PR #7 e atualização de `recados.md` e `squad-b.md` após a Squad A também aprovar o PR #9 (`4870928`).

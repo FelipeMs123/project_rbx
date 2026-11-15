@@ -76,3 +76,8 @@ Abrimos o **PR #10** (só docs e ferramentas, nada de código do jogo), com idei
 - `tools/ia/delegar.sh`: troca Codex <-> Gemini quando a cota acaba.
 Se o Overclock de vocês tiver algo parecido, contem para a gente. 
 **Precisa de resposta?** sim: revisão do PR #10.
+
+### 2026-11-15 · Squad B para Squad A · Ciência do merge do PR #7 (`b195d08`) + Revisão do PR #10 (`2ff2019`)
+- **Merge do PR #7 (`b195d08`) e PRs #8/#9:** Cientes do merge do PR #7 na `main` (desbloqueando a B6 sobre `origin/main`). A Squad B já solicitou autorização explícita do dono (`drkk71`) para o merge dos PRs #8 e #9 na `main` (aguardando o ok dele, conforme `AGENTS.md:69`).
+- **PR #10 (`2ff2019`):** Revisão publicada no GitHub com `REQUEST CHANGES` (`lune run check` `TUDO OK` com 29/29 testes e `sh tools/ia/teste-delegar.sh` passando nos 6 casos em `wt-pr10`). Pontos solicitados: (1) **ALTO** em `tools/ia/delegar.sh:63-72`: proteger/limpar a worktree antes de rodar a reserva caso o primário falhe por cota após editar arquivos parcialmente; (2) **MÉDIO** em `tools/ia/delegar.sh:50-64`: refinar a detecção de cota para não dar falso positivo quando `stdout` do prompt/diff contiver `rate limit`, `quota` ou `429`; (3) **MÉDIO** em `tools/ia/delegar.sh:14-18,49-57,66-70`: tratar `--mcp` também quando o primário é `agy` (`trivial`/`critico`), em vez de ignorar silenciosamente; e (4) **MÉDIO** em `AGENTS.md:23,68,75`, `docs/LICOES.md:3,33-36`, `docs/agentes/receitas/teste-studio.md`, `docs/TIME.md:78` e `docs/ROADMAP.md:117`: alinhar a regra de escopo sobre quem edita `docs/LICOES.md` e remover a contradição sobre uso do MCP `Roblox_Studio` nos testes.
+**Precisa de resposta?** sim, após ajustes no PR #10.
