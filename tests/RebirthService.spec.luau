@@ -474,14 +474,23 @@ return function(t)
 			t.eq(h.getData(p1).Coins, 50000)
 			t.eq(h.getSaveCount(), 1)
 
-			-- Falha de DataService.Update libera inFlight e não cacheia resultado
+			-- Falha de DataService.Update libera inFlight, estorna Coins e não cacheia resultado
 			h.advanceClock(2)
-			h.setDataServiceUpdateHook(function()
-				error("falha simulada no Update")
+			h.getData(p1).Coins = 25000
+			local rebirthUpdateThrew = false
+			h.setDataServiceUpdateHook(function(original, player, key, modifier)
+				if key == "Rebirths" then
+					rebirthUpdateThrew = true
+					error("falha simulada no Update")
+				end
+				return original(player, key, modifier)
 			end)
 			local failRes = h.invokeRemote("RequestRebirth", p1, "req-rebirth-2")
+			t.eq(rebirthUpdateThrew, true)
 			t.eq(failRes.ok, false)
 			t.eq(failRes.err, "INTERNAL")
+			t.eq(h.getData(p1).Coins, 25000, "Coins deve ser estornado exatamente para 25000 após exceção no Update")
+			t.eq(h.getData(p1).Rebirths, 1)
 
 			h.setDataServiceUpdateHook(nil)
 			local recoveredRes = h.invokeRemote("RequestRebirth", p1, "req-rebirth-2")

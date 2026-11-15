@@ -44,7 +44,7 @@ local function executeRequestRebirth(player: Player): Types.Result
 		return { ok = false, err = ErrorCodes.NOT_ENOUGH_COINS }
 	end
 
-	local updatedRebirths = DataService.Update(player, "Rebirths", function(rebirths: number)
+	local updateOk, updatedRebirths = pcall(DataService.Update, player, "Rebirths", function(rebirths: number)
 		local safeRebirths = if type(rebirths) == "number"
 				and rebirths == rebirths
 				and rebirths >= 0
@@ -52,13 +52,16 @@ local function executeRequestRebirth(player: Player): Types.Result
 			else 0
 		return safeRebirths + 1
 	end)
-	if updatedRebirths == nil then
+	if not updateOk or updatedRebirths == nil then
 		if cost > 0 then
-			DataService.Update(player, "Coins", function(coins: number)
+			pcall(DataService.Update, player, "Coins", function(coins: number)
 				return (coins or 0) + cost
 			end)
 		end
-		return { ok = false, err = ErrorCodes.DATA_NOT_LOADED }
+		return {
+			ok = false,
+			err = if not updateOk then ErrorCodes.INTERNAL else ErrorCodes.DATA_NOT_LOADED,
+		}
 	end
 
 	DataService.Set(player, "Coins", GameConfig.StartingCoins)
