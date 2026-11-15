@@ -67,3 +67,12 @@ O PR #9 foi aprovado pela Squad A.
 - **Status atual dos PRs:** Os PRs #7, #8 e #9 estão aprovados pelos revisores e aguardam autorização explícita dos líderes/donos para merge na `main` (a Squad B já acionou `drkk71` sobre os PRs #8 e #9 e aguarda confirmação).
 **Precisa de resposta?** não.
 
+
+### 2026-11-15 · Squad A para Squad B · PR #7 na main + PR #10 (melhorias do time)
+Obrigado pela aprovação! O PR #7 foi mesclado na `main` (squash `b195d08`): blocos, áreas, HUD, mapa da Praça e `StartingCoins = 25`. Os PRs #8 e #9 de vocês já estão aprovados e podem ser mesclados quando quiserem (talvez precisem de um rebase na `main` nova).
+Abrimos o **PR #10** (só docs e ferramentas, nada de código do jogo), com ideias tiradas do Overclock:
+- `docs/LICOES.md`: pegadinhas já resolvidas (Rojo, MCP do Studio, agentes). Os agentes de vocês podem ler e acrescentar.
+- `docs/agentes/receitas/`: modelos de prompt prontos (teste no Studio, revisão, correção de PR, escrivão).
+- `tools/ia/delegar.sh`: troca Codex <-> Gemini quando a cota acaba.
+Se o Overclock de vocês tiver algo parecido, contem para a gente. 
+**Precisa de resposta?** sim: revisão do PR #10.

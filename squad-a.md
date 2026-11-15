@@ -3,15 +3,23 @@
 ## Painel
 | Tarefa | Status | Feito por (ferramenta e modelo) | Branch / PR | Bloqueio ou próximo passo |
 |---|---|---|---|---|
-| A1 Fórmulas | 🔵 em teste | Codex gpt-6.1-sol / Gemini gemini-4-hydrogen-high | `a/fase1` #7 | Correções da revisão no 5712f86; aguardando nova revisão da Squad B no PR #7 |
-| A2 BlockService | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Correções da revisão no 5712f86; aguardando nova revisão da Squad B no PR #7 |
-| A3 AreaService | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Correções da revisão no 5712f86; aguardando nova revisão da Squad B no PR #7 |
-| A4 Cliente dos blocos | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Correções da revisão no 5712f86; aguardando nova revisão da Squad B no PR #7 |
-| A5 HUD e portões | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Correções da revisão no 5712f86; aguardando nova revisão da Squad B no PR #7 |
-| A6 Studio: Praça dos Doces | 🔵 em teste | Gemini 4 Argon + Codex gpt-6.1-sol + Gemini 3.8 Flash | `a/fase1` #7 | Correções da revisão no 5712f86; aguardando nova revisão da Squad B no PR #7 |
+| A1 Fórmulas | ✅ pronto | Codex gpt-6.1-sol / Gemini gemini-4-hydrogen-high | main (#7, b195d08) | Mesclado na main |
+| A2 BlockService | ✅ pronto | Codex gpt-6.1-sol / Codex gpt-6.1-terra | main (#7, b195d08) | Mesclado na main |
+| A3 AreaService | ✅ pronto | Codex gpt-6.1-sol / Codex gpt-6.1-terra | main (#7, b195d08) | Mesclado na main |
+| A4 Cliente dos blocos | ✅ pronto | Codex gpt-6.1-sol / Codex gpt-6.1-terra | main (#7, b195d08) | Mesclado na main |
+| A5 HUD e portões | ✅ pronto | Codex gpt-6.1-sol / Codex gpt-6.1-terra | main (#7, b195d08) | Mesclado na main |
+| A6 Studio: Praça dos Doces | ✅ pronto | Gemini 4 Argon + Codex gpt-6.1-sol + Gemini 3.8 Flash | main (#7, b195d08) | Mesclado na main |
 
 ## Registro
 (entrada mais nova em cima)
+
+### 2026-11-15 · Rodada 8: merge do PR #7 e melhorias do time
+- **O que foi feito:** Merge do PR #7 com squash na main (commit b195d08) após aprovação da Squad B e autorização do Felipe; branch a/fase1 apagado. Análise do orquestrador Overclock (usado pela Squad B) pelo líder e Gemini. Abertura do PR #10 (branch a/melhorias-time, commit 2ff2019) contendo docs/LICOES.md, docs/agentes/receitas/ com 5 receitas de prompt e README, tools/ia/delegar.sh com modelo reserva quando a cota acaba, tools/ia/teste-delegar.sh, citação dos documentos em AGENTS.md e .gitignore ignorando .alethe/.
+- **Como:** Aprovação do PR #7 pela Squad B após retestar no Studio (commit 5712f86); squash e merge autorizados pelo Felipe. Análise do Overclock pedida pelo líder ao Gemini gemini-4-hydrogen-high com checagem de fontes pelo líder (alguns detalhes não confirmados, como contagem de ferramentas MCP). Decisão do Felipe de copiar 3 ideias. PR #10: docs/LICOES.md por Gemini gemini-3.8-flash-high (com acréscimo de 3 lições pelo líder); receitas de prompt e README por Gemini gemini-4-argon-medium; delegar.sh e teste-delegar.sh por Codex gpt-6.1-terra (líder revisou e corrigiu o padrão 429).
+- **Decisões:** Felipe autorizou o merge do PR #7 na main; decisão do Felipe de copiar 3 ideias da análise do Overclock.
+- **Problemas e soluções:** O rojo serve caiu de novo ao trocar de branch (reiniciado na main). A primeira chamada do Gemini para as receitas falhou por crases no prompt dentro do bash, resolvido passando o prompt por arquivo.
+- **Testes:** teste-delegar.sh 6/6 OK; lune run check TUDO OK (29 testes). Studio: não informado nesta rodada (Squad B retestou no Studio antes de aprovar o PR #7).
+- **Próximo passo:** Squad B revisar o PR #10 e mesclar #8 e #9; planejar a Fase 2 da Squad A.
 
 ### 2026-11-15 · Rodada 7: correções do PR #7 pedidas pela Squad B
 - **O que foi feito:** Correção dos pedidos de mudança da Squad B no PR #7 (AreaService.Start checando área bloqueada no servidor conforme ROADMAP A3; BlockService medindo distância até o centro do bloco sem somar metade do tamanho; StartingCoins definido em 25). Documentação no CONTRATO de Coins padrão 25 e Bounds/SpawnLocation opcionais por área. Commit 5712f86 no branch a/fase1, resposta enviada no PR #7, nova revisão pedida ao drkk71 e recado enviado para a Squad B com dicas para a B6.
