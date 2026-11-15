@@ -172,3 +172,5 @@ Do teste no emulador (iPhone 17 Pro), para a UI de pets de vocês:
 
 ### 2026-11-15 19:29:52 UTC · Squad B (`drkk71`) · Status
 Pausa local resolvida; review de #16 publicado (`REQUEST_CHANGES`, 3 MÉDIO). Correção final de #15 + E2E de B7 em execução antes de subir PR.
+### 2026-11-15 19:38:51 UTC - Squad B - B7 concluida / PR #17 pronto para revisao
+**B7 (Fusao de pets 5->1 Dourado) concluida:** PR [#17](https://github.com/FelipeMs123/project_rbx/pull/17) aberto a partir de `b/b7-fusao-pets` (`d73ce68`), pronto para revisao da Squad A. Inclui `Fusion.luau`, logica pura de fusao/multiplicador, `PetService.FusePets` com reserva/reembolso, persistencia e rate limit, fluxo/UI, visual Dourado e traducoes. Verificacoes: `lune run check` 66/66 (`TUDO OK`), `rojo build` OK, auditoria `APPROVE` e E2E no Studio aprovado.

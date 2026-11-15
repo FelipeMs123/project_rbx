@@ -95,3 +95,8 @@
 - **Testes:** `lune run check` (`TUDO OK` no PR #9 `4870928`, na `b/b5-ovos-rebirth` com 143 verificações em memória e no PR #7 `1de24d0` com 24 testes) / Studio: PR #7 testado via MCP no head `1de24d0` (`CandyPlaza` com 10 blocos e 4 templates com `PrimaryPart = Core`, `CandyHud` em `(0.02, 0.5)`, `UnlockArea` validando `AREA_LOCKED`/`NOT_ENOUGH_COINS`, teste de alcance 25–28 studs). Não testado: multiplayer (2 jogadores), emulador mobile e portões com `ChocolateFalls` construída.
 - **Próximo passo:** Aguardar merge do PR #8 para abrir PRs de B2/B3/B5, reavaliação do PR #9 pela Squad A e correção dos 2 bloqueios do PR #7 para iniciar B6.
 
+### 2026-11-15 19:38:51 UTC - Rodada B7 - Fusao de pets concluida
+- **PR #17:** [feat(squad-b): B7 Fusao de pets 5->1 Dourado](https://github.com/FelipeMs123/project_rbx/pull/17), branch `b/b7-fusao-pets`, commit `d73ce68`, aberto e pronto para revisao da Squad A.
+- **Entrega:** Config `Fusion.luau`; fusao/multiplicador puro em `Inventory.luau`; `PetService.FusePets` com reserva/reembolso, save e rate limit; `PetController`/`PetInventoryUI`; visual Dourado em `Workspace.ClientPets`; traducoes em `Messages`.
+- **Evidencias:** `lune run check` 66/66 (`TUDO OK`), `rojo build -o build/game.rbxl` exit 0, auditoria cruzada `APPROVE` e E2E ao vivo no Studio aprovado (validacoes negativas, clique duplo real, `CottonCat:Golden`, 5 gemas, visual dourado e dano 4/hit).
+- **Proximo passo:** aguardar revisao da Squad A; B7 esta concluida.
