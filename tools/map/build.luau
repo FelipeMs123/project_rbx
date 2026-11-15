@@ -1,12 +1,13 @@
 --!strict
--- Workspace.Areas.{CandyPlaza,ChocolateFalls}, ServerStorage.BlockTemplates e ReplicatedStorage.PetModels
--- Dono: Squad A (A6) / Squad B (B6) | Gera modelos Rojo 7.
+-- Workspace.Areas.{CandyPlaza,ChocolateFalls,CottonClouds}, ServerStorage.BlockTemplates e ReplicatedStorage.PetModels
+-- Dono: Squad A (A6/A7) / Squad B (B6) | Gera modelos Rojo 7.
 -- Execute na raiz: lune run tools/map/build
 -- PrimaryPart via atributos Rojo_Id / Rojo_Target_PrimaryPart (resolvidos pelo Rojo no build).
 local fs = require("@lune/fs")
 local serde = require("@lune/serde")
 local plaza = require("./CandyPlaza")
 local falls = require("./ChocolateFalls")
+local clouds = require("./CottonClouds")
 local templates = require("./BlockTemplates")
 local petModelsData = require("./PetModels")
 
@@ -120,8 +121,21 @@ local chocolateFalls = folder("ChocolateFalls", {
 	folder("Scenery", makeParts(falls.Scenery)),
 })
 assert(
-	#falls.Scenery == 48 and #falls.BlockSpawns == 10 and #falls.Eggs == 1 and #falls.Gate.Parts == 5,
+	#falls.Scenery == 47 and #falls.BlockSpawns == 10 and #falls.Eggs == 1 and #falls.Gate.Parts == 5,
 	"Contagem da ChocolateFalls incorreta"
+)
+
+local cottonClouds = folder("CottonClouds", {
+	makePart(clouds.Bounds),
+	makePart(clouds.SpawnLocation),
+	folder("BlockSpawns", makeParts(clouds.BlockSpawns)),
+	makeModel(clouds.Gate, "CottonClouds"),
+	folder("Eggs", makeModels(clouds.Eggs)),
+	folder("Scenery", makeParts(clouds.Scenery)),
+})
+assert(
+	#clouds.Scenery == 50 and #clouds.BlockSpawns == 10 and #clouds.Eggs == 0 and #clouds.Gate.Parts == 5,
+	"Contagem da CottonClouds incorreta"
 )
 
 local expectedPets: { [string]: number } = {
@@ -142,12 +156,13 @@ assert(#petModels == 5, "Contagem de PetModels incorreta")
 fs.writeDir("assets/map")
 fs.writeFile("assets/map/CandyPlaza.model.json", serde.encode("json", candyPlaza, true) .. "\n")
 fs.writeFile("assets/map/ChocolateFalls.model.json", serde.encode("json", chocolateFalls, true) .. "\n")
+fs.writeFile("assets/map/CottonClouds.model.json", serde.encode("json", cottonClouds, true) .. "\n")
 fs.writeFile(
 	"assets/BlockTemplates.model.json",
 	serde.encode("json", folder("BlockTemplates", blockModels), true) .. "\n"
 )
 fs.writeFile("assets/PetModels.model.json", serde.encode("json", folder("PetModels", petModels), true) .. "\n")
 print(
-	`Geradas {partCount} Parts totais: CandyPlaza (54 cenário + 10 spawns + 1 spawn + CandyEgg 8), ChocolateFalls (48 cenário + 10 spawns + 1 spawn + 1 bounds + Gate 5 + ChocolateEgg 8), BlockTemplates (4 modelos = 25), PetModels (5 modelos = 50).`
+	`Geradas {partCount} Parts totais: CandyPlaza (54 cenário + 10 spawns + 1 spawn + CandyEgg 8), ChocolateFalls (47 cenário + 10 spawns + 1 spawn + 1 bounds + Gate 5 + ChocolateEgg 8), CottonClouds (50 cenário + 10 spawns + 1 spawn + 1 bounds + Gate 5 = 67; Eggs vazia), BlockTemplates (4 modelos = 25), PetModels (5 modelos = 50).`
 )
 print("PrimaryPart definida em todos os blocos, ovos, portão e 5 pets (Core).")
