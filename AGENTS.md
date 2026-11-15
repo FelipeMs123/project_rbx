@@ -20,6 +20,8 @@ Leia antes de mexer:
 | `docs/GDD.md` | Regras do jogo e fórmulas. |
 | `docs/TIME.md` | Squads, quem é dono de quê, papéis dos agentes. |
 | `docs/ROADMAP.md` | Tarefas. Trabalhe só na tarefa que você recebeu. |
+| `docs/LICOES.md` | Pegadinhas já resolvidas (Rojo, MCP do Studio, agentes). Leia antes; acrescente as novas. |
+| `docs/agentes/receitas/` | Modelos de prompt prontos para delegar tarefas a outros agentes. |
 
 ## Onde fica cada coisa
 
