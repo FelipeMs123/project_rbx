@@ -7,16 +7,23 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage.Shared
+local FusionConfig = require(Shared.Config.Fusion)
 local GameConfig = require(Shared.Config.Game)
+local MonetizationConfig = require(Shared.Config.Monetization)
 local PetsConfig = require(Shared.Config.Pets)
 local ErrorCodes = require(Shared.ErrorCodes)
 local Inventory = require(Shared.Logic.Inventory)
 local Types = require(Shared.Types)
 local NetServer = require(script.Parent.Parent.Net.NetServer)
 local DataService = require(script.Parent.DataService)
+local EconomyService = require(script.Parent.EconomyService)
+local MonetizationService = require(script.Parent.MonetizationService)
 
 local PET_REMOTE_RATE = 8
 local PET_REMOTE_BURST = 8
+local FUSE_REMOTE_RATE = 2
+local FUSE_REMOTE_BURST = 3
+local EXTRA_PET_SLOT_BONUS = MonetizationConfig.GamePasses.ExtraPetSlot.BonusSlots or 1
 
 local PetService = {}
 
@@ -26,15 +33,20 @@ local function isValidUuid(value: any): boolean
 	return typeof(value) == "string" and #value >= 1 and #value <= 64
 end
 
+local function getMaxEquipped(player: Player): number
+	local hasExtraSlot = MonetizationService.HasPass(player, "ExtraPetSlot")
+	return Inventory.maxEquipped(GameConfig.MaxEquipped, hasExtraSlot, EXTRA_PET_SLOT_BONUS)
+end
+
 local function buildEquippedAttribute(data: Types.PlayerData): string
-	local petIds: { string } = {}
+	local tokens: { string } = {}
 	for _, uuid in data.Equipped do
 		local pet = data.Inventory[uuid]
 		if pet ~= nil and PetsConfig[pet.Id] ~= nil then
-			table.insert(petIds, pet.Id)
+			table.insert(tokens, Inventory.formatEquippedToken(pet.Id, pet.Variant))
 		end
 	end
-	return table.concat(petIds, ",")
+	return table.concat(tokens, ",")
 end
 
 local function syncEquippedAttribute(player: Player, data: Types.PlayerData)
@@ -53,7 +65,15 @@ local function sanitizePlayerData(player: Player, data: Types.PlayerData)
 
 	for uuid, pet in rawInventory do
 		if isValidUuid(uuid) and type(pet) == "table" and type(pet.Id) == "string" and PetsConfig[pet.Id] ~= nil then
-			cleanInventory[uuid] = { Id = pet.Id }
+			local variant: string? = nil
+			if pet.Variant ~= nil then
+				if Inventory.isValidVariant(pet.Variant) then
+					variant = pet.Variant
+				else
+					inventoryChanged = true
+				end
+			end
+			cleanInventory[uuid] = if variant ~= nil then { Id = pet.Id, Variant = variant } else { Id = pet.Id }
 		else
 			inventoryChanged = true
 		end
@@ -63,6 +83,7 @@ local function sanitizePlayerData(player: Player, data: Types.PlayerData)
 	local seenEquipped: { [string]: boolean } = {}
 	local equippedChanged = type(data.Equipped) ~= "table"
 	local rawEquippedCount = 0
+	local maxEquipped = getMaxEquipped(player)
 
 	for index, uuid in rawEquipped do
 		rawEquippedCount += 1
@@ -71,7 +92,7 @@ local function sanitizePlayerData(player: Player, data: Types.PlayerData)
 			and isValidUuid(uuid)
 			and cleanInventory[uuid] ~= nil
 			and not seenEquipped[uuid]
-			and #cleanEquipped < GameConfig.MaxEquipped
+			and #cleanEquipped < maxEquipped
 		then
 			seenEquipped[uuid] = true
 			table.insert(cleanEquipped, uuid)
@@ -121,7 +142,8 @@ local function equipPet(player: Player, uuid: any): Types.Result
 	if data == nil or player.Parent ~= Players then
 		return { ok = false, err = ErrorCodes.DATA_NOT_LOADED }
 	end
-	local canEquip, equipErr = Inventory.canEquip(data, uuid, GameConfig.MaxEquipped)
+	local maxEquipped = getMaxEquipped(player)
+	local canEquip, equipErr = Inventory.canEquip(data, uuid, maxEquipped)
 	if not canEquip then
 		return { ok = false, err = equipErr }
 	end
@@ -169,22 +191,102 @@ local function unequipPet(player: Player, uuid: any): Types.Result
 	return { ok = true, data = { uuid = uuid } }
 end
 
+local function fusePets(player: Player, uuids: any): Types.Result
+	if player.Parent ~= Players or not DataService.IsLoaded(player) then
+		return { ok = false, err = ErrorCodes.DATA_NOT_LOADED }
+	end
+	local data = DataService.Get(player)
+	if data == nil then
+		return { ok = false, err = ErrorCodes.DATA_NOT_LOADED }
+	end
+
+	local canFuse, fuseErr, petId, petDef = Inventory.canFuse(data, uuids, PetsConfig :: any, FusionConfig :: any)
+	if not canFuse or petId == nil or petDef == nil then
+		return { ok = false, err = fuseErr or ErrorCodes.FUSE_INVALID }
+	end
+
+	local rarity = petDef.Rarity
+	local gemCost = if type(rarity) == "string" then FusionConfig.GemCostByRarity[rarity] else nil
+	if type(gemCost) ~= "number" or gemCost ~= gemCost or gemCost == math.huge or gemCost <= 0 then
+		return { ok = false, err = ErrorCodes.FUSE_INVALID }
+	end
+
+	if not EconomyService.Spend(player, "Gems", gemCost) then
+		return { ok = false, err = ErrorCodes.NOT_ENOUGH_GEMS }
+	end
+
+	-- Sem yield após Spend: gera o novo UUID e troca os 5 pets pelo Dourado num único Update.
+	local newUuid = HttpService:GenerateGUID(false)
+	while data.Inventory[newUuid] ~= nil do
+		newUuid = HttpService:GenerateGUID(false)
+	end
+
+	local mutated = false
+	local updateOk, updatedInventory = pcall(
+		DataService.Update,
+		player,
+		"Inventory",
+		function(inventory: { [string]: Types.PetInstance })
+			while inventory[newUuid] ~= nil do
+				newUuid = HttpService:GenerateGUID(false)
+			end
+			for _, uuid in uuids :: { string } do
+				inventory[uuid] = nil
+			end
+			inventory[newUuid] = { Id = petId, Variant = "Golden" }
+			mutated = true
+			return inventory
+		end
+	)
+	if not mutated then
+		local refundOk, refundedGems = pcall(DataService.Update, player, "Gems", function(gems: number)
+			return (gems or 0) + gemCost
+		end)
+		if not refundOk or refundedGems == nil then
+			warn(`[PetService] Falha ao estornar {gemCost} gemas de {player.Name} após erro em FusePets`)
+		end
+		return {
+			ok = false,
+			err = if not updateOk then ErrorCodes.INTERNAL else ErrorCodes.DATA_NOT_LOADED,
+		}
+	end
+	if not updateOk or updatedInventory == nil then
+		warn(`[PetService] Sync de inventário falhou após fusão para {player.Name}`)
+	end
+
+	local saveOk = pcall(DataService.Save, player)
+	if not saveOk then
+		warn(`[PetService] Falha ao salvar fusão de {player.Name}`)
+	end
+	return {
+		ok = true,
+		data = {
+			uuid = newUuid,
+			petId = petId,
+			variant = "Golden",
+		},
+	}
+end
+
 -- Soma dos multiplicadores dos pets equipados. Dano = BaseDamage + GetDamageBonus.
 function PetService.GetDamageBonus(player: Player): number
 	local data = DataService.Get(player)
 	if data == nil then
 		return 0
 	end
-	return Inventory.bonus(data, PetsConfig :: any)
+	return Inventory.bonus(data, PetsConfig :: any, FusionConfig :: any)
 end
 
 -- Cria um pet novo no inventário. Devolve (uuid, nil) ou (nil, ErrorCode).
-function PetService.AddPet(player: Player, petId: string): (string?, string?)
+function PetService.AddPet(player: Player, petId: string, variant: string?): (string?, string?)
 	if typeof(petId) ~= "string" or #petId < 1 or #petId > 64 then
 		return nil, ErrorCodes.INVALID_ARGS
 	end
 	if PetsConfig[petId] == nil then
 		return nil, ErrorCodes.UNKNOWN_ITEM
+	end
+	if variant ~= nil and not Inventory.isValidVariant(variant) then
+		return nil, ErrorCodes.INVALID_ARGS
 	end
 	local data = DataService.Get(player)
 	if data == nil or player.Parent ~= Players then
@@ -201,7 +303,7 @@ function PetService.AddPet(player: Player, petId: string): (string?, string?)
 	end
 
 	local updated = DataService.Update(player, "Inventory", function(inventory: { [string]: Types.PetInstance })
-		inventory[uuid] = { Id = petId }
+		inventory[uuid] = if variant ~= nil then { Id = petId, Variant = variant } else { Id = petId }
 		return inventory
 	end)
 	if updated == nil then
@@ -213,6 +315,7 @@ end
 function PetService.Init()
 	NetServer.OnInvoke("EquipPet", equipPet, { rate = PET_REMOTE_RATE, burst = PET_REMOTE_BURST })
 	NetServer.OnInvoke("UnequipPet", unequipPet, { rate = PET_REMOTE_RATE, burst = PET_REMOTE_BURST })
+	NetServer.OnInvoke("FusePets", fusePets, { rate = FUSE_REMOTE_RATE, burst = FUSE_REMOTE_BURST })
 	DataService.Loaded:Connect(onProfileLoaded)
 	DataService.Changed:Connect(onDataChanged)
 	Players.PlayerRemoving:Connect(function(player)

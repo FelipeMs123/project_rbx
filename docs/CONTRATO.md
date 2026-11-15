@@ -56,11 +56,11 @@ Criados pelo `NetServer.Init()`. Rate limit é por jogador e por remote. Remote 
 |---|---|---|---|---|---|
 | `GetData` | Function | - | `Result{data: PlayerData}` | 2/s | fundação |
 | `RequestClick` | Event | `blockId: string` | - | 15/s, burst 15 | A |
-| `RequestRebirth` | Function | - | `Result` | 2/s | B |
+| `RequestRebirth` | Function | `requestId: string?` (opcional, retrocompatível) | `Result` | 2/s | B |
 | `UnlockArea` | Function | `areaId: string` | `Result` | 2/s | A |
 | `EquipPet` | Function | `uuid: string` | `Result` | 8/s | B |
 | `UnequipPet` | Function | `uuid: string` | `Result` | 8/s | B |
-| `PurchaseEgg` | Function | `eggId: string` | `Result{data: {uuid, petId}}` | 4/s | B |
+| `PurchaseEgg` | Function | `eggId: string, requestId: string?` (`requestId` opcional, retrocompatível) | `Result{data: {uuid, petId}}` | 4/s | B |
 | `ClaimDaily` | Function | - | `Result{data: {day, streak, coins, gems}}` | 2/s | A (v2) |
 | `SetTutorialStep` | Function | `step: number` | `Result` | 2/s | A (v2) |
 | `SetSetting` | Function | `key: string, value: boolean` | `Result` | 2/s | A (v2) |
@@ -73,7 +73,9 @@ Validações obrigatórias no servidor:
   no servidor).
 - `EquipPet/UnequipPet`: `uuid` é string de até 64 caracteres e existe no `Inventory` do jogador.
 - `PurchaseEgg`: ovo existe; área do ovo liberada; jogador perto do ovo no mapa (quando o
-  mapa existir); espaço no inventário **antes** de cobrar; cobra, sorteia e entrega.
+  mapa existir); espaço no inventário **antes** de cobrar; cobra, sorteia e entrega. `requestId` opcional
+  (string de 1 a 64 chars) garante idempotência por jogador para retry após timeout do cliente (trava `inFlight` + cache FIFO limitado dos últimos 100 resultados).
+- `RequestRebirth`: saldo >= custo; cobra, incrementa `Rebirths` (estornando `cost` diretamente se falhar), reseta moedas/áreas e credita gemas. `requestId` opcional (string de 1 a 64 chars) segue a mesma política de idempotência para retry após timeout do cliente.
 - `UnlockArea`: área existe, ainda não liberada, a anterior (`Order - 1`) já liberada, saldo.
 - `ClaimDaily` (v2): dia UTC do servidor maior que `Daily.LastClaimDay`, senão `DAILY_NOT_READY`.
   Sequência pelas regras de `Config/DailyRewards` (`Streak` conta 1..7 e volta a 1 depois do 7).
