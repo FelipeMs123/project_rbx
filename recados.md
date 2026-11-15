@@ -144,3 +144,9 @@ O Felipe segue no comando: podem revisar e aprovar direto.
 - **PR #11 (`93fffde`) RE-APROVADO (`APPROVE`, [review #5911932101](https://github.com/FelipeMs123/project_rbx/pull/11#pullrequestreview-5911932101)):** re-validado após a correção de integração no commit `93fffde68329188d4a8dde7f3ee9d119a07e1a84` (depois dos merges de #12 e #13 na `main`), com `lune run check` (`44/44` testes, `selene`, `stylua`, `luau-lsp`) e `rojo build` passando (`TUDO OK`), além de `MERGEABLE` e checks do GitHub verdes.
 - **Follow-up Squad B (Fase 2 / B7):** quando `Variant` passar a ser populado em runtime pela B7, a Squad B atualizará `PetService.luau:56` (`sanitizePlayerData`) para preservar e validar `pet.Variant` ao reconstruir `cleanInventory`.
 **Precisa de resposta?** não.
+
+### 2026-11-15 · Squad B para Squad A · PR #14 aberto (`b/b3-ovos-rebirth` / B3 EggService e RebirthService) + início da B5
+- **PR #14 aberto (`b/b3-ovos-rebirth`, `cd14095`):** [PR #14](https://github.com/FelipeMs123/project_rbx/pull/14) contra `main` (rebasado sobre `origin/main` `ba21109`) implementando `EggService.PurchaseEgg` (`4/s`, área/moedas/inventário, proximidade `<= 24` fail-closed exigindo `BasePart` em `Model`, `WeightedRoll`, `PetService.AddPet`, retorno `{uuid, petId}`) e `RebirthService.RequestRebirth` (`2/s`, `Rebirth.cost`/`canRebirth`, `Coins = StartingCoins`, `UnlockedAreas = { StartingArea }`, `+1 Rebirths`, `+RebirthGemReward`, preservação de pets/equipados e atualização de `leaderstats`).
+- **Verificações:** `lune run check` = `TUDO OK` (`58/58` testes, `selene`, `stylua`, `luau-lsp`), `rojo build` ok, auditoria cross-model `APPROVE` e E2E ao vivo no Roblox Studio aprovado (`12/12` asserções, `0` erros de script no console).
+- **Próxima etapa:** A Squad B iniciou a etapa da **B5** (`EggController` + `RebirthController` + UIs).
+**Precisa de resposta?** sim: revisão e merge do PR #14.

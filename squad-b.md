@@ -6,14 +6,22 @@
 | Tarefa | Status | Feito por (ferramenta e modelo) | Branch / PR | Bloqueio ou próximo passo |
 |---|---|---|---|---|
 | B1 Lógica pura | ✅ pronto | Antigravity gemini-4-hydrogen-high / Codex gpt-6.1-sol | `b/b1-logica-pura` #8 | Mesclado na `main` (`36e389a`) |
-| B2 PetService | ✅ pronto | Codex / Antigravity | `b/b2-pet-service` #12 | PR #12 aberto (`15c7dcb`), testado no Studio e pronto para revisão/merge |
-| B3 EggService + RebirthService | ⬜ a fazer | — | `b/b3-egg-rebirth-service` | Desbloqueado o PR #8 (`36e389a`); depende de B2 |
+| B2 PetService | ✅ pronto | Codex / Antigravity | `b/b2-pet-service` #12 | Mesclado na `main` (`16ba206`) |
+| B3 EggService + RebirthService | ✅ pronto | Codex / Antigravity | `b/b3-ovos-rebirth` #14 | PR #14 aberto (`cd14095`), validado (`58/58` + `12/12` Studio E2E) e pronto para revisão/merge |
 | B4 Pets e inventário | ✅ pronto | Codex gpt-6-sol (`rbx-client`) + revisão Codex gpt-6-luna | `b/b4-pets-ui` #9 | Mesclado na `main` (`3bf697e`) |
-| B5 Ovos e rebirth | 🟡 em andamento | Antigravity gemini-4-hydrogen-high + revisão Codex gpt-6.1-sol | `b/b5-ovos-rebirth` (local) | Implementado e revisado localmente; pronto para rebase na `main` e integração com B3/B6 |
-| B6 Studio: Cascata de Chocolate | ✅ pronto | Codex / Antigravity | `b/b6-cascata` #13 | PR #13 aberto (`e4f55dc`), auditado e testado no Studio; pronto para revisão/merge |
+| B5 Ovos e rebirth | 🟡 em andamento | Antigravity gemini-4-hydrogen-high + revisão Codex gpt-6.1-sol | `b/b5-ovos-rebirth` | Etapa B5 (`EggController` + `RebirthController` + UIs) iniciada pela Squad B |
+| B6 Studio: Cascata de Chocolate | ✅ pronto | Codex / Antigravity | `b/b6-cascata` #13 | Mesclado na `main` (`0b56317`) |
 
 ## Registro
 (entrada mais nova em cima)
+
+### 2026-11-15 · Rodada 10: abertura do PR #14 (`b/b3-ovos-rebirth`, `cd14095`) e início da B5
+- **O que foi feito:** Push da branch `b/b3-ovos-rebirth` (`cd14095`), abertura do **PR #14 (`feat(squad-b): B3 EggService e RebirthService`)** contra `main` ([PR #14](https://github.com/FelipeMs123/project_rbx/pull/14)), e registro em `recados.md` e `squad-b.md` da validação completa da B3 e do início da etapa **B5** (`EggController` + `RebirthController` + UIs).
+- **Como:** Conferência de `wt-b3` rebasada sobre `origin/main` (`ba21109`), `git push -u origin b/b3-ovos-rebirth`, abertura do PR #14 via `gh pr create` e atualização do diário em `wt-diario`.
+- **Decisões:** Marcar **B3** como pronta para revisão/merge no **PR #14** e registrar o início da etapa **B5** pela Squad B.
+- **Problemas e soluções:** Nenhum bloqueio em B3.
+- **Testes:** `lune run check` = `TUDO OK` (`58/58` testes, `selene`, `stylua`, `luau-lsp`), `rojo build` ok, auditoria cross-model `APPROVE` / Studio: E2E ao vivo aprovado (`12/12` asserções de `EggService`/`RebirthService`, `0` erros de script no console).
+- **Próximo passo:** Aguardar revisão/merge do PR #14 pela Squad A / `@FelipeMs123` e avançar na etapa da **B5** (`EggController` + `RebirthController` + UIs).
 
 ### 2026-11-15 · Rodada 9: abertura do PR #13 (`b/b6-cascata`, `e4f55dc`)
 - **O que foi feito:** Registro em `recados.md` e `squad-b.md` da abertura do **PR #13 (`feat(squad-b): B6 Cascata de Chocolate, 5 PetModels e 2 Eggs`, `e4f55dc`)** e agradecimento à Squad A pela aprovação do PR #12.
