@@ -11,6 +11,7 @@ local EggsConfig = require(Shared.Config.Eggs)
 local GameConfig = require(Shared.Config.Game)
 local ErrorCodes = require(Shared.ErrorCodes)
 local Inventory = require(Shared.Logic.Inventory)
+local RequestIdempotency = require(Shared.Logic.RequestIdempotency)
 local WeightedRoll = require(Shared.Logic.WeightedRoll)
 local Types = require(Shared.Types)
 local NetServer = require(script.Parent.Parent.Net.NetServer)
@@ -21,6 +22,7 @@ local PetService = require(script.Parent.PetService)
 local PURCHASE_EGG_RATE = 4
 local PURCHASE_EGG_BURST = 6
 local MAX_EGG_DISTANCE = 24
+local MAX_CACHED_RESULTS = 100
 
 -- Posições canônicas dos pedestais para fallback server-side enquanto o modelo real não existir em Workspace.Areas.
 local FALLBACK_EGG_POSITIONS: { [string]: Vector3 } = {
@@ -29,6 +31,8 @@ local FALLBACK_EGG_POSITIONS: { [string]: Vector3 } = {
 }
 
 local rng = Random.new()
+local purchaseIdempotency = RequestIdempotency.new(MAX_CACHED_RESULTS)
+local playerRemovingConnected = false
 
 local EggService = {}
 
@@ -71,7 +75,7 @@ local function resolveEggPosition(areasFolder: Instance, areaId: string, eggId: 
 	return FALLBACK_EGG_POSITIONS[eggId]
 end
 
-local function handlePurchaseEgg(player: Player, eggId: any): Types.Result
+local function executePurchaseEgg(player: Player, eggId: any): Types.Result
 	if typeof(eggId) ~= "string" or #eggId < 1 or #eggId > 64 then
 		return { ok = false, err = ErrorCodes.INVALID_ARGS }
 	end
@@ -141,11 +145,23 @@ local function handlePurchaseEgg(player: Player, eggId: any): Types.Result
 	return { ok = true, data = { uuid = uuid, petId = petId } }
 end
 
+local function handlePurchaseEgg(player: Player, eggId: any, requestId: any): Types.Result
+	return purchaseIdempotency:Execute(player, requestId, function()
+		return executePurchaseEgg(player, eggId)
+	end) :: Types.Result
+end
+
 function EggService.Init()
 	NetServer.OnInvoke("PurchaseEgg", handlePurchaseEgg, {
 		rate = PURCHASE_EGG_RATE,
 		burst = PURCHASE_EGG_BURST,
 	})
+	if not playerRemovingConnected then
+		playerRemovingConnected = true
+		Players.PlayerRemoving:Connect(function(player)
+			purchaseIdempotency:Remove(player)
+		end)
+	end
 end
 
 function EggService.Start() end
