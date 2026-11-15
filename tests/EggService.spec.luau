@@ -75,6 +75,25 @@ local function makeInstance(name: string, className: string, children: { [string
 		end
 		return nil
 	end
+	function instance:FindFirstChildWhichIsA(targetClass: string, recursive: boolean?)
+		for _, child in self._children do
+			if child:IsA(targetClass) then
+				return child
+			end
+			if recursive then
+				local nested = child:FindFirstChildWhichIsA(targetClass, true)
+				if nested ~= nil then
+					return nested
+				end
+			end
+		end
+		return nil
+	end
+	if className == "Model" and instance.GetPivot == nil then
+		function instance:GetPivot()
+			return { Position = makeVector3(0, 0, 0) }
+		end
+	end
 	return instance
 end
 
@@ -491,8 +510,10 @@ return function(t)
 			t.eq(res.data.petId, "CottonCat")
 			t.eq(h.getData(p1).Coins, 900)
 
-			-- Model sem PrimaryPart usa GetPivot().Position
-			local pivotEgg = makeInstance("CandyEgg", "Model", {}, {
+			-- Model sem PrimaryPart mas com BasePart física usa GetPivot().Position
+			local pivotEgg = makeInstance("CandyEgg", "Model", {
+				Body = makeInstance("Body", "Part", nil, { Position = makeVector3(100, 3, 0) }),
+			}, {
 				GetPivot = function()
 					return { Position = makeVector3(100, 3, 0) }
 				end,
@@ -587,9 +608,9 @@ return function(t)
 			t.eq(res.ok, true)
 			t.eq(h.getData(p1).Coins, 7300)
 
-			-- Instância presente sem PrimaryPart/GetPivot/BasePart válida -> fail-closed mesmo em cima do pedestal
+			-- Model vazio (com GetPivot padrão em 0,0,0, simulando PVInstance real) -> fail-closed mesmo com jogador em (0,0,0)
 			h.advanceClock(2)
-			h.setCharacterAt(p1, makeVector3(0, 2.6, -28), 100)
+			h.setCharacterAt(p1, makeVector3(0, 0, 0), 100)
 			local emptyModelEgg = makeInstance("CandyEgg", "Model", {})
 			h.setEggInWorkspace("CandyPlaza", "CandyEgg", emptyModelEgg)
 			res = h.invokeRemote("PurchaseEgg", p1, "CandyEgg")
@@ -597,12 +618,44 @@ return function(t)
 			t.eq(res.err, "TOO_FAR")
 			t.eq(h.getData(p1).Coins, 7300)
 
+			-- Model sem PrimaryPart e apenas com Folder/Attachment (sem BasePart) -> também fail-closed em (0,0,0)
+			local nonPhysicalModelEgg = makeInstance("CandyEgg", "Model", {
+				Fx = makeInstance("Fx", "Folder", {}),
+			})
+			h.setEggInWorkspace("CandyPlaza", "CandyEgg", nonPhysicalModelEgg)
+			res = h.invokeRemote("PurchaseEgg", p1, "CandyEgg")
+			t.eq(res.ok, false)
+			t.eq(res.err, "TOO_FAR")
+			t.eq(h.getData(p1).Coins, 7300)
+
+			-- Model sem PrimaryPart contendo BasePart física descendente -> aceita <= 24 studs e rejeita > 24 studs
+			local physicalChildModelEgg = makeInstance("CandyEgg", "Model", {
+				Parts = makeInstance("Parts", "Folder", {
+					Shell = makeInstance("Shell", "Part", nil, { Position = makeVector3(60, 2, 10) }),
+				}),
+			}, {
+				GetPivot = function()
+					return { Position = makeVector3(60, 2, 10) }
+				end,
+			})
+			h.setEggInWorkspace("CandyPlaza", "CandyEgg", physicalChildModelEgg)
+			h.setCharacterAt(p1, makeVector3(85, 2, 10), 100) -- 25 studs > 24
+			res = h.invokeRemote("PurchaseEgg", p1, "CandyEgg")
+			t.eq(res.ok, false)
+			t.eq(res.err, "TOO_FAR")
+			t.eq(h.getData(p1).Coins, 7300)
+
+			h.setCharacterAt(p1, makeVector3(80, 2, 10), 100) -- 20 studs <= 24
+			res = h.invokeRemote("PurchaseEgg", p1, "CandyEgg")
+			t.eq(res.ok, true)
+			t.eq(h.getData(p1).Coins, 7200)
+
 			local folderEgg = makeInstance("CandyEgg", "Folder", {})
 			h.setEggInWorkspace("CandyPlaza", "CandyEgg", folderEgg)
 			res = h.invokeRemote("PurchaseEgg", p1, "CandyEgg")
 			t.eq(res.ok, false)
 			t.eq(res.err, "TOO_FAR")
-			t.eq(h.getData(p1).Coins, 7300)
+			t.eq(h.getData(p1).Coins, 7200)
 
 			-- Ovo sem instância e sem fallback canônico conhecido com Areas presente -> fail-closed
 			local hCustom = loadEggServiceHarness({

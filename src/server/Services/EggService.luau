@@ -33,10 +33,16 @@ local rng = Random.new()
 local EggService = {}
 
 local function getEggPosition(eggInstance: Instance): Vector3?
-	if eggInstance:IsA("Model") then
+	if eggInstance:IsA("BasePart") then
+		return eggInstance.Position
+	elseif eggInstance:IsA("Model") then
 		local primary = eggInstance.PrimaryPart
 		if primary ~= nil and primary:IsA("BasePart") then
 			return primary.Position
+		end
+		local basePart = eggInstance:FindFirstChildWhichIsA("BasePart", true)
+		if basePart == nil or not basePart:IsA("BasePart") then
+			return nil
 		end
 		local getPivot = (eggInstance :: any).GetPivot
 		if type(getPivot) == "function" then
@@ -45,9 +51,7 @@ local function getEggPosition(eggInstance: Instance): Vector3?
 				return pivot.Position
 			end
 		end
-		return nil
-	elseif eggInstance:IsA("BasePart") then
-		return eggInstance.Position
+		return basePart.Position
 	end
 	return nil
 end
