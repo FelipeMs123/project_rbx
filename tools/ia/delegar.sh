@@ -62,7 +62,9 @@ chamar() {
 }
 
 estado_arvore() {
-    git -C "$raiz" status --porcelain && git -C "$raiz" diff
+    git -C "$raiz" status --porcelain && git -C "$raiz" diff &&
+        git -C "$raiz" diff --cached &&
+        git -C "$raiz" ls-files --others --exclude-standard | git -C "$raiz" hash-object --stdin-paths
 }
 
 executar() {

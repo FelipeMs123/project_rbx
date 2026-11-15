@@ -15,6 +15,11 @@ printf '%s\n' "$nome" >> "$CHAMADAS"
 printf '%s\n' "$@" >> "$ARGUMENTOS"
 if [ "$nome" = codex ]; then
     [ "${ALTERAR_ARVORE:-0}" -eq 0 ] || printf alterado > arquivo-criado
+    [ "${ALTERAR_UNTRACKED:-0}" -eq 0 ] || printf alterado > arquivo-untracked
+    if [ "${ALTERAR_STAGED:-0}" -eq 1 ]; then
+        printf alterado > arquivo-staged
+        git add arquivo-staged || exit 1
+    fi
     printf '%s\n' "$CODEX_SAIDA"
     exit "$CODEX_CODIGO"
 fi
@@ -28,8 +33,8 @@ export CODEX_BIN AGY_BIN CHAMADAS ARGUMENTOS
 falhas=0
 preparar() {
     : > "$CHAMADAS"; : > "$ARGUMENTOS"
-    CODEX_SAIDA=ok CODEX_CODIGO=0 AGY_SAIDA=ok AGY_CODIGO=0 ALTERAR_ARVORE=0
-    export CODEX_SAIDA CODEX_CODIGO AGY_SAIDA AGY_CODIGO ALTERAR_ARVORE
+    CODEX_SAIDA=ok CODEX_CODIGO=0 AGY_SAIDA=ok AGY_CODIGO=0 ALTERAR_ARVORE=0 ALTERAR_UNTRACKED=0 ALTERAR_STAGED=0
+    export CODEX_SAIDA CODEX_CODIGO AGY_SAIDA AGY_CODIGO ALTERAR_ARVORE ALTERAR_UNTRACKED ALTERAR_STAGED
 }
 resultado() {
     if [ "$1" -eq 0 ]; then printf 'OK: %s\n' "$2"; else printf 'FALHOU: %s\n' "$2"; falhas=$((falhas + 1)); fi
@@ -68,7 +73,7 @@ if [ "$status" -eq 0 ] && grep -Fx -- '-c' "$ARGUMENTOS" >/dev/null && grep -Fx 
 
 # O repositório temporário permite verificar alterações reais feitas pelo primário.
 git -C "$teste/repo" init -q || exit 1
-git -C "$teste/repo" -c user.name=Teste -c user.email=teste@example.invalid commit --allow-empty -qm inicial || exit 1
+printf '.alethe/\n' >> "$teste/repo/.git/info/exclude"
 preparar
 CODEX_SAIDA='429 Too Many Requests' CODEX_CODIGO=1 ALTERAR_ARVORE=1
 rodar simples "$teste/prompt"
@@ -89,5 +94,18 @@ preparar
 CODEX_SAIDA='429 Too Many Requests' CODEX_CODIGO=1
 rodar critico "$teste/prompt" --mcp
 if [ "$status" -eq 3 ] && [ "$(cat "$CHAMADAS")" = codex ]; then resultado 0 'cota com MCP sem agy'; else resultado 1 'cota com MCP sem agy'; fi
+
+printf original > "$teste/repo/arquivo-untracked"
+preparar
+CODEX_SAIDA='429 Too Many Requests' CODEX_CODIGO=1 ALTERAR_UNTRACKED=1
+rodar simples "$teste/prompt"
+if [ "$status" -eq 4 ] && [ "$(cat "$CHAMADAS")" = codex ]; then resultado 0 'cota com untracked modificado'; else resultado 1 'cota com untracked modificado'; fi
+
+printf original > "$teste/repo/arquivo-staged"
+git -C "$teste/repo" add arquivo-staged || exit 1
+preparar
+CODEX_SAIDA='429 Too Many Requests' CODEX_CODIGO=1 ALTERAR_STAGED=1
+rodar simples "$teste/prompt"
+if [ "$status" -eq 4 ] && [ "$(cat "$CHAMADAS")" = codex ]; then resultado 0 'cota com staged modificado'; else resultado 1 'cota com staged modificado'; fi
 
 [ "$falhas" -eq 0 ]
