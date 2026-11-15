@@ -27,3 +27,6 @@ DevPackages/
 build/
 globalTypes.d.luau
 roblox.yml
+
+# Registros locais dos agentes (tools/ia/delegar.sh e afins)
+.alethe/
