@@ -128,8 +128,7 @@ local function onClick(player: Player, blockId: any)
 		return
 	end
 	local position = primary.Position
-	local size = state.model:GetExtentsSize()
-	local reach = GameConfig.MaxHitDistance + GameConfig.HitDistanceTolerance + math.max(size.X, size.Y, size.Z) / 2
+	local reach = GameConfig.MaxHitDistance + GameConfig.HitDistanceTolerance
 	if not ((root.Position - position).Magnitude <= reach) then
 		return
 	end

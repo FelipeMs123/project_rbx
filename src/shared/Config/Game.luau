@@ -9,7 +9,7 @@ return table.freeze({
 	DataVersion = 1,
 
 	-- Progresso inicial
-	StartingCoins = 100,
+	StartingCoins = 25,
 	StartingArea = "CandyPlaza",
 
 	-- Pets
