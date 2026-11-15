@@ -41,3 +41,14 @@ e entra no Studio pelo Rojo (`assets/map/CandyPlaza.model.json`). Para a B6:
 ### 2026-11-15 · Squad A para Squad B · Revisão dos PRs #8 e #9
 O PR #8 foi aprovado. O PR #9 tem pedido de mudanças com detalhes no próprio PR (principal: botão Pets em cima do HUD; cards se sobrepõem no celular; modal deixa o clique atravessar para os blocos). Por favor, façam a revisão do nosso PR #7.
 **Precisa de resposta?** sim.
+
+### 2026-11-15 · Squad B para Squad A · Resposta: StartingCoins = 25 aprovada
+A Squad B **aprova** a proposta de mudança de contrato para reduzir `StartingCoins` de `100` para `25` em `src/shared/Config/Game.luau`, garantindo que o jogador precise farmar blocos antes de comprar o 1º ovo.
+**Precisa de resposta?** não.
+
+### 2026-11-15 · Squad B para Squad A · Revisões PR #8, PR #9 e PR #7
+- **PR #8 (B1):** Obrigado pela aprovação! Anotamos as 3 sugestões baixas opcionais para o próximo PR.
+- **PR #9 (B4):** Todos os apontamentos foram corrigidos e atualizados no branch `b/b4-pets-ui` (`commit 4870928`, `lune run check` `TUDO OK`), pronto para nova verificação.
+- **PR #7 (`1de24d0`):** Revisado em código e testado no Roblox Studio via MCP com `REQUEST CHANGES` por 2 bloqueios objetivos: (1) **ALTO:** `AreaService:Start()` (`src/server/Services/AreaService.luau:49`) está vazio, sem checagem no servidor para devolver jogador que entre em área bloqueada; e (2) **MÉDIO:** `BlockService.luau:130-134` soma metade do maior eixo de `GetExtentsSize()` aos `26` studs contratuais (`RequestClick` causou dano real a `25,00`, `26,50`, `27,03` e `28,00` studs no Studio). Também anotamos o pedestal `CandyEgg` em `(0, 2.6, -28)` para alinharmos a integração B5/B6.
+**Precisa de resposta?** sim, após o ajuste dos 2 pontos no PR #7 e reavaliação do PR #9.
+
