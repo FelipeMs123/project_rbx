@@ -859,7 +859,7 @@ return function(t)
 	)
 
 	t.test(
-		"RequestRebirth detecta falha de AddGems (Update de Gems retornando nil) via targetGems e recupera exatamente no retry",
+		"RequestRebirth detecta falha de AddGems (Update de Gems retornando nil) sem mutação e recupera exatamente no retry",
 		function()
 			local h = loadRebirthServiceHarness()
 			h.RebirthService.Init()
@@ -954,71 +954,151 @@ return function(t)
 		end
 	)
 
-	t.test("RequestRebirth limpa checkpoints pendentes no PlayerRemoving e respeita limite FIFO de 100", function()
-		local h = loadRebirthServiceHarness()
-		h.RebirthService.Init()
+	t.test(
+		"RequestRebirth credita Gems do rebirth no retry mesmo após +10 Gems externas quando AddGems falhou sem mutar",
+		function()
+			for _, mode in { "return_nil", "throw" } do
+				local h = loadRebirthServiceHarness()
+				h.RebirthService.Init()
 
-		local p1 = h.makePlayer(1, "Alice")
-		h.setLoadedData(p1, {
-			Version = 1,
-			Coins = 1e60,
-			Gems = 0,
-			Rebirths = 0,
-			UnlockedAreas = { "CandyPlaza", "ChocolateFalls" },
-			Inventory = {},
-			Equipped = {},
-		})
+				local p1 = h.makePlayer(1, "Alice")
+				h.setLoadedData(p1, {
+					Version = 1,
+					Coins = 15000,
+					Gems = 3,
+					Rebirths = 0,
+					UnlockedAreas = { "CandyPlaza", "ChocolateFalls" },
+					Inventory = {},
+					Equipped = {},
+				})
 
-		-- Gera 101 falhas parciais: o 1º checkpoint (cp-1) deve ser despejado pela fila FIFO de 100
-		h.setDataServiceSetHook(function(original, player, key, value)
-			if key == "UnlockedAreas" then
-				return false
+				h.setDataServiceUpdateHook(function(original, player, key, modifier)
+					if key == "Gems" then
+						if mode == "throw" then
+							error("falha simulada antes de mutar Gems")
+						end
+						return nil
+					end
+					return original(player, key, modifier)
+				end)
+
+				local failRes = h.invokeRemote("RequestRebirth", p1, "req-gems-ext-" .. mode)
+				t.eq(failRes.ok, false)
+				t.eq(failRes.err, "INTERNAL")
+				t.eq(h.getData(p1).Rebirths, 1)
+				t.eq(h.getData(p1).Coins, 25)
+				t.eq(#h.getData(p1).UnlockedAreas, 1)
+				t.eq(h.getData(p1).Gems, 3, "Gems não deve mudar quando AddGems falha sem mutar")
+				t.eq(h.getSaveCount(), 0)
+
+				-- Fonte externa credita +10 Gems antes do retry (3 -> 13)
+				h.setDataServiceUpdateHook(nil)
+				h.EconomyService.AddGems(p1, 10)
+				t.eq(h.getData(p1).Gems, 13)
+
+				-- Retry deve creditar os +5 Gems do rebirth (13 -> 18) sem duplicar Rebirths
+				local retryRes = h.invokeRemote("RequestRebirth", p1, "req-gems-ext-" .. mode)
+				t.eq(retryRes.ok, true)
+				t.eq(retryRes.data.rebirths, 1)
+				t.eq(retryRes.data.gemsReward, 5)
+				t.eq(h.getData(p1).Rebirths, 1)
+				t.eq(h.getData(p1).Gems, 18)
+				t.eq(h.getSaveCount(), 1)
 			end
-			return original(player, key, value)
-		end)
+		end
+	)
 
-		for i = 1, 101 do
+	t.test(
+		"RequestRebirth recusa novo requestId no limite de 100 checkpoints pendentes sem descartar cp-1 e limpa no PlayerRemoving",
+		function()
+			local h = loadRebirthServiceHarness()
+			h.RebirthService.Init()
+
+			local p1 = h.makePlayer(1, "Alice")
+			h.setLoadedData(p1, {
+				Version = 1,
+				Coins = 1e60,
+				Gems = 0,
+				Rebirths = 0,
+				UnlockedAreas = { "CandyPlaza", "ChocolateFalls" },
+				Inventory = {},
+				Equipped = {},
+			})
+
+			-- Gera exatamente 100 falhas parciais pendentes (cp-1 .. cp-100)
+			h.setDataServiceSetHook(function(original, player, key, value)
+				if key == "UnlockedAreas" then
+					return false
+				end
+				return original(player, key, value)
+			end)
+
+			for i = 1, 100 do
+				h.advanceClock(1)
+				h.getData(p1).Coins = 1e60
+				local res = h.invokeRemote("RequestRebirth", p1, `cp-{i}`)
+				t.eq(res.ok, false)
+				t.eq(res.err, "INTERNAL")
+			end
+			t.eq(h.getData(p1).Rebirths, 100)
+			local gemsAtLimit = h.getData(p1).Gems
+			t.eq(gemsAtLimit, 500)
+
+			-- Novo requestId (cp-101) com 100 pendentes deve ser rejeitado sem qualquer mutação
 			h.advanceClock(1)
 			h.getData(p1).Coins = 1e60
-			local res = h.invokeRemote("RequestRebirth", p1, `cp-{i}`)
-			t.eq(res.ok, false)
-			t.eq(res.err, "INTERNAL")
+			local rejectedRes = h.invokeRemote("RequestRebirth", p1, "cp-101")
+			t.eq(rejectedRes.ok, false)
+			t.eq(rejectedRes.err, "INTERNAL")
+			t.eq(h.getData(p1).Rebirths, 100, "cp-101 não deve incrementar Rebirths")
+			t.eq(h.getData(p1).Coins, 1e60, "cp-101 não deve gastar nem resetar Coins")
+			t.eq(h.getData(p1).Gems, gemsAtLimit, "cp-101 não deve creditar Gems")
+			t.eq(#h.getData(p1).UnlockedAreas, 2)
+
+			-- cp-1 continua retomável e conclui sem incrementar Rebirths pela segunda vez nem duplicar Gems
+			h.setDataServiceSetHook(nil)
+			h.advanceClock(1)
+			h.getData(p1).Coins = 1e60
+			local resumedRes = h.invokeRemote("RequestRebirth", p1, "cp-1")
+			t.eq(resumedRes.ok, true)
+			t.eq(resumedRes.data.rebirths, 1)
+			t.eq(resumedRes.data.gemsReward, 5)
+			t.eq(h.getData(p1).Rebirths, 100)
+			t.eq(h.getData(p1).Coins, 1e60, "Coins já havia sido resetado em cp-1")
+			t.eq(h.getData(p1).Gems, gemsAtLimit, "Gems já havia sido creditado em cp-1")
+			t.eq(#h.getData(p1).UnlockedAreas, 1)
+			t.eq(h.getData(p1).UnlockedAreas[1], "CandyPlaza")
+
+			-- Com a conclusão de cp-1 (99 pendentes), cp-101 volta a ser aceito normalmente
+			h.advanceClock(1)
+			h.getData(p1).Coins = 1e60
+			h.getData(p1).UnlockedAreas = { "CandyPlaza", "ChocolateFalls" }
+			local acceptedAfterFreeRes = h.invokeRemote("RequestRebirth", p1, "cp-101")
+			t.eq(acceptedAfterFreeRes.ok, true)
+			t.eq(acceptedAfterFreeRes.data.rebirths, 101)
+			t.eq(h.getData(p1).Rebirths, 101)
+
+			-- Falha parcial cp-leave é descartada após PlayerRemoving
+			h.setDataServiceSetHook(function(original, player, key, value)
+				if key == "UnlockedAreas" then
+					return false
+				end
+				return original(player, key, value)
+			end)
+			h.advanceClock(1)
+			h.getData(p1).Coins = 1e60
+			h.getData(p1).UnlockedAreas = { "CandyPlaza", "ChocolateFalls" }
+			local partialRes = h.invokeRemote("RequestRebirth", p1, "cp-leave")
+			t.eq(partialRes.ok, false)
+			t.eq(h.getData(p1).Rebirths, 102)
+
+			h.firePlayerRemoving(p1)
+			h.setDataServiceSetHook(nil)
+			h.advanceClock(1)
+			h.getData(p1).Coins = 1e60
+			local afterLeaveRes = h.invokeRemote("RequestRebirth", p1, "cp-leave")
+			t.eq(afterLeaveRes.ok, true)
+			t.eq(afterLeaveRes.data.rebirths, 103)
 		end
-		t.eq(h.getData(p1).Rebirths, 101)
-
-		-- Como cp-1 foi removido pelo limite FIFO, reenviar cp-1 inicia novo rebirth (102); cp-101 retoma checkpoint (continua 102)
-		h.setDataServiceSetHook(nil)
-		h.advanceClock(1)
-		h.getData(p1).Coins = 1e60
-		local evictedRes = h.invokeRemote("RequestRebirth", p1, "cp-1")
-		t.eq(evictedRes.ok, true)
-		t.eq(evictedRes.data.rebirths, 102)
-
-		h.advanceClock(1)
-		local keptRes = h.invokeRemote("RequestRebirth", p1, "cp-101")
-		t.eq(keptRes.ok, true)
-		t.eq(keptRes.data.rebirths, 101)
-		t.eq(h.getData(p1).Rebirths, 102)
-
-		-- Falha parcial cp-leave é descartada após PlayerRemoving
-		h.setDataServiceSetHook(function(original, player, key, value)
-			if key == "UnlockedAreas" then
-				return false
-			end
-			return original(player, key, value)
-		end)
-		h.advanceClock(1)
-		h.getData(p1).Coins = 1e60
-		local partialRes = h.invokeRemote("RequestRebirth", p1, "cp-leave")
-		t.eq(partialRes.ok, false)
-		t.eq(h.getData(p1).Rebirths, 103)
-
-		h.firePlayerRemoving(p1)
-		h.setDataServiceSetHook(nil)
-		h.advanceClock(1)
-		h.getData(p1).Coins = 1e60
-		local afterLeaveRes = h.invokeRemote("RequestRebirth", p1, "cp-leave")
-		t.eq(afterLeaveRes.ok, true)
-		t.eq(afterLeaveRes.data.rebirths, 104)
-	end)
+	)
 end

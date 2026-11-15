@@ -24,12 +24,11 @@ type RebirthCheckpoint = {
 	coinsDone: boolean,
 	areasDone: boolean,
 	gemsDone: boolean,
-	targetGems: number?,
 }
 
 type PlayerCheckpointEntry = {
 	map: { [string]: RebirthCheckpoint },
-	order: { string },
+	count: number,
 }
 
 local rebirthIdempotency = RequestIdempotency.new(MAX_CACHED_RESULTS)
@@ -48,32 +47,29 @@ local function cloneAreaList(areas: { string }?): { string }
 	return copy
 end
 
-local function getOrCreateCheckpoint(player: Player, requestId: string): (PlayerCheckpointEntry, RebirthCheckpoint)
+local function getOrCreateCheckpoint(player: Player, requestId: string): (PlayerCheckpointEntry?, RebirthCheckpoint?)
 	local entry = pendingCheckpoints[player]
 	if entry == nil then
 		entry = {
 			map = {},
-			order = {},
+			count = 0,
 		}
 		pendingCheckpoints[player] = entry
 	end
 	local checkpoint = entry.map[requestId]
 	if checkpoint == nil then
+		-- Nunca descartar checkpoints já commitados/pendentes: recusa novos requests acima do limite até um pendente concluir.
+		if entry.count >= MAX_CACHED_RESULTS then
+			return nil, nil
+		end
 		checkpoint = {
 			rebirthsUpdated = nil,
 			coinsDone = false,
 			areasDone = false,
 			gemsDone = false,
-			targetGems = nil,
 		}
 		entry.map[requestId] = checkpoint
-		table.insert(entry.order, requestId)
-		while #entry.order > MAX_CACHED_RESULTS do
-			local oldest = table.remove(entry.order, 1)
-			if oldest ~= nil then
-				entry.map[oldest] = nil
-			end
-		end
+		entry.count += 1
 	end
 	return entry, checkpoint
 end
@@ -84,12 +80,9 @@ local function removeCheckpoint(player: Player, entry: PlayerCheckpointEntry?, r
 	end
 	if entry.map[requestId] ~= nil then
 		entry.map[requestId] = nil
-		local index = table.find(entry.order, requestId)
-		if index ~= nil then
-			table.remove(entry.order, index)
-		end
+		entry.count = math.max(0, entry.count - 1)
 	end
-	if #entry.order == 0 then
+	if entry.count == 0 then
 		pendingCheckpoints[player] = nil
 	end
 end
@@ -181,27 +174,13 @@ local function runPostCommitSteps(player: Player, checkpoint: RebirthCheckpoint,
 			return
 		end
 
-		local currentData = DataService.Get(player)
-		if checkpoint.targetGems == nil then
-			if currentData ~= nil and type(currentData.Gems) == "number" then
-				checkpoint.targetGems = currentData.Gems + gemReward
-			end
-		end
-
-		local targetGems = checkpoint.targetGems
-		if targetGems == nil then
-			warn(`[RebirthService] Falha pós-commit ao calcular targetGems de {player.UserId}`)
-			return
-		end
-
-		if currentData ~= nil and type(currentData.Gems) == "number" and currentData.Gems >= targetGems then
-			checkpoint.gemsDone = true
-			return
-		end
-
+		local beforeData = DataService.Get(player)
+		local gemsBefore = if beforeData ~= nil and type(beforeData.Gems) == "number" then beforeData.Gems else nil
 		local addGemsOk, gemsCredited = pcall(EconomyService.AddGems, player, GameConfig.RebirthGemReward)
 		local afterData = DataService.Get(player)
-		if afterData ~= nil and type(afterData.Gems) == "number" and afterData.Gems >= targetGems then
+		local gemsAfter = if afterData ~= nil and type(afterData.Gems) == "number" then afterData.Gems else nil
+
+		if gemsBefore ~= nil and gemsAfter ~= nil and gemsAfter >= gemsBefore + gemReward then
 			if not addGemsOk then
 				warn(
 					`[RebirthService] Exceção após creditar Gems para {player.UserId}; mantendo checkpoint concluído: {tostring(
@@ -251,14 +230,19 @@ local function executeRequestRebirth(player: Player, requestId: any): Types.Resu
 	local checkpointEntry: PlayerCheckpointEntry? = nil
 	local checkpoint: RebirthCheckpoint
 	if isIdempotent then
-		checkpointEntry, checkpoint = getOrCreateCheckpoint(player, requestId :: string)
+		local entry, existingOrNew = getOrCreateCheckpoint(player, requestId :: string)
+		if entry == nil or existingOrNew == nil then
+			warn(`[RebirthService] Limite de checkpoints pendentes atingido para {player.UserId}`)
+			return { ok = false, err = ErrorCodes.INTERNAL }
+		end
+		checkpointEntry = entry
+		checkpoint = existingOrNew
 	else
 		checkpoint = {
 			rebirthsUpdated = nil,
 			coinsDone = false,
 			areasDone = false,
 			gemsDone = false,
-			targetGems = nil,
 		}
 	end
 
