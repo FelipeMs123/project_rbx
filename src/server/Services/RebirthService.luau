@@ -44,6 +44,7 @@ local function executeRequestRebirth(player: Player): Types.Result
 		return { ok = false, err = ErrorCodes.NOT_ENOUGH_COINS }
 	end
 
+	local previousRebirths = data.Rebirths
 	local updateOk, updatedRebirths = pcall(DataService.Update, player, "Rebirths", function(rebirths: number)
 		local safeRebirths = if type(rebirths) == "number"
 				and rebirths == rebirths
@@ -53,21 +54,56 @@ local function executeRequestRebirth(player: Player): Types.Result
 		return safeRebirths + 1
 	end)
 	if not updateOk or updatedRebirths == nil then
-		if cost > 0 then
-			pcall(DataService.Update, player, "Coins", function(coins: number)
-				return (coins or 0) + cost
-			end)
+		local currentData = DataService.Get(player)
+		if currentData == nil or currentData.Rebirths == previousRebirths then
+			if cost > 0 then
+				local refundOk, refunded = pcall(DataService.Update, player, "Coins", function(coins: number)
+					return (coins or 0) + cost
+				end)
+				if not refundOk or refunded == nil then
+					warn(
+						`[RebirthService] Falha ao estornar {cost} Coins de {player.UserId} após erro em Rebirths: {tostring(
+							refunded
+						)}`
+					)
+					return { ok = false, err = ErrorCodes.DATA_NOT_LOADED }
+				end
+			end
+			return {
+				ok = false,
+				err = if not updateOk then ErrorCodes.INTERNAL else ErrorCodes.DATA_NOT_LOADED,
+			}
 		end
-		return {
-			ok = false,
-			err = if not updateOk then ErrorCodes.INTERNAL else ErrorCodes.DATA_NOT_LOADED,
-		}
+
+		warn(
+			`[RebirthService] Exceção após incremento de Rebirths para {player.UserId}; finalizando commit: {tostring(
+				updatedRebirths
+			)}`
+		)
+		updatedRebirths = currentData.Rebirths
 	end
 
-	DataService.Set(player, "Coins", GameConfig.StartingCoins)
-	DataService.Set(player, "UnlockedAreas", { GameConfig.StartingArea })
-	EconomyService.AddGems(player, GameConfig.RebirthGemReward)
-	DataService.Save(player)
+	local resetCoinsOk, resetCoinsSet = pcall(DataService.Set, player, "Coins", GameConfig.StartingCoins)
+	if not resetCoinsOk or not resetCoinsSet then
+		warn(`[RebirthService] Falha pós-commit ao resetar Coins de {player.UserId}: {tostring(resetCoinsSet)}`)
+	end
+
+	local resetAreasOk, resetAreasSet = pcall(DataService.Set, player, "UnlockedAreas", { GameConfig.StartingArea })
+	if not resetAreasOk or not resetAreasSet then
+		warn(
+			`[RebirthService] Falha pós-commit ao resetar UnlockedAreas de {player.UserId}: {tostring(resetAreasSet)}`
+		)
+	end
+
+	local addGemsOk, gemsCredited = pcall(EconomyService.AddGems, player, GameConfig.RebirthGemReward)
+	if not addGemsOk or (GameConfig.RebirthGemReward > 0 and (type(gemsCredited) ~= "number" or gemsCredited <= 0)) then
+		warn(`[RebirthService] Falha pós-commit ao creditar Gems de {player.UserId}: {tostring(gemsCredited)}`)
+	end
+
+	local saveOk = pcall(DataService.Save, player)
+	if not saveOk then
+		warn(`[RebirthService] Falha pós-commit ao salvar dados de {player.UserId}`)
+	end
 
 	return {
 		ok = true,

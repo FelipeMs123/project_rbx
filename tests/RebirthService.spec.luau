@@ -95,6 +95,8 @@ local function loadRebirthServiceHarness()
 	}
 
 	local baseUpdate = mockDataService.Update
+	local baseSave = mockDataService.Save
+	local warnings = {}
 
 	local registeredInvokes = {}
 	local mockNetServer = {
@@ -202,7 +204,13 @@ local function loadRebirthServiceHarness()
 			game = mockGame,
 			script = node,
 			typeof = type,
-			warn = function() end,
+			warn = function(...)
+				local parts = {}
+				for i = 1, select("#", ...) do
+					table.insert(parts, tostring(select(i, ...)))
+				end
+				table.insert(warnings, table.concat(parts, " "))
+			end,
 			task = task,
 			require = loadModule,
 		}
@@ -243,6 +251,12 @@ local function loadRebirthServiceHarness()
 		firePlayerRemoving = function(player)
 			playerRemovingSignal:Fire(player)
 		end,
+		getWarnings = function()
+			return warnings
+		end,
+		onChanged = function(fn)
+			return changedSignal:Connect(fn)
+		end,
 		setDataServiceUpdateHook = function(fn)
 			if fn then
 				mockDataService.Update = function(player, key, modifier)
@@ -250,6 +264,15 @@ local function loadRebirthServiceHarness()
 				end
 			else
 				mockDataService.Update = baseUpdate
+			end
+		end,
+		setDataServiceSaveHook = function(fn)
+			if fn then
+				mockDataService.Save = function(player)
+					return fn(baseSave, player)
+				end
+			else
+				mockDataService.Save = baseSave
 			end
 		end,
 	}
@@ -558,4 +581,197 @@ return function(t)
 			t.eq(h.getSaveCount(), 1)
 		end
 	)
+
+	t.test(
+		"RequestRebirth estorna Coins antes do retry quando Update de Rebirths lança exceção antes de mutar, e retry conclui Rebirths = 1",
+		function()
+			local h = loadRebirthServiceHarness()
+			h.RebirthService.Init()
+
+			local p1 = h.makePlayer(1, "Alice")
+			h.setLoadedData(p1, {
+				Version = 1,
+				Coins = 15000,
+				Gems = 2,
+				Rebirths = 0,
+				UnlockedAreas = { "CandyPlaza", "ChocolateFalls" },
+				Inventory = {},
+				Equipped = {},
+			})
+
+			local threwBeforeMutation = false
+			h.setDataServiceUpdateHook(function(original, player, key, modifier)
+				if key == "Rebirths" then
+					threwBeforeMutation = true
+					error("exceção antes de mutar Rebirths")
+				end
+				return original(player, key, modifier)
+			end)
+
+			local failRes = h.invokeRemote("RequestRebirth", p1, "req-pre-mutate-1")
+			t.eq(threwBeforeMutation, true)
+			t.eq(failRes.ok, false)
+			t.eq(failRes.err, "INTERNAL")
+			t.eq(h.getData(p1).Coins, 15000, "Coins deve voltar exatamente para 15000 ANTES do retry")
+			t.eq(h.getData(p1).Rebirths, 0)
+			t.eq(h.getData(p1).Gems, 2)
+			t.eq(#h.getData(p1).UnlockedAreas, 2)
+			t.eq(h.getSaveCount(), 0)
+
+			-- Retry com o mesmo requestId conclui Rebirths = 1
+			h.setDataServiceUpdateHook(nil)
+			local retryRes = h.invokeRemote("RequestRebirth", p1, "req-pre-mutate-1")
+			t.eq(retryRes.ok, true)
+			t.eq(retryRes.data.rebirths, 1)
+			t.eq(retryRes.data.gemsReward, 5)
+			t.eq(h.getData(p1).Rebirths, 1)
+			t.eq(h.getData(p1).Coins, 25)
+			t.eq(h.getData(p1).Gems, 7)
+			t.eq(#h.getData(p1).UnlockedAreas, 1)
+			t.eq(h.getSaveCount(), 1)
+		end
+	)
+
+	t.test(
+		"RequestRebirth não estorna nem duplica quando sync lança exceção após mutar Rebirths, e retry devolve cache",
+		function()
+			local h = loadRebirthServiceHarness()
+			h.RebirthService.Init()
+
+			local p1 = h.makePlayer(1, "Alice")
+			h.setLoadedData(p1, {
+				Version = 1,
+				Coins = 15000,
+				Gems = 1,
+				Rebirths = 0,
+				UnlockedAreas = { "CandyPlaza", "ChocolateFalls" },
+				Inventory = {},
+				Equipped = {},
+			})
+
+			local syncThrew = false
+			local conn = h.onChanged(function(_, key)
+				if key == "Rebirths" then
+					syncThrew = true
+					error("falha simulada no sync após mutar Rebirths")
+				end
+			end)
+
+			local res = h.invokeRemote("RequestRebirth", p1, "req-post-mutate-1")
+			conn:Disconnect()
+
+			t.eq(syncThrew, true)
+			t.eq(res.ok, true)
+			t.eq(res.data.rebirths, 1)
+			t.eq(res.data.gemsReward, 5)
+			t.eq(h.getData(p1).Rebirths, 1)
+			t.eq(h.getData(p1).Coins, 25, "Não deve estornar cost após Rebirths já incrementado")
+			t.eq(#h.getData(p1).UnlockedAreas, 1)
+			t.eq(h.getData(p1).UnlockedAreas[1], "CandyPlaza")
+			t.eq(h.getData(p1).Gems, 6)
+			t.eq(h.getSaveCount(), 1)
+			t.ok(#h.getWarnings() >= 1)
+
+			-- Retry com o mesmo requestId devolve cache sem incrementar Rebirths para 2
+			h.getData(p1).Coins = 50000
+			local retryRes = h.invokeRemote("RequestRebirth", p1, "req-post-mutate-1")
+			t.eq(retryRes.ok, true)
+			t.eq(retryRes.data.rebirths, 1)
+			t.eq(retryRes.data.gemsReward, 5)
+			t.eq(h.getData(p1).Rebirths, 1)
+			t.eq(h.getData(p1).Coins, 50000)
+			t.eq(h.getData(p1).Gems, 6)
+			t.eq(h.getSaveCount(), 1)
+		end
+	)
+
+	t.test(
+		"RequestRebirth cacheia commit e impede 2º rebirth no retry mesmo se DataService.Save lançar exceção",
+		function()
+			local h = loadRebirthServiceHarness()
+			h.RebirthService.Init()
+
+			local p1 = h.makePlayer(1, "Alice")
+			h.setLoadedData(p1, {
+				Version = 1,
+				Coins = 15000,
+				Gems = 0,
+				Rebirths = 0,
+				UnlockedAreas = { "CandyPlaza", "ChocolateFalls" },
+				Inventory = {},
+				Equipped = {},
+			})
+
+			local saveThrew = false
+			h.setDataServiceSaveHook(function()
+				saveThrew = true
+				error("falha simulada no Save")
+			end)
+
+			local res = h.invokeRemote("RequestRebirth", p1, "req-save-fail-1")
+			t.eq(saveThrew, true)
+			t.eq(res.ok, true)
+			t.eq(res.data.rebirths, 1)
+			t.eq(res.data.gemsReward, 5)
+			t.eq(h.getData(p1).Rebirths, 1)
+			t.eq(h.getData(p1).Coins, 25)
+			t.eq(h.getData(p1).Gems, 5)
+			t.eq(#h.getData(p1).UnlockedAreas, 1)
+			t.eq(h.getSaveCount(), 0)
+			t.ok(#h.getWarnings() >= 1)
+
+			-- Retry com o mesmo requestId devolve cache sem executar 2º rebirth
+			h.setDataServiceSaveHook(nil)
+			h.getData(p1).Coins = 50000
+			local retryRes = h.invokeRemote("RequestRebirth", p1, "req-save-fail-1")
+			t.eq(retryRes.ok, true)
+			t.eq(retryRes.data.rebirths, 1)
+			t.eq(h.getData(p1).Rebirths, 1)
+			t.eq(h.getData(p1).Coins, 50000)
+			t.eq(h.getData(p1).Gems, 5)
+			t.eq(h.getSaveCount(), 0)
+		end
+	)
+
+	t.test("RequestRebirth trata falha (nil) no estorno de Coins com warn explícito e sem crash", function()
+		local h = loadRebirthServiceHarness()
+		h.RebirthService.Init()
+
+		local p1 = h.makePlayer(1, "Alice")
+		h.setLoadedData(p1, {
+			Version = 1,
+			Coins = 15000,
+			Gems = 3,
+			Rebirths = 0,
+			UnlockedAreas = { "CandyPlaza", "ChocolateFalls" },
+			Inventory = {},
+			Equipped = {},
+		})
+
+		local coinsUpdateCalls = 0
+		h.setDataServiceUpdateHook(function(original, player, key, modifier)
+			if key == "Coins" then
+				coinsUpdateCalls += 1
+				if coinsUpdateCalls == 1 then
+					-- Spend ocorre antes de o perfil ficar inativo
+					return original(player, key, modifier)
+				end
+				-- Estorno falha com nil (perfil inativo)
+				return nil
+			end
+			if key == "Rebirths" then
+				return nil
+			end
+			return original(player, key, modifier)
+		end)
+
+		local failRes = h.invokeRemote("RequestRebirth", p1, "req-refund-nil-1")
+		t.eq(coinsUpdateCalls, 2)
+		t.eq(failRes.ok, false)
+		t.eq(failRes.err, "DATA_NOT_LOADED")
+		t.eq(h.getData(p1).Rebirths, 0)
+		t.eq(h.getData(p1).Gems, 3)
+		t.eq(h.getSaveCount(), 0)
+		t.ok(#h.getWarnings() >= 1, "Deve emitir warn explícito quando o estorno de Coins falhar")
+	end)
 end
