@@ -143,7 +143,7 @@ function DailyUI.Create(onClaim: () -> ())
 	grid.BackgroundTransparency = 1
 	grid.BorderSizePixel = 0
 	grid.Position = UDim2.fromOffset(12, 66)
-	grid.Size = UDim2.new(1, -24, 1, -176)
+	grid.Size = UDim2.new(1, -24, 1, -196)
 	grid.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	grid.CanvasSize = UDim2.new()
 	grid.ScrollBarThickness = 6
@@ -164,6 +164,20 @@ function DailyUI.Create(onClaim: () -> ())
 		cards[index] = card
 		strokes[index] = stroke
 	end
+	local bonusNote = Instance.new("TextLabel")
+	bonusNote.Name = "RebirthBonusNote"
+	bonusNote.Text = "Valores já com bônus de rebirth"
+	bonusNote.BackgroundTransparency = 1
+	bonusNote.TextColor3 = Color3.fromRGB(185, 180, 200)
+	bonusNote.Font = Enum.Font.Gotham
+	bonusNote.TextScaled = true
+	bonusNote.Size = UDim2.new(1, -24, 0, 20)
+	bonusNote.Position = UDim2.new(0, 12, 1, -130)
+	bonusNote.Parent = panel
+	local bonusTextLimit = Instance.new("UITextSizeConstraint")
+	bonusTextLimit.MinTextSize = 12
+	bonusTextLimit.MaxTextSize = 14
+	bonusTextLimit.Parent = bonusNote
 	local status = Instance.new("TextLabel")
 	status.BackgroundTransparency = 1
 	status.Size = UDim2.new(1, -24, 0, 40)
@@ -194,7 +208,7 @@ function DailyUI.Create(onClaim: () -> ())
 		layout.CellSize = UDim2.fromOffset(math.floor((width - 32 - (columns - 1) * 8) / columns), 120)
 		for _, descendant in panel:GetDescendants() do
 			if descendant:IsA("UITextSizeConstraint") then
-				descendant.MinTextSize = math.ceil(14 / factor)
+				descendant.MinTextSize = math.ceil((if descendant == bonusTextLimit then 12 else 14) / factor)
 			end
 		end
 	end

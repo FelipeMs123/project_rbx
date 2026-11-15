@@ -71,10 +71,11 @@ local function claim()
 	requestCount += 1
 	local request = requestCount
 	pendingRequest = request
-	local completed = false
 	refresh()
-	task.delay(8, function()
-		if completed or pendingRequest ~= request then
+	local timeoutExpired = false
+	local timeout = task.delay(8, function()
+		timeoutExpired = true
+		if pendingRequest ~= request then
 			return
 		end
 		pendingRequest = nil
@@ -84,10 +85,9 @@ local function claim()
 	end)
 	task.spawn(function()
 		local result = NetClient.Invoke("ClaimDaily")
-		if completed then
-			return
+		if not timeoutExpired then
+			task.cancel(timeout)
 		end
-		completed = true
 		if pendingRequest == request then
 			pendingRequest = nil
 			pending = false
@@ -96,6 +96,16 @@ local function claim()
 			confirmedDay = today
 			DailyUI.SetOpen(false)
 		else
+			local currentDay = Daily.dayIndex(workspace:GetServerTimeNow())
+			local latestState = state
+			if
+				request ~= requestCount
+				or confirmedDay == currentDay
+				or (latestState and latestState.LastClaimDay == currentDay)
+			then
+				refresh()
+				return
+			end
 			local message = Messages.message(result.err)
 			HudController.Toast(message, "error")
 			DailyUI.ShowStatus(message)
