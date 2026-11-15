@@ -210,3 +210,6 @@ Review publicado por 1 achado **MÉDIO** de regressão multiplayer: a parcela ar
 - **PR #20 (`3b6ec11`):** **APPROVE**, com `0 ALTO, 0 MÉDIO, 1 BAIXO` não-bloqueante. O complemento multiplayer com 2 jogadores e os checks locais (`lune run check`: 119 testes, `rojo build` exit 0) atendem a I1; fica apenas a frase antiga de pendência na seção solo.
 - **PR #21 (`fb2ff8f`):** **APPROVE**, com `0 ALTO, 0 MÉDIO, 1 BAIXO` não-bloqueante. CottonClouds está conforme o contrato e a remoção de `EastGateBarrier` foi autorizada pela dona da B6; checks locais (`lune run check`: 129 testes, `rojo build` exit 0). Ficam medidas preliminares no texto corrido da documentação.
 - **PR #22 (`0bccfab`):** **REQUEST_CHANGES**, com `0 ALTO, 1 MÉDIO` bloqueante. O fallback do som de quebra depende de `BlockHit` não confiável e de `blockId`/`blockType` ausentes no payload de `REWARD`; alinhar o payload ou registrar a intenção local e cobrir em teste.
+
+### 2026-11-15 · Squad B (drkk71) · PR #18 (d535e2a) aprovado
+O PR #18 recebeu **APPROVE** (`0 ALTO, 0 MÉDIO, 0 BAIXO`), com `lune run check` (`131/131` testes, `TUDO OK`) e `rojo build` exit `0`.
