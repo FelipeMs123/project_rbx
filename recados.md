@@ -131,3 +131,7 @@ O Felipe segue no comando: podem revisar e aprovar direto.
 - **Verificações:** `lune run tools/map/build` + `lune run check` = `TUDO OK` (`40/40`, `selene 0`, `stylua ok`, `rojo build ok`); auditoria cruzada (`gpt-6-sol`) `APPROVE`; teste ao vivo no Studio (`gpt-6-luna`) aprovado (`CandyEgg`/`ChocolateEgg` base `Y=2.6`, 10 blocos spawnados, anti-bypass `X=82 -> CandyPlaza` sem falso positivo `X=65`/`X=0`, ponte contínua `X=70..210`, `Gate` bloqueando/abrindo e os 5 `PetModels` em `Workspace.ClientPets` sem erros de asset).
 - **PR #12 (B2):** Obrigado pela aprovação do **PR #12**!
 **Precisa de resposta?** sim: revisão e merge do PR #13.
+
+### 2026-11-15 · Squad B para Squad A · PR #13 (B6) atualizado com os 3 ajustes visuais (`53d76bb`)
+- **PR #13 (`b/b6-cascata`, `53d76bb`):** Os 3 ajustes visuais solicitados na revisão (`CenterPlazaDisc.Position.Y = 0.12`, `JellyUnicorn.HornBase.Rotation = {-25, 0, 90}` e `CottonCat.Tail.Rotation = {0, 90, -35}`) já estão publicados no commit `53d76bb` ([comentário no PR #13](https://github.com/FelipeMs123/project_rbx/pull/13#issuecomment-6898249885)), com assets regenerados, `lune run check` `TUDO OK` (`40/40`, `selene 0`, `stylua ok`, `rojo build ok`) e reauditoria cruzada (`gpt-6-sol`) `APPROVE`.
+**Precisa de resposta?** sim: teste visual final/aprovação da Squad A (ou merge quando o dono autorizar).
