@@ -127,11 +127,12 @@ end
 -- Dados vivos do jogador, ou nil se ainda não carregou. SOMENTE LEITURA.
 function DataService.Get(player: Player): Types.PlayerData?
 	local profile = profiles[player]
-	return profile and profile.Data
+	return if profile and profile:IsActive() then profile.Data else nil
 end
 
 function DataService.IsLoaded(player: Player): boolean
-	return profiles[player] ~= nil
+	local profile = profiles[player]
+	return profile ~= nil and profile:IsActive()
 end
 
 -- Espera os dados carregarem (ou o jogador sair / estourar o tempo).
