@@ -7,7 +7,10 @@
         "$path": "src/shared"
       },
       "PetModels": {
-        "$path": "assets/PetModels.model.json"
+        "$path": "assets/PetModels.model.json",
+        "BearGummy": {
+          "$path": "assets/pets/BearGummy.rbxm"
+        }
       }
     },
     "ServerScriptService": {

@@ -140,7 +140,6 @@ assert(
 
 local expectedPets: { [string]: number } = {
 	CottonCat = 9,
-	BearGummy = 9,
 	LollipopBunny = 10,
 	JellyUnicorn = 10,
 	ChocolateDragon = 12,
@@ -151,7 +150,7 @@ for _, petTemplate in petModelsData do
 	assert(#petTemplate.Parts == expectedPets[petTemplate.Name], `Contagem incorreta no pet {petTemplate.Name}`)
 	table.insert(petModels, makeModel(petTemplate, "Pet_"))
 end
-assert(#petModels == 5, "Contagem de PetModels incorreta")
+assert(#petModels == 4, "Contagem de PetModels gerados incorreta (BearGummy vem do .rbxm)")
 
 fs.writeDir("assets/map")
 fs.writeFile("assets/map/CandyPlaza.model.json", serde.encode("json", candyPlaza, true) .. "\n")
@@ -163,6 +162,6 @@ fs.writeFile(
 )
 fs.writeFile("assets/PetModels.model.json", serde.encode("json", folder("PetModels", petModels), true) .. "\n")
 print(
-	`Geradas {partCount} Parts totais: CandyPlaza (54 cenário + 10 spawns + 1 spawn + CandyEgg 8), ChocolateFalls (47 cenário + 10 spawns + 1 spawn + 1 bounds + Gate 5 + ChocolateEgg 8), CottonClouds (50 cenário + 10 spawns + 1 spawn + 1 bounds + Gate 5 = 67; Eggs vazia), BlockTemplates (4 modelos = 25), PetModels (5 modelos = 50).`
+	`Geradas {partCount} Parts totais: CandyPlaza (54 cenário + 10 spawns + 1 spawn + CandyEgg 8), ChocolateFalls (47 cenário + 10 spawns + 1 spawn + 1 bounds + Gate 5 + ChocolateEgg 8), CottonClouds (50 cenário + 10 spawns + 1 spawn + 1 bounds + Gate 5 = 67; Eggs vazia), BlockTemplates (4 modelos = 25), PetModels (4 modelos = 41; BearGummy externo).`
 )
-print("PrimaryPart definida em todos os blocos, ovos, portão e 5 pets (Core).")
+print("PrimaryPart definida em todos os blocos, ovos, portão e 4 pets gerados (Core). BearGummy usa BearBody no .rbxm.")
