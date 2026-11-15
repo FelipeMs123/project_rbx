@@ -60,7 +60,9 @@ local function claim()
 		end
 		requestToken += 1
 		pending = false
-		HudController.Toast("Demorou um pouquinho. Tente de novo!", "error")
+		local message = "Demorou um pouquinho. Tente de novo!"
+		HudController.Toast(message, "error")
+		DailyUI.ShowStatus(message)
 		refresh()
 	end)
 	task.spawn(function()
@@ -71,8 +73,11 @@ local function claim()
 		pending = false
 		if result.ok then
 			confirmedDay = today
+			DailyUI.SetOpen(false)
 		else
-			HudController.Toast(Messages.message(result.err), "error")
+			local message = Messages.message(result.err)
+			HudController.Toast(message, "error")
+			DailyUI.ShowStatus(message)
 		end
 		refresh()
 	end)

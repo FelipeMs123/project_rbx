@@ -13,6 +13,9 @@ local claimButton: TextButton? = nil
 local statusLabel: TextLabel? = nil
 local cards: { TextLabel } = {}
 local strokes: { UIStroke } = {}
+local normalStatus = ""
+local statusToken = 0
+local statusVisible = false
 
 local function decorate(target: TextLabel | TextButton)
 	-- Luau strict não permite escrever propriedades numa união; as duas classes têm estas propriedades.
@@ -36,6 +39,23 @@ function DailyUI.SetOpen(open: boolean)
 	if overlay then
 		overlay.Visible = open
 	end
+end
+
+function DailyUI.ShowStatus(text: string)
+	statusToken += 1
+	local token = statusToken
+	statusVisible = true
+	if statusLabel then
+		statusLabel.Text = text
+	end
+	task.delay(3, function()
+		if statusToken == token then
+			statusVisible = false
+			if statusLabel then
+				statusLabel.Text = normalStatus
+			end
+		end
+	end)
 end
 
 function DailyUI.IsMounted(): boolean
@@ -78,6 +98,7 @@ function DailyUI.Create(onClaim: () -> ())
 	alert.Position = UDim2.new(1, -16, 0, -8)
 	alert.BackgroundColor3 = Color3.fromRGB(210, 45, 80)
 	decorate(alert)
+	alert.Active = false
 	alert.Visible = false
 	alert.Parent = open
 	badge = alert
@@ -157,6 +178,9 @@ function DailyUI.Create(onClaim: () -> ())
 	claimButton = claim
 	local function resize()
 		local size = root.AbsoluteSize
+		if size.X <= 0 or size.Y <= 0 then
+			return
+		end
 		local factor = math.clamp(math.min(size.X, size.Y) / 520, 0.85, 1.15)
 		scale.Scale = factor
 		openScale.Scale = factor
@@ -183,6 +207,15 @@ function DailyUI.Create(onClaim: () -> ())
 	gui.Destroying:Connect(function()
 		resizeConnection:Disconnect()
 		screen = nil
+		overlay = nil
+		badge = nil
+		claimButton = nil
+		statusLabel = nil
+		cards = {}
+		strokes = {}
+		normalStatus = ""
+		statusVisible = false
+		statusToken += 1
 	end)
 	gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
 	resize()
@@ -196,6 +229,9 @@ function DailyUI.Refresh(
 	pending: boolean,
 	seconds: number
 )
+	if not screen then
+		return
+	end
 	if badge then
 		badge.Visible = available
 	end
@@ -214,10 +250,13 @@ function DailyUI.Refresh(
 	end
 	if statusLabel then
 		local minutes = math.ceil(seconds / 60)
-		statusLabel.Text = if not loaded
+		normalStatus = if not loaded
 			then "Carregando seus presentes..."
 			elseif available then "Um presente para deixar seu dia mais doce!"
 			else string.format("Volte em %02d:%02d", math.floor(minutes / 60), minutes % 60)
+		if not statusVisible then
+			statusLabel.Text = normalStatus
+		end
 	end
 	if claimButton then
 		local enabled = loaded and available and not pending

@@ -8,6 +8,12 @@ return function(t)
 		t.eq(streak, 1)
 	end)
 
+	t.test("primeiro resgate ignora sequ?ncia anterior", function()
+		local ok, streak = Daily.evaluate({ LastClaimDay = 0, Streak = 5 }, 100, 7)
+		t.eq(ok, true)
+		t.eq(streak, 1)
+	end)
+
 	t.test("mesmo dia ou dia anterior não permite resgate", function()
 		for _, today in { 100, 99 } do
 			local ok, streak = Daily.evaluate({ LastClaimDay = 100, Streak = 2 }, today, 7)
@@ -26,7 +32,7 @@ return function(t)
 	end)
 
 	t.test("um dia perdido recua um passo até o mínimo de 1", function()
-		for _, case in { { 5, 4 }, { 1, 1 } } do
+		for _, case in { { 5, 4 }, { 1, 1 }, { 7, 6 } } do
 			local ok, streak = Daily.evaluate({ LastClaimDay = 100, Streak = case[1] }, 102, 7)
 			t.eq(ok, true)
 			t.eq(streak, case[2])
@@ -42,7 +48,7 @@ return function(t)
 	end)
 
 	t.test("sequência inválida reinicia em 1", function()
-		for _, invalid in { 0 / 0, 0, 99, 2.5 } do
+		for _, invalid in { 0 / 0, 0, 99, 2.5, -1, math.huge } do
 			for _, today in { 101, 102, 103 } do
 				local ok, streak = Daily.evaluate({ LastClaimDay = 100, Streak = invalid }, today, 7)
 				t.eq(ok, true)
