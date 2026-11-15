@@ -3,15 +3,23 @@
 ## Painel
 | Tarefa | Status | Feito por (ferramenta e modelo) | Branch / PR | Bloqueio ou próximo passo |
 |---|---|---|---|---|
-| A1 Fórmulas | 🔵 em teste | Codex gpt-6.1-sol / Gemini gemini-4-hydrogen-high | `a/fase1` #7 | Aprovação do PR #7 pela Squad B ou merge pelo Felipe |
-| A2 BlockService | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Aprovação do PR #7 pela Squad B ou merge pelo Felipe |
-| A3 AreaService | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Aprovação do PR #7 pela Squad B ou merge pelo Felipe |
-| A4 Cliente dos blocos | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Aprovação do PR #7 pela Squad B ou merge pelo Felipe |
-| A5 HUD e portões | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Aprovação do PR #7 pela Squad B ou merge pelo Felipe |
-| A6 Studio: Praça dos Doces | 🔵 em teste | Gemini 4 Argon + Codex gpt-6.1-sol + Gemini 3.8 Flash | `a/fase1` #7 | Aprovação do PR #7 pela Squad B ou merge pelo Felipe |
+| A1 Fórmulas | 🔵 em teste | Codex gpt-6.1-sol / Gemini gemini-4-hydrogen-high | `a/fase1` #7 | Correções da revisão no 5712f86; aguardando nova revisão da Squad B no PR #7 |
+| A2 BlockService | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Correções da revisão no 5712f86; aguardando nova revisão da Squad B no PR #7 |
+| A3 AreaService | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Correções da revisão no 5712f86; aguardando nova revisão da Squad B no PR #7 |
+| A4 Cliente dos blocos | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Correções da revisão no 5712f86; aguardando nova revisão da Squad B no PR #7 |
+| A5 HUD e portões | 🔵 em teste | Codex gpt-6.1-sol / Codex gpt-6.1-terra | `a/fase1` #7 | Correções da revisão no 5712f86; aguardando nova revisão da Squad B no PR #7 |
+| A6 Studio: Praça dos Doces | 🔵 em teste | Gemini 4 Argon + Codex gpt-6.1-sol + Gemini 3.8 Flash | `a/fase1` #7 | Correções da revisão no 5712f86; aguardando nova revisão da Squad B no PR #7 |
 
 ## Registro
 (entrada mais nova em cima)
+
+### 2026-11-15 · Rodada 7: correções do PR #7 pedidas pela Squad B
+- **O que foi feito:** Correção dos pedidos de mudança da Squad B no PR #7 (AreaService.Start checando área bloqueada no servidor conforme ROADMAP A3; BlockService medindo distância até o centro do bloco sem somar metade do tamanho; StartingCoins definido em 25). Documentação no CONTRATO de Coins padrão 25 e Bounds/SpawnLocation opcionais por área. Commit 5712f86 no branch a/fase1, resposta enviada no PR #7, nova revisão pedida ao drkk71 e recado enviado para a Squad B com dicas para a B6.
+- **Como:** Correções por Codex gpt-6.1-sol (rbx-server): Logic/Areas com lockedAreaAt e lastUnlocked com testes; AreaService checa a cada 1 s e devolve para o SpawnLocation da última área liberada com aviso AREA_LOCKED; caixa da área com Part Bounds opcional ou AABB das Parts sem o Gate (+50 studs no topo); BlockService mede só até o centro do bloco (26 studs); StartingCoins = 25. Correção de erro de tipo no pcall do AreaService e documentação no CONTRATO pelo líder (Claude Opus). Revisão por Gemini gemini-4-hydrogen-high (veredito PRONTO, 6 achados BAIXO). Testes no Studio via MCP pelo Codex gpt-6.1-sol com ChocolateFalls temporária.
+- **Decisões:** StartingCoins padrão 25 (aprovado pela Squad B); Bounds e SpawnLocation opcionais por área no CONTRATO; 2 achados baixos da revisão viraram dicas para a B6 (Bounds da Cascata em X >= 71,25 e com altura); texto do aviso AREA_LOCKED genérico e conexões redundantes deixados para depois.
+- **Problemas e soluções:** O `rojo serve` caiu ao trocar do branch teste/squad-b para a/fase1; foi reiniciado e o Felipe reconectou. Líder corrigiu 1 erro de tipo no pcall do AreaService.
+- **Testes:** `lune run check` TUDO OK (29 testes). Studio via MCP (com ChocolateFalls temporária): perfil novo nasce com 25 moedas; área bloqueada com Bounds devolve em ~0,85 s (3 de 3) com aviso; sem Bounds devolve em ~0,53 s; parado só no Gate não volta; passagem X=69 e praça sem falso positivo; alcance 25,5 studs dá dano e 26,8 não; quebra de GummyBlock 25 -> 33 moedas.
+- **Próximo passo:** Squad B revisar de novo o PR #7; depois perguntar ao Felipe antes do merge do #7.
 
 ### 2026-11-15 · Rodada 6: reteste e aprovação do PR #9 da Squad B
 - **O que foi feito:** Reteste das correções enviadas pela Squad B no PR #9 (commit 4870928, resolvendo os 5 achados anteriores) e aprovação do PR #9 pela Squad A com 1 sugestão baixa. Integração do commit no branch local de integração. Adição de ferramenta vigia em Python para monitorar PRs e diário da Squad B.

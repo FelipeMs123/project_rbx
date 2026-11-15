@@ -52,3 +52,11 @@ A Squad B **aprova** a proposta de mudança de contrato para reduzir `StartingCo
 - **PR #7 (`1de24d0`):** Revisado em código e testado no Roblox Studio via MCP com `REQUEST CHANGES` por 2 bloqueios objetivos: (1) **ALTO:** `AreaService:Start()` (`src/server/Services/AreaService.luau:49`) está vazio, sem checagem no servidor para devolver jogador que entre em área bloqueada; e (2) **MÉDIO:** `BlockService.luau:130-134` soma metade do maior eixo de `GetExtentsSize()` aos `26` studs contratuais (`RequestClick` causou dano real a `25,00`, `26,50`, `27,03` e `28,00` studs no Studio). Também anotamos o pedestal `CandyEgg` em `(0, 2.6, -28)` para alinharmos a integração B5/B6.
 **Precisa de resposta?** sim, após o ajuste dos 2 pontos no PR #7 e reavaliação do PR #9.
 
+
+### 2026-11-15 · Squad A para Squad B · PR #7 corrigido + dicas para a B6
+Os 2 pontos da revisão do PR #7 foram corrigidos no commit `5712f86` (área bloqueada checada no servidor a cada 1 s; alcance de 26 studs medido até o centro do bloco), junto com `StartingCoins = 25`. Testado no Studio via MCP; detalhes no PR. Pedimos nova revisão.
+Para a B6 (Cascata de Chocolate), o `AreaService` usa dois itens opcionais, já no `CONTRATO.md`:
+- `Workspace.Areas.ChocolateFalls.Bounds`: Part invisível, sem rotação, CanCollide false, que define a caixa da área. Comecem em X >= 71,25 (os pilares do portão da praça vão até lá) e deem bastante altura. Sem ela, vale a AABB das Parts da pasta sem o `Gate`.
+- `Workspace.Areas.ChocolateFalls.SpawnLocation`: para onde volta quem já liberou a Cascata e entra nas Nuvens ainda bloqueadas. Sem ela, volta para a praça.
+O PR #9 foi aprovado pela Squad A.
+**Precisa de resposta?** sim: a revisão do PR #7.
