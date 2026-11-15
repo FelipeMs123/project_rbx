@@ -8,7 +8,6 @@ local Shared = ReplicatedStorage.Shared
 local Sounds = require(Shared.Config.Sounds)
 local Pets = require(Shared.Config.Pets)
 local Areas = require(Shared.Config.Areas)
-local GameConfig = require(Shared.Config.Game)
 local Rules = require(Shared.Logic.SoundRules)
 local DataController = require(script.Parent.DataController)
 local HudController = require(script.Parent.HudController)
@@ -19,8 +18,8 @@ local Messages = require(script.Parent.Parent.UI.Hud.Messages)
 local SoundController = {}
 local started = false
 local loaded = false
-local settings: { [string]: boolean } = { Music = true, Sfx = true }
-local confirmed: { [string]: boolean } = { Music = true, Sfx = true }
+local settings: { [string]: boolean } = { Music = false, Sfx = false }
+local confirmed: { [string]: boolean } = { Music = false, Sfx = false }
 local pending: { [string]: boolean } = {}
 local versions: { [string]: number } = { Music = 0, Sfx = 0 }
 local pools: { [string]: { Sound } } = {}
@@ -32,7 +31,7 @@ local random = Random.new()
 local lastError = -math.huge
 
 local function sfx(key: string, pitch: number?)
-	if not settings.Sfx then
+	if not loaded or not settings.Sfx then
 		return
 	end
 	local pool = pools[key]
@@ -83,7 +82,7 @@ end
 
 local function applySettings()
 	for key, sound in tracks do
-		if key == currentArea and settings.Music and sound.SoundId ~= "" then
+		if loaded and key == currentArea and settings.Music and sound.SoundId ~= "" then
 			if not sound.IsPlaying then
 				if sound.TimePosition == 0 then
 					sound:Play()
@@ -135,7 +134,9 @@ local function toggle(key: string)
 			settings[key] = value
 		else
 			settings[key] = confirmed[key]
-			HudController.Toast(Messages.message(err), "error")
+			local message = Messages.message(err)
+			HudController.Toast(message, "error")
+			SettingsUI.ShowStatus(message)
 		end
 		applySettings()
 	end
@@ -246,7 +247,7 @@ function SoundController.Start()
 	end
 	SettingsUI.Create(toggle)
 	DataController.Observe("Settings", function(value: any)
-		if type(value) ~= "table" then
+		if type(value) ~= "table" or type(value.Music) ~= "boolean" or type(value.Sfx) ~= "boolean" then
 			return
 		end
 		loaded = true
@@ -295,39 +296,39 @@ function SoundController.Start()
 		end
 		inventory = table.clone(value)
 	end)
-	NetClient.On("BlockHit", function(_id: string, _hp: number, _max: number, _damage: number, attacker: Player)
-		if attacker == Players.LocalPlayer then
+	local recentHits: { [string]: number } = {}
+	local playedBreaks: { [string]: number } = {}
+	local function playBreakOnce(id: string, blockType: string)
+		if playedBreaks[id] then
+			return
+		end
+		local now = os.clock()
+		playedBreaks[id] = now
+		task.delay(10, function()
+			if playedBreaks[id] == now then
+				playedBreaks[id] = nil
+			end
+		end)
+		breakSound(blockType)
+	end
+	NetClient.On("BlockHit", function(id: string, _hp: number, _max: number, _damage: number, attacker: Player)
+		if attacker == Players.LocalPlayer and type(id) == "string" then
+			local now = os.clock()
+			recentHits[id] = now
+			task.delay(10, function()
+				if recentHits[id] == now then
+					recentHits[id] = nil
+				end
+			end)
 			sfx("BlockHit", random:NextNumber(0.9, 1.1))
 		end
 	end)
-	-- Agrupa por um instante para aceitar REWARD antes ou depois de BlockBroken.
-	local recentRewards: { [string]: number } = {}
-	local typedRewards: { { blockType: string, at: number, used: boolean } } = {}
-	NetClient.On("BlockBroken", function(id: string, position: Vector3, blockType: string)
-		local root = rootPart()
-		if
-			not root
-			or (root.Position - position).Magnitude > GameConfig.MaxHitDistance + GameConfig.HitDistanceTolerance
-		then
-			return
+	NetClient.On("BlockBroken", function(id: string, _position: Vector3, blockType: string)
+		local hitAt = recentHits[id]
+		if hitAt and os.clock() - hitAt <= 10 then
+			recentHits[id] = nil
+			playBreakOnce(id, blockType)
 		end
-		local brokenAt = os.clock()
-		task.delay(0.15, function()
-			if recentRewards[id] then
-				return
-			end
-			-- O contrato não exige blockId em REWARD: correlaciona por tipo e janela curta.
-			for _, reward in typedRewards do
-				if not reward.used and reward.blockType == blockType and math.abs(reward.at - brokenAt) <= 0.3 then
-					reward.used = true
-					return
-				end
-			end
-			breakSound(blockType)
-		end)
-		task.delay(2, function()
-			recentRewards[id] = nil
-		end)
 	end)
 	NetClient.On("Notify", function(code: string, payload: any)
 		if code ~= "REWARD" then
@@ -340,23 +341,9 @@ function SoundController.Start()
 		if type(payload) ~= "table" then
 			return
 		end
-		if type(payload.blockType) == "string" then
-			if type(payload.blockId) == "string" then
-				recentRewards[payload.blockId] = os.clock()
-				task.delay(2, function()
-					recentRewards[payload.blockId] = nil
-				end)
-			else
-				local reward = { blockType = payload.blockType, at = os.clock(), used = false }
-				table.insert(typedRewards, reward)
-				task.delay(2, function()
-					local index = table.find(typedRewards, reward)
-					if index then
-						table.remove(typedRewards, index)
-					end
-				end)
-			end
-			breakSound(payload.blockType)
+		-- Um ID permite deduplicar com BlockBroken sem adivinhar por tipo.
+		if type(payload.blockId) == "string" and type(payload.blockType) == "string" then
+			playBreakOnce(payload.blockId, payload.blockType)
 		end
 		if type(payload.coins) == "number" and payload.coins > 0 then
 			sfx("CoinsCollect")
@@ -373,18 +360,46 @@ function SoundController.Start()
 		table.sort(ids, function(a, b)
 			return Areas[a].Order < Areas[b].Order
 		end)
+		local boxes: { Rules.Box } = {}
+		local areasFolder: Instance? = nil
+		local connections: { RBXScriptConnection } = {}
+		local dirty = true
+		local function watchAreas(nextFolder: Instance?)
+			for _, connection in connections do
+				connection:Disconnect()
+			end
+			table.clear(connections)
+			areasFolder = nextFolder
+			dirty = true
+			if nextFolder then
+				local function invalidate()
+					dirty = true
+				end
+				table.insert(connections, nextFolder.ChildAdded:Connect(invalidate))
+				table.insert(connections, nextFolder.DescendantAdded:Connect(invalidate))
+				table.insert(connections, nextFolder.DescendantRemoving:Connect(invalidate))
+			end
+		end
 		while folder.Parent do
-			local root = rootPart()
-			local areasFolder = workspace:FindFirstChild("Areas")
-			if root and areasFolder then
-				local boxes: { Rules.Box } = {}
-				for _, id in ids do
-					local area = areasFolder:FindFirstChild(id)
-					local box = if area then areaBox(area, id) else nil
-					if box then
-						table.insert(boxes, box)
+			local found = workspace:FindFirstChild("Areas")
+			if found ~= areasFolder then
+				watchAreas(found)
+			end
+			if dirty then
+				table.clear(boxes)
+				if areasFolder then
+					for _, id in ids do
+						local area = areasFolder:FindFirstChild(id)
+						local box = if area then areaBox(area, id) else nil
+						if box then
+							table.insert(boxes, box)
+						end
 					end
 				end
+				dirty = false
+			end
+			local root = rootPart()
+			if root and areasFolder then
 				local id = Rules.areaAt(boxes, point(root.Position))
 				if id and id ~= currentArea then
 					-- Interrompe fades mais antigos antes de iniciar outro crossfade.
@@ -405,6 +420,7 @@ function SoundController.Start()
 			end
 			task.wait(1)
 		end
+		watchAreas(nil)
 	end)
 end
 

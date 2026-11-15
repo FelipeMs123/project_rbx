@@ -4,6 +4,8 @@ local Players = game:GetService("Players")
 local SettingsUI = {}
 local screen: ScreenGui? = nil
 local buttons: { [string]: TextButton } = {}
+local status: TextLabel? = nil
+local statusVersion = 0
 
 local function decorate(item: TextButton)
 	item.Active = true
@@ -32,6 +34,21 @@ function SettingsUI.Refresh(music: boolean, sfx: boolean, loaded: boolean, pendi
 	end
 end
 
+function SettingsUI.ShowStatus(message: string)
+	statusVersion += 1
+	local version = statusVersion
+	local label = status
+	if not label then
+		return
+	end
+	label.Text = message
+	task.delay(3, function()
+		if statusVersion == version and status == label then
+			label.Text = ""
+		end
+	end)
+end
+
 function SettingsUI.Create(onToggle: (string) -> ())
 	if screen then
 		return
@@ -51,7 +68,7 @@ function SettingsUI.Create(onToggle: (string) -> ())
 	open.Name = "OpenSettings"
 	open.Text = "🔊"
 	open.AnchorPoint = Vector2.new(0, 1)
-	open.Position = UDim2.new(0.02, 0, 0.5, -124)
+	open.Position = UDim2.new(0.02, 118, 0.5, -64)
 	open.Size = UDim2.fromOffset(52, 48)
 	open.BackgroundColor3 = Color3.fromRGB(125, 65, 180)
 	decorate(open)
@@ -107,12 +124,26 @@ function SettingsUI.Create(onToggle: (string) -> ())
 			onToggle(key)
 		end)
 	end
+	local statusLabel = Instance.new("TextLabel")
+	statusLabel.Name = "Status"
+	statusLabel.BackgroundTransparency = 1
+	statusLabel.Position = UDim2.fromOffset(12, 192)
+	statusLabel.Size = UDim2.new(1, -24, 0, 36)
+	statusLabel.Font = Enum.Font.Gotham
+	statusLabel.TextColor3 = Color3.fromRGB(255, 160, 160)
+	statusLabel.TextSize = 16
+	statusLabel.TextWrapped = true
+	statusLabel.Text = ""
+	statusLabel.Parent = panel
+	status = statusLabel
 	open.Activated:Connect(function()
 		shade.Visible = not shade.Visible
 	end)
 	close.Activated:Connect(function()
 		shade.Visible = false
 	end)
+	local dailyButton: GuiObject? = nil
+	local dailySizeConnection: RBXScriptConnection? = nil
 	local function resize()
 		local size = root.AbsoluteSize
 		if size.X <= 0 or size.Y <= 0 then
@@ -122,7 +153,25 @@ function SettingsUI.Create(onToggle: (string) -> ())
 		scale.Scale = factor
 		openScale.Scale = factor
 		limit.MinSize = Vector2.new(math.ceil(48 / factor), math.ceil(48 / factor))
-		panel.Size = UDim2.fromOffset(math.min(360, size.X * 0.94 / factor), 196)
+		panel.Size = UDim2.fromOffset(math.min(360, size.X * 0.94 / factor), 232)
+		local playerGui = Players.LocalPlayer:FindFirstChild("PlayerGui")
+		local daily = if playerGui then playerGui:FindFirstChild("OpenDaily", true) else nil
+		local nextDaily = if daily and daily:IsA("GuiObject") then daily else nil
+		if nextDaily ~= dailyButton then
+			if dailySizeConnection then
+				dailySizeConnection:Disconnect()
+			end
+			dailyButton = nextDaily
+			dailySizeConnection = if nextDaily
+				then nextDaily:GetPropertyChangedSignal("AbsoluteSize"):Connect(resize)
+				else nil
+		end
+		local width = if daily
+				and daily:IsA("GuiObject")
+				and daily.AbsoluteSize.X > 0
+			then daily.AbsoluteSize.X / factor
+			else 110
+		open.Position = UDim2.new(0.02, width + 8, 0.5, -64)
 		for _, item in gui:GetDescendants() do
 			if item:IsA("UITextSizeConstraint") then
 				item.MinTextSize = math.ceil(14 / factor)
@@ -130,13 +179,30 @@ function SettingsUI.Create(onToggle: (string) -> ())
 		end
 	end
 	local connection = root:GetPropertyChangedSignal("AbsoluteSize"):Connect(resize)
+	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
+	local addedConnection = playerGui.DescendantAdded:Connect(function(item)
+		if item.Name == "OpenDaily" then
+			task.defer(resize)
+		end
+	end)
+	local removingConnection = playerGui.DescendantRemoving:Connect(function(item)
+		if item == dailyButton then
+			task.defer(resize)
+		end
+	end)
 	gui.Destroying:Connect(function()
 		connection:Disconnect()
+		addedConnection:Disconnect()
+		removingConnection:Disconnect()
+		if dailySizeConnection then
+			dailySizeConnection:Disconnect()
+		end
 		screen = nil
+		status = nil
 		table.clear(buttons)
 	end)
-	SettingsUI.Refresh(true, true, false, {})
-	gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+	SettingsUI.Refresh(false, false, false, {})
+	gui.Parent = playerGui
 	resize()
 end
 
