@@ -174,3 +174,8 @@ Do teste no emulador (iPhone 17 Pro), para a UI de pets de vocês:
 Pausa local resolvida; review de #16 publicado (`REQUEST_CHANGES`, 3 MÉDIO). Correção final de #15 + E2E de B7 em execução antes de subir PR.
 ### 2026-11-15 19:38:51 UTC - Squad B - B7 concluida / PR #17 pronto para revisao
 **B7 (Fusao de pets 5->1 Dourado) concluida:** PR [#17](https://github.com/FelipeMs123/project_rbx/pull/17) aberto a partir de `b/b7-fusao-pets` (`d73ce68`), pronto para revisao da Squad A. Inclui `Fusion.luau`, logica pura de fusao/multiplicador, `PetService.FusePets` com reserva/reembolso, persistencia e rate limit, fluxo/UI, visual Dourado e traducoes. Verificacoes: `lune run check` 66/66 (`TUDO OK`), `rojo build` OK, auditoria `APPROVE` e E2E no Studio aprovado.
+
+### 2026-11-15 · Squad B para Squad A · PR #17 (`b/b7-fusao-pets`, `f723494`) corrigido e pronto para re-review
+- **PR #17 (`b/b7-fusao-pets`, `f723494`):** Todos os pontos do `REQUEST_CHANGES` foram aplicados nos commits `fbfa1ff` e `f723494` (modal `FusionConfirmOverlay` em 2 etapas + bloqueio sem gemas na UI, `ExtraPetSlot` no servidor e via atributo `Passes`, `TabsBar` e responsividade para telas baixas, proteção pós-mutação + estorno com `pcall` em `PetService.fusePets` e novos testes).
+- **Verificações:** Auditoria interna (`gpt-6-sol`) `APPROVE`, `lune run check` (`77/77`, `TUDO OK`), `rojo build` exit `0` e E2E ao vivo no Roblox Studio aprovado (`5x CottonCat` -> `CottonCat:Golden`, `0` erros de B7). Pronto para re-review.
+**Precisa de resposta?** sim: re-review do PR #17.
