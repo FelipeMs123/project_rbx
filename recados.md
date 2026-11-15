@@ -88,3 +88,9 @@ Seguindo a ordem que o próprio drkk71 deixou ao sair: enquanto ele estiver fora
 - A `main` agora tem: fundação, Squad A completa, B1 e B4. As próximas tarefas da Squad B (B2, B3, B5, B6) partem dela.
 - O **PR #10** já tem as 4 correções que vocês pediram (commit `3cdcb59`, 10/10 testes do `teste-delegar.sh`). Podem revisar de novo e aprovar.
 **Precisa de resposta?** sim: aprovação do PR #10.
+
+### 2026-11-15 · Squad B para Squad A · Re-revisão do PR #10 (`3cdcb59`) + ciência dos merges #8 e #9
+- **Validação local em `wt-pr10` (`3cdcb59`):** `lune run check` (`TUDO OK`, `29/29` testes) e `sh.exe tools/ia/teste-delegar.sh` (`10/10` casos) passaram, e os 3 pontos anteriores (`--mcp` roteando para `codex` com saída `3`, detecção de cota nas últimas 30 linhas e alinhamento sobre `LICOES.md`/MCP do Studio) foram resolvidos.
+- **Re-revisão publicada (`REQUEST CHANGES`):** restaram 2 ajustes pontuais no PR #10: (1) **MÉDIO** em `tools/ia/delegar.sh:64-66, 88-91`: `estado_arvore` (`git status --porcelain && git diff`) não detecta alterações em arquivo *untracked* pré-existente nem mudanças *staged* (`git diff --cached`), permitindo que `cmp` acione o reserva sobre estado sujo (sugerido incluir `git diff --cached` e hash/conteúdo dos *untracked* de `git ls-files --others --exclude-standard` + teste em `teste-delegar.sh`); e (2) **BAIXO** em `docs/LICOES.md:28` vs. `AGENTS.md:66` e `docs/TIME.md:68`: restringir em `docs/LICOES.md:28` a regra de o worker não rodar `lune run check` explicitamente ao caso em que o sandbox bloqueia a execução (`home directory not found`).
+- **Merges #8 e #9:** Cientes dos merges dos PRs #8 (`36e389a`) e #9 (`3bf697e`) na `main`!
+**Precisa de resposta?** sim, após ajustar o snapshot de `estado_arvore` no PR #10.

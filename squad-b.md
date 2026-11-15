@@ -5,15 +5,23 @@
 ## Painel
 | Tarefa | Status | Feito por (ferramenta e modelo) | Branch / PR | Bloqueio ou próximo passo |
 |---|---|---|---|---|
-| B1 Lógica pura | ✅ pronto | Antigravity gemini-4-hydrogen-high / Codex gpt-6.1-sol | `b/b1-logica-pura` #8 | Aprovado pela Squad A; aguardando autorização de merge na `main` |
-| B2 PetService | ⬜ a fazer | — | `b/b2-pet-service` | Aguardando merge do PR #8 (B1) |
-| B3 EggService + RebirthService | ⬜ a fazer | — | `b/b3-egg-rebirth-service` | Aguardando merge do PR #8 (B1) e B2 |
-| B4 Pets e inventário | ✅ pronto | Codex gpt-6-sol (`rbx-client`) + revisão Codex gpt-6-luna | `b/b4-pets-ui` #9 | Aprovado pela Squad A (`4870928`); aguardando autorização de merge na `main` |
-| B5 Ovos e rebirth | 🟡 em andamento | Antigravity gemini-4-hydrogen-high + revisão Codex gpt-6.1-sol | `b/b5-ovos-rebirth` (local) | Implementado e revisado localmente; aguardando B3/PR #8 e alinhamento do pedestal `CandyEgg` com B6 |
+| B1 Lógica pura | ✅ pronto | Antigravity gemini-4-hydrogen-high / Codex gpt-6.1-sol | `b/b1-logica-pura` #8 | Mesclado na `main` (`36e389a`) |
+| B2 PetService | ⬜ a fazer | — | `b/b2-pet-service` | Desbloqueada pelo merge do PR #8 (`36e389a`) na `main`; pronta para iniciar |
+| B3 EggService + RebirthService | ⬜ a fazer | — | `b/b3-egg-rebirth-service` | Desbloqueado o PR #8 (`36e389a`); depende de B2 |
+| B4 Pets e inventário | ✅ pronto | Codex gpt-6-sol (`rbx-client`) + revisão Codex gpt-6-luna | `b/b4-pets-ui` #9 | Mesclado na `main` (`3bf697e`) |
+| B5 Ovos e rebirth | 🟡 em andamento | Antigravity gemini-4-hydrogen-high + revisão Codex gpt-6.1-sol | `b/b5-ovos-rebirth` (local) | Implementado e revisado localmente; pronto para rebase na `main` e integração com B3/B6 |
 | B6 Studio: Cascata de Chocolate | ⬜ a fazer | — | `b/b6-cascata-chocolate` | Desbloqueada pelo merge do PR #7 (`b195d08`) na `main`; pronta para iniciar |
 
 ## Registro
 (entrada mais nova em cima)
+
+### 2026-11-15 · Rodada 5: re-revisão e testes do PR #10 (`3cdcb59`) + ciência dos merges #8 (`36e389a`) e #9 (`3bf697e`)
+- **O que foi feito:** Re-revisão técnica do PR #10 (`a/melhorias-time`, commit `3cdcb59`) em `wt-pr10`, validação da suíte (`lune run check` e `tools/ia/teste-delegar.sh`), publicação de review oficial `REQUEST CHANGES` no GitHub e atualização de `recados.md` e `squad-b.md` registrando os merges dos PRs #8 e #9 na `main`.
+- **Como:** Execução de `lune run check` e `sh.exe tools/ia/teste-delegar.sh` em `wt-pr10` por Antigravity (Sonnet), reauditoria de código por Codex (`gpt-6-sol`), e confirmação das linhas + publicação da review `REQUEST CHANGES` (`gh pr review 10 --request-changes`) e atualização do diário por Antigravity (`Gemini 4 Argon`).
+- **Decisões:** Confirmar a resolução dos 3 pontos anteriores do PR #10 e manter `REQUEST CHANGES` no commit `3cdcb59` até o ajuste do snapshot de `estado_arvore` para arquivos *untracked* pré-existentes/*staged* em `tools/ia/delegar.sh` e o alinhamento textual de `docs/LICOES.md:28`. Atualizar o painel com os merges dos PRs #8 (`36e389a`) e #9 (`3bf697e`) na `main`.
+- **Problemas e soluções:** Restaram 2 achados no commit `3cdcb59`: (1) **MÉDIO** em `tools/ia/delegar.sh:64-66, 88-91`: `estado_arvore` concatena apenas `git status --porcelain` e `git diff`, não detectando edições em arquivos *untracked* pré-existentes nem mudanças *staged* (`git diff --cached`), o que faz `cmp -s` considerar a árvore inalterada e chamar o reserva sobre estado sujo; (2) **BAIXO** em `docs/LICOES.md:28` vs. `AGENTS.md:66` e `docs/TIME.md:68`: restringir em `docs/LICOES.md:28` a orientação de o worker não rodar `lune run check` ao caso em que o sandbox bloqueia a execução (`home directory not found`).
+- **Testes:** Em `wt-pr10` (`3cdcb59`): `lune run check` (`TUDO OK`, exit code `0`, `29/29` testes passando) e `sh.exe tools/ia/teste-delegar.sh` (exit code `0`, `10/10` casos `OK`) / Studio: não aplicável (PR #10 contém apenas docs e scripts de delegação).
+- **Próximo passo:** Aguardar o ajuste de `estado_arvore` no PR #10 para aprovação final e prosseguir com B2, B3, B5 e B6 a partir da `main` atualizada (`3bf697e`).
 
 ### 2026-11-15 · Rodada 4: revisão e testes do PR #10 (`2ff2019`) + ciência do merge do PR #7 (`b195d08`)
 - **O que foi feito:** Revisão técnica completa do PR #10 (`a/melhorias-time`, commit `2ff2019`) em worktree isolado (`wt-pr10`), execução de `lune run check` e `tools/ia/teste-delegar.sh`, publicação de review oficial `REQUEST CHANGES` no GitHub e atualização de `recados.md` e `squad-b.md` registrando o desbloqueio da B6 após o merge do PR #7 (`b195d08`).
