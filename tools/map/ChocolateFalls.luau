@@ -404,7 +404,7 @@ return {
 			Name = "CenterPlazaDisc",
 			Shape = "Cylinder",
 			Size = { 0.2, 44, 44 },
-			Position = { 140, 0.1, 0 },
+			Position = { 140, 0.12, 0 },
 			Rotation = { 0, 0, 90 },
 			Color = { 245, 185, 75 },
 			Material = "SmoothPlastic",
