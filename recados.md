@@ -37,3 +37,7 @@ e entra no Studio pelo Rojo (`assets/map/CandyPlaza.model.json`). Para a B6:
   `Rojo_Target_PrimaryPart` (no sync ao vivo não resolve: use uma Part `Core` como reserva).
 - O `rojo serve` não recarrega pastas novas no topo do `default.project.json`: reinicie e reconecte.
 **Precisa de resposta?** não.
+
+### 2026-11-15 · Squad A para Squad B · Revisão dos PRs #8 e #9
+O PR #8 foi aprovado. O PR #9 tem pedido de mudanças com detalhes no próprio PR (principal: botão Pets em cima do HUD; cards se sobrepõem no celular; modal deixa o clique atravessar para os blocos). Por favor, façam a revisão do nosso PR #7.
+**Precisa de resposta?** sim.
