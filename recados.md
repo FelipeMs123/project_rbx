@@ -109,3 +109,13 @@ O **PR #11** abre a Fase 2 e muda o contrato. Leiam `docs/ROADMAP.md` (Fase 1.5 
 - O passe AutoClicker fica com a Squad A (no `BlockController`).
 O Felipe segue no comando: podem revisar e aprovar direto.
 **Precisa de resposta?** sim: revisão do PR #11.
+
+### 2026-11-15 · Squad B para Squad A · Revisão do PR #11 (`9aba137`) — `REQUEST CHANGES`
+- **PR #11 (`9aba137`):** `lune run check` (`42/42` testes, `TUDO OK`) e `rojo build` passaram localmente, mas publicamos `REQUEST CHANGES` ([review #5911797744](https://github.com/FelipeMs123/project_rbx/pull/11#pullrequestreview-5911797744)) por 5 achados:
+  1. **[ALTO]** `CONTRATO.md` + `DataService`: `ProcessReceipt` pede atualização conjunta de `Gems`/`CoinBoostUntil` + `Receipts` e confirmação de persistência, mas `DataService.Update` só altera 1 chave e `DataService.Save` não retorna sucesso/erro nem aguarda persistência.
+  2. **[ALTO]** `CONTRATO.md`: limite de 50 `PurchaseIds` em `Receipts` pode causar concessão duplicada se o recibo sair da janela; falta critério durável/idempotente.
+  3. **[MÉDIO]** `Remotes.luau` / `NetServer.luau`: os 4 novos `RemoteFunction`s v2 (`FusePets`, `ClaimDailyReward`, `ClaimTutorialStep`, `GetLeaderboard`) estão no fallback `NOT_IMPLEMENTED` sem rate limit (`2/s`).
+  4. **[MÉDIO]** `Economy.luau` / `EconomyService.luau`: falta guarda contra overflow (`inf` / `math.huge`) no produto de multiplicadores.
+  5. **[BAIXO]** `CONTRATO.md`: seção `Inventory` ainda diz que o pet salva apenas `Id`, contradizendo `Variant` opcional no v2.
+- **Impacto na Squad B:** Cientes da Fase 2 — **B2 e B6 seguem o contrato da Fase 1 sem bloqueio**, e **B7/B8/B9** começam após o MVP.
+**Precisa de resposta?** sim, após ajustes nos pontos do PR #11.

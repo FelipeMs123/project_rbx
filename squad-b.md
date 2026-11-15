@@ -6,14 +6,22 @@
 | Tarefa | Status | Feito por (ferramenta e modelo) | Branch / PR | Bloqueio ou próximo passo |
 |---|---|---|---|---|
 | B1 Lógica pura | ✅ pronto | Antigravity gemini-4-hydrogen-high / Codex gpt-6.1-sol | `b/b1-logica-pura` #8 | Mesclado na `main` (`36e389a`) |
-| B2 PetService | 🔄 em andamento | Codex / Antigravity | `b/b2-pet-service` | Iniciada em worktree `wt-b2` a partir de `origin/main` (`3bf697e`) |
+| B2 PetService | ✅ pronto | Codex / Antigravity | `b/b2-pet-service` | Aprovado em revisão estática e em teste E2E final no Studio |
 | B3 EggService + RebirthService | ⬜ a fazer | — | `b/b3-egg-rebirth-service` | Desbloqueado o PR #8 (`36e389a`); depende de B2 |
 | B4 Pets e inventário | ✅ pronto | Codex gpt-6-sol (`rbx-client`) + revisão Codex gpt-6-luna | `b/b4-pets-ui` #9 | Mesclado na `main` (`3bf697e`) |
 | B5 Ovos e rebirth | 🟡 em andamento | Antigravity gemini-4-hydrogen-high + revisão Codex gpt-6.1-sol | `b/b5-ovos-rebirth` (local) | Implementado e revisado localmente; pronto para rebase na `main` e integração com B3/B6 |
-| B6 Studio: Cascata de Chocolate | 🔄 em andamento | Codex / Antigravity | `b/b6-cascata` | Iniciada em worktree `wt-b6` a partir de `origin/main` (`3bf697e`) |
+| B6 Studio: Cascata de Chocolate | 🔄 em andamento | Codex / Antigravity | `b/b6-cascata` | Em finalização local em `wt-b6` |
 
 ## Registro
 (entrada mais nova em cima)
+
+### 2026-11-15 · Rodada 7: revisão do PR #11 (`9aba137`) + status de B2 e B6
+- **O que foi feito:** Validação local do PR #11 (`a/fase2-plano`, commit `9aba137`), publicação oficial de `REQUEST CHANGES` no GitHub ([review #5911797744](https://github.com/FelipeMs123/project_rbx/pull/11#pullrequestreview-5911797744)) e atualização de `recados.md` e `squad-b.md` com o parecer técnico e o status de B2 e B6.
+- **Como:** Execução de `lune run check` e `rojo build -o build/game.rbxl` em `wt-pr11`, auditoria adversarial do Contrato v2 e código do PR #11 por Codex (`gpt-6-sol`), e publicação da review via `gh pr review 11 --request-changes` + atualização do diário por Antigravity (`Gemini 4 Hydrogen`).
+- **Decisões:** Solicitar mudanças (`REQUEST CHANGES`) no PR #11 antes da aprovação do Contrato v2 até o ajuste dos 5 achados (2 `ALTO`, 2 `MÉDIO`, 1 `BAIXO`). Registrar que B2 e B6 seguem o contrato da Fase 1 sem bloqueio, e que B7/B8/B9 começam após o MVP.
+- **Problemas e soluções:** Apontados no PR #11: (1) **ALTO** atomicidade/confirmação de persistência no `ProcessReceipt` (`CONTRATO.md:153-159` + `DataService.luau:160-179`); (2) **ALTO** limite de 50 `PurchaseIds` em `Receipts` (`CONTRATO.md:33,158`); (3) **MÉDIO** 4 novos `RemoteFunction`s v2 sem rate limit no fallback padrão (`Remotes.luau:19-22`, `NetServer.luau:59-64,96-102`, `CONTRATO.md:64-67`); (4) **MÉDIO** falta guarda contra `inf` no produto de multiplicadores (`Economy.luau:24-31`, `EconomyService.luau:37-44`); (5) **BAIXO** seção `Inventory` desatualizada sobre `Variant` (`CONTRATO.md:37-39`). Status das tarefas B: **B2** aprovado em revisão estática e em teste E2E final no Studio; **B6** em finalização local em `wt-b6`.
+- **Testes:** Em `wt-pr11` (`9aba137`): `lune run check` (`TUDO OK`: `42` testes passaram, `0` falharam, `selene` 0 errors, `stylua` ok) e `rojo build -o build/game.rbxl` compilou sem erros / Studio: B2 aprovado em teste E2E final no Studio; PR #11 auditado em código/build (sem alteração em `project_rbx` nem novo teste no Studio nesta entrega).
+- **Próximo passo:** Aguardar ajustes da Squad A no PR #11 para reavaliação; concluir finalização/PR de B6 (`wt-b6`) e abertura de PR de B2, mantendo B7/B8/B9 para depois do MVP.
 
 ### 2026-11-15 · Rodada 6: aprovação (`APPROVE`) do PR #10 (`2116cad`) + abertura de `wt-b2` e `wt-b6`
 - **O que foi feito:** Auditoria e verificação final do commit `2116cad` no PR #10 (`a/melhorias-time`), publicação de review oficial `APPROVE` no GitHub, criação dos worktrees isolados `wt-b2` (`b/b2-pet-service`) e `wt-b6` (`b/b6-cascata`) sobre `origin/main` (`3bf697e`) e atualização de `recados.md` e `squad-b.md`.
