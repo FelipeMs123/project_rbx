@@ -153,7 +153,12 @@ local function onClick(player: Player, blockId: any)
 			local coins = EconomyService.AddCoins(recipient, reward.coins)
 			local gems = EconomyService.AddGems(recipient, reward.gems)
 			if coins > 0 or gems > 0 then
-				NetServer.Fire("Notify", recipient, "REWARD", { coins = coins, gems = gems })
+				NetServer.Fire("Notify", recipient, "REWARD", {
+					coins = coins,
+					gems = gems,
+					blockId = blockId,
+					blockType = state.blockType,
+				})
 			end
 		end
 	end

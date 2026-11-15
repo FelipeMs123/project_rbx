@@ -2,19 +2,17 @@
 -- Tutorial.luau (ReplicatedStorage.Shared.Logic.Tutorial)
 -- Dono: Squad A. Valida avanços e calcula o progresso do tutorial sem Roblox.
 
-export type StepDefinition = { Id: string, TargetCoins: number? }
+export type StepDefinition = { Id: string, TargetCoins: number?, BlockId: string? }
 export type Snapshot = { Coins: number, InventoryCount: number, EquippedCount: number }
 export type PlayerData = { TutorialStep: number, Rebirths: number, Inventory: { [string]: any } }
 
 local Tutorial = {}
 
-function Tutorial.matchBreak(now: number, brokenAt: number, rewardAt: number?, window: number): boolean
-	return rewardAt ~= nil
-		and brokenAt <= now
-		and rewardAt <= now
-		and math.abs(brokenAt - rewardAt) <= window
-		and now - brokenAt <= window
-		and now - rewardAt <= window
+function Tutorial.rewardCompletesStep(stepDef: StepDefinition, payload: any): boolean
+	if type(payload) ~= "table" or type(payload.blockType) ~= "string" then
+		return false
+	end
+	return stepDef.Id == "BreakFirstBlock" or (stepDef.Id == "BreakLollipop" and payload.blockType == stepDef.BlockId)
 end
 
 function Tutorial.isValidAdvance(current: number, step: any, total: number): boolean

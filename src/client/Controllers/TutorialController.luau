@@ -20,10 +20,6 @@ local current: number? = nil
 local inFlight = false
 local confirmed: number? = nil
 local blockSatisfied: number? = nil
-local hits: { [string]: number } = {}
-local pendingBreaks: { [string]: { time: number, step: number } } = {}
-local lastRewardAt: number? = nil
-local BREAK_REWARD_WINDOW = 1.5
 local retryScheduled = false
 local petsModal: GuiObject? = nil
 local modalConnection: RBXScriptConnection? = nil
@@ -167,9 +163,6 @@ refresh = function()
 	if previous ~= stepNumber then
 		confirmed = nil
 		blockSatisfied = nil
-		table.clear(hits)
-		table.clear(pendingBreaks)
-		lastRewardAt = nil
 	end
 	if Tutorial.isDone(stepNumber, total) then
 		UI.Hide()
@@ -226,73 +219,13 @@ function TutorialController.Start()
 	end
 	table.insert(
 		connections,
-		NetClient.On(
-			"BlockHit",
-			function(blockId: string, _hp: number, _maxHp: number, _damage: number, attacker: Player)
-				if attacker ~= Players.LocalPlayer or current == nil or Tutorial.isDone(current, total) then
-					return
-				end
-				hits[blockId] = os.clock()
-			end
-		)
-	)
-	table.insert(
-		connections,
-		NetClient.On("BlockBroken", function(blockId: string, position: Vector3, blockType: string)
-			local now = os.clock()
-			local hit = hits[blockId]
-			hits[blockId] = nil
-			pendingBreaks[blockId] = nil
-			local index = if current then Tutorial.currentIndex(current, total) else nil
-			local step = if index then Config[index] else nil
-			if not step or not current then
-				return
-			end
-			if step.Id ~= "BreakFirstBlock" and (step.Id ~= "BreakLollipop" or blockType ~= step.BlockId) then
-				return
-			end
-			if hit and now - hit <= 10 then
-				lastRewardAt = nil
-				blockSatisfied = current
-				refresh()
-				return
-			end
-			local character = Players.LocalPlayer.Character
-			local root = if character then character:FindFirstChild("HumanoidRootPart") else nil
-			if root and root:IsA("BasePart") and (root.Position - position).Magnitude <= 30 then
-				if Tutorial.matchBreak(now, now, lastRewardAt, BREAK_REWARD_WINDOW) then
-					lastRewardAt = nil
-					blockSatisfied = current
-					refresh()
-				else
-					pendingBreaks[blockId] = { time = now, step = current }
-				end
-			end
-		end)
-	)
-	table.insert(
-		connections,
 		NetClient.On("Notify", function(code: any, payload: any)
-			if code ~= "REWARD" or type(payload) ~= "table" or type(payload.coins) ~= "number" then
+			if code ~= "REWARD" or current == nil then
 				return
 			end
-			if not (payload.coins > 0) then
-				return
-			end
-			local now = os.clock()
-			lastRewardAt = now
-			local satisfied = false
-			for id, pending in pendingBreaks do
-				if
-					Tutorial.matchBreak(now, pending.time, lastRewardAt, BREAK_REWARD_WINDOW)
-					and pending.step == current
-				then
-					satisfied = true
-				end
-				pendingBreaks[id] = nil
-			end
-			if satisfied then
-				lastRewardAt = nil
+			local index = Tutorial.currentIndex(current, total)
+			local step = if index then Config[index] else nil
+			if step and Tutorial.rewardCompletesStep(step, payload) then
 				blockSatisfied = current
 				refresh()
 			end
@@ -302,17 +235,6 @@ function TutorialController.Start()
 	task.spawn(function()
 		while current == nil or not Tutorial.isDone(current, total) do
 			task.wait(0.5)
-			local now = os.clock()
-			for id, hit in hits do
-				if now - hit > 10 then
-					hits[id] = nil
-				end
-			end
-			for id, pending in pendingBreaks do
-				if now - pending.time > BREAK_REWARD_WINDOW then
-					pendingBreaks[id] = nil
-				end
-			end
 			updateGuide()
 		end
 	end)

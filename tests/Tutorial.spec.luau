@@ -2,12 +2,28 @@
 local Tutorial = require("../src/shared/Logic/Tutorial")
 
 return function(t)
-	t.test("correlaciona quebra e recompensa nas duas ordens dentro da janela", function()
-		t.ok(Tutorial.matchBreak(11.5, 11.5, 10, 1.5))
-		t.ok(Tutorial.matchBreak(11.5, 10, 11.5, 1.5))
-		t.eq(Tutorial.matchBreak(11.6, 11.6, 10, 1.5), false)
-		t.eq(Tutorial.matchBreak(11.6, 10, 11.6, 1.5), false)
-		t.eq(Tutorial.matchBreak(10, 10, nil, 1.5), false)
+	t.test("primeiro passo aceita recompensa de qualquer tipo de bloco", function()
+		for _, blockType in { "GummyBlock", "LollipopBlock", "ChocolateBlock", "CloudBlock" } do
+			t.ok(Tutorial.rewardCompletesStep({ Id = "BreakFirstBlock" }, { blockType = blockType }))
+		end
+	end)
+
+	t.test("passo do Pirulito exige recompensa do bloco indicado", function()
+		local step = { Id = "BreakLollipop", BlockId = "LollipopBlock" }
+		t.eq(Tutorial.rewardCompletesStep(step, { blockType = "GummyBlock" }), false)
+		t.ok(Tutorial.rewardCompletesStep(step, { blockType = "LollipopBlock" }))
+		t.eq(Tutorial.rewardCompletesStep({ Id = "Reach100Coins" }, { blockType = "LollipopBlock" }), false)
+	end)
+
+	t.test("diária e payload inválido não concluem passos de bloco", function()
+		for _, step in { { Id = "BreakFirstBlock" }, { Id = "BreakLollipop", BlockId = "LollipopBlock" } } do
+			t.eq(Tutorial.rewardCompletesStep(step, nil), false)
+			for _, payload in
+				{ false, 42, "LollipopBlock", {}, { coins = 100, gems = 5 }, { blockType = 42 }, { blockType = {} } }
+			do
+				t.eq(Tutorial.rewardCompletesStep(step, payload), false)
+			end
+		end
 	end)
 
 	t.test("valida avanço inteiro, finito e dentro do total", function()
