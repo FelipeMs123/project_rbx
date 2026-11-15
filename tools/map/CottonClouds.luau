@@ -5,8 +5,8 @@ return {
 	Bounds = {
 		Name = "Bounds",
 		Shape = "Block",
-		Size = { 136, 480, 140 },
-		Position = { 284, 160, 0 },
+		Size = { 139, 480, 140 },
+		Position = { 282.5, 160, 0 },
 		Rotation = { 0, 0, 0 },
 		Color = { 255, 255, 255 },
 		Material = "SmoothPlastic",
@@ -275,7 +275,7 @@ return {
 		{
 			Name = "EntranceBridge",
 			Shape = "Block",
-			Size = { 16, 0.2, 14 },
+			Size = { 16, 0.2, 16 },
 			Position = { 218, 0.1, 0 },
 			Rotation = { 0, 0, 0 },
 			Color = { 255, 255, 255 },
@@ -719,7 +719,7 @@ return {
 		{
 			Name = "RainbowSegNorthMid",
 			Shape = "Block",
-			Size = { 2.5, 14, 3.5 },
+			Size = { 2.54, 14, 3.5 },
 			Position = { 342, 18.5, -11.5 },
 			Rotation = { -52, 0, 0 },
 			Color = { 185, 130, 255 },
@@ -731,7 +731,7 @@ return {
 		{
 			Name = "RainbowSegTop",
 			Shape = "Block",
-			Size = { 2.5, 3.5, 14 },
+			Size = { 2.58, 3.5, 14 },
 			Position = { 342, 22.5, 0 },
 			Rotation = { 0, 0, 0 },
 			Color = { 255, 230, 95 },
@@ -743,7 +743,7 @@ return {
 		{
 			Name = "RainbowSegSouthMid",
 			Shape = "Block",
-			Size = { 2.5, 14, 3.5 },
+			Size = { 2.54, 14, 3.5 },
 			Position = { 342, 18.5, 11.5 },
 			Rotation = { 52, 0, 0 },
 			Color = { 145, 220, 255 },

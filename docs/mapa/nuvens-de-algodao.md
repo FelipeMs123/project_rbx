@@ -28,7 +28,7 @@ Este documento especifica a construção geométrica completa da Área 3 **Cotto
 Workspace
 └── Areas (Folder)
     └── CottonClouds (Folder)
-        ├── Bounds (Part)               -- Caixa invisível da área (X 216..352, Y -80..400, Z -70..70)
+        ├── Bounds (Part)               -- Caixa invisível da área (X 213..352, Y -80..400, Z -70..70)
         ├── SpawnLocation (SpawnLocation) -- Filho direto em (230, 0.5, 0), Enabled = false
         ├── BlockSpawns (Folder)        -- 10 Parts invisíveis (6 CloudBlock + 4 ChocoBlock)
         ├── Gate (Model)                -- Portão em X = 212, Z -8..8 (Core + 4 peças decorativas)
@@ -59,12 +59,12 @@ Estética sonhadora em tons pastel de branco, lilás, rosa e azul-bebê, com pon
 
 Filhos diretos de `Workspace.Areas.CottonClouds`.
 
-- **`Bounds`:** começa em `X = 216` (depois dos pilares `EastGatePillarNorth/South` da cascata e do próprio `Gate` em `X = 212`) e vai até `X = 352` (`Size.X = 136`, centro `Position.X = 284`), cobrindo `Y` de `-80` a `400` (`Size.Y = 480`, centro `Position.Y = 160`) e `Z` de `-70` a `70` (`Size.Z = 140`, centro `Position.Z = 0`). Possui `CanCollide = false`, `CanQuery = false`, `CanTouch = false` e `Transparency = 1`.
+- **`Bounds`:** começa em `X = 213` (depois dos pilares `EastGatePillarNorth/South` da cascata e do próprio `Gate` em `X = 212`) e vai até `X = 352` (`Size.X = 136`, centro `Position.X = 284`), cobrindo `Y` de `-80` a `400` (`Size.Y = 480`, centro `Position.Y = 160`) e `Z` de `-70` a `70` (`Size.Z = 140`, centro `Position.Z = 0`). Possui `CanCollide = false`, `CanQuery = false`, `CanTouch = false` e `Transparency = 1`.
 - **`SpawnLocation`:** posicionado logo após a entrada oeste em `(230, 0.5, 0)`, com `Enabled = false` (para o jogador nascer na `CandyPlaza` ao entrar no servidor, mas ser devolvido para cá pelo `AreaService` caso já tenha `CottonClouds` liberada) e `Neutral = true`.
 
 | Nome | Classe | Shape | Size `(X, Y, Z)` | Position `(X, Y, Z)` | Rotation `(X, Y, Z)` | Color `(R, G, B)` | Material | `CanCollide` | `Transparency` | Propriedades Extras |
 |---|---|---|---|---|---|---|---|---|---|---|
-| `Bounds` | `Part` | `Block` | `136, 480, 140` | `284, 160, 0` | `0, 0, 0` | `255, 255, 255` | `SmoothPlastic` | `false` | `1` | `Anchored = true`, `CanQuery = false`, `CanTouch = false` |
+| `Bounds` | `Part` | `Block` | `139, 480, 140` | `282.5, 160, 0` | `0, 0, 0` | `255, 255, 255` | `SmoothPlastic` | `false` | `1` | `Anchored = true`, `CanQuery = false`, `CanTouch = false` |
 | `SpawnLocation` | `SpawnLocation` | `Block` | `8, 1, 8` | `230, 0.5, 0` | `0, -90, 0` | `255, 230, 95` | `SmoothPlastic` | `true` | `0` | `Anchored = true`, `Enabled = false`, `Neutral = true` |
 
 ---
@@ -198,10 +198,16 @@ Todos os enfeites ficam nas bordas (`|Z| ≥ 46` ou `X ≥ 338`), deixando o cen
 
 | Subpasta / Objeto | Quantidade de Parts | Observações |
 |---|---:|---|
-| `Bounds` | `1` | `Size = (136, 480, 140)` em `(284, 160, 0)` (`X ∈ [216, 352]`, `Y ∈ [-80, 400]`, `Z ∈ [-70, 70]`) |
+| `Bounds` | `1` | `Size = (139, 480, 140)` em `(282.5, 160, 0)` (`X ∈ [213, 352]`, `Y ∈ [-80, 400]`, `Z ∈ [-70, 70]`) |
 | `SpawnLocation` | `1` | Em `(230, 0.5, 0)`, `Enabled = false`, `Neutral = true` |
 | `BlockSpawns` | `10` | 6 `"CloudBlock"` + 4 `"ChocoBlock"`, invisíveis (`Size = (1, 1, 1)` em `Y = 3`) |
 | `Gate` | `5` | `Model` em `X = 212, Z ∈ [-8, 8]`, `PrimaryPart = Core` (`Y = 4.5`) + 4 peças |
 | `Eggs` | `0` | Pasta vazia (ovo da Área 3 fica para depois) |
 | `Scenery` | `50` | 19 estruturais + 31 enfeites (4 nuvens de 4 `Ball`, arco-íris de 7 `Parts`, algodão-doce de 2 `Parts`, 6 estrelas `Neon`) |
 | **Total Geral (`CottonClouds`)** | **67** | Leve para dispositivos móveis (cenário ≤ 60 Parts) |
+
+## Ajustes da revisão (A7)
+
+- `EntranceBridge` com `Size = (16, 0.2, 16)` (cobre `Z ∈ [-8, 8]`, sem fresta nos lados do portão).
+- `Bounds` começa em `X = 213` (`Size = (139, 480, 140)`, `Position = (282.5, 160, 0)`), logo depois do `Gate`; os pilares da cascata ocupam de fato `X ∈ [207.25, 210.75]`.
+- Arco-íris sem z-fighting: `Size.X` dos segmentos `2.50, 2.54, 2.58, 2.54, 2.50` (norte baixo, norte meio, topo, sul meio, sul baixo).
