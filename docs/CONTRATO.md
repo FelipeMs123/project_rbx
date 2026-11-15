@@ -113,7 +113,8 @@ Um Service só chama outro por estas funções.
 
 ### DataService (fundação, pronto)
 ```luau
-DataService.SaveAndWait(player, timeout?): boolean  -- v2: pede o save e espera o OnAfterSave (faz yield)
+DataService.SaveAndWait(player, timeout?, isSaved?): boolean  -- v2: pede o save e espera um OnAfterSave cujo snapshot satisfaz isSaved (faz yield)
+DataService.IsSaved(player, isSaved): boolean  -- v2: confere LastSavedData sem yield
 DataService.Get(player): PlayerData?          -- só leitura
 DataService.WaitForData(player, timeout?): PlayerData?
 DataService.IsLoaded(player): boolean
@@ -154,18 +155,23 @@ multiplicadores registrados no `EconomyService`. Stub: `HasPass` = false.
 Fluxo do `ProcessReceipt` (Developer Products), nesta ordem:
 1. `ProductId` precisa existir em `Config/Monetization.DevProducts` com `Id > 0`; senão `NotProcessedYet` e log.
 2. Jogador fora do servidor ou dados não carregados (`DataService.WaitForData` com timeout): `NotProcessedYet` (o Roblox tenta de novo).
-3. `PurchaseId` já em `Receipts`: devolve `PurchaseGranted` sem entregar de novo.
+3. `PurchaseId` já **salvo** (`DataService.IsSaved` conferindo `LastSavedData.Receipts`): devolve
+   `PurchaseGranted` sem entregar de novo. Já em `Data.Receipts` mas ainda não salvo (tentativa
+   anterior deu timeout): não entrega de novo, pula para o passo 5.
 4. Sem yield entre as chamadas: entrega (gemas por `EconomyService.AddGems`, boost somando em
    `CoinBoostUntil` por `DataService.Update`) e grava o `PurchaseId` em `Receipts` (mantém os últimos 100).
    O servidor Luau roda uma coisa por vez: chamadas seguidas sem yield não se misturam com outro
    código, e as duas mudanças vão no mesmo `Profile.Data`, salvas juntas.
-5. `DataService.SaveAndWait(player)` (espera o `OnAfterSave` do ProfileStore). `true`: devolve
-   `PurchaseGranted`. `false`: devolve `NotProcessedYet` (o Roblox reentrega; o passo 3 evita entregar
-   duas vezes se a entrega já estava salva). Erro em qualquer passo: `Notify("PURCHASE_FAILED")` e `NotProcessedYet`.
+5. `DataService.SaveAndWait(player, timeout, isSaved)` com `isSaved` conferindo o `PurchaseId` em
+   `LastSavedData.Receipts` (um auto-save que começou antes da compra não conta). `true`: devolve
+   `PurchaseGranted`. `false`: devolve `NotProcessedYet` (o Roblox reentrega; o passo 3 evita
+   entregar duas vezes). Erro em qualquer passo: `Notify("PURCHASE_FAILED")` e `NotProcessedYet`.
 
 Por que 100 recibos bastam: o Roblox só reentrega o recibo que ainda não recebeu `PurchaseGranted`.
 Um recibo concedido nunca volta; a lista só precisa cobrir os que estão em trânsito (é o padrão do
-autor do ProfileStore).
+autor do ProfileStore, `docs/devproducts` do pacote). **Premissa:** no máximo 100 compras do mesmo
+jogador pendentes de confirmação ao mesmo tempo. Acima disso, um recibo antigo sairia da lista e
+poderia ser entregue de novo; para este jogo (compras manuais, uma por vez) o risco é desprezível.
 
 Quem usa os passes:
 - `ExtraPetSlot`: `PetService` (limite de equipados = `MaxEquipped + 1`); a UI de pets (B) lê o atributo `Passes`.
