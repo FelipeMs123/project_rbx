@@ -8,6 +8,15 @@ export type PlayerData = { TutorialStep: number, Rebirths: number, Inventory: { 
 
 local Tutorial = {}
 
+function Tutorial.matchBreak(now: number, brokenAt: number, rewardAt: number?, window: number): boolean
+	return rewardAt ~= nil
+		and brokenAt <= now
+		and rewardAt <= now
+		and math.abs(brokenAt - rewardAt) <= window
+		and now - brokenAt <= window
+		and now - rewardAt <= window
+end
+
 function Tutorial.isValidAdvance(current: number, step: any, total: number): boolean
 	if type(current) ~= "number" or current ~= current or current < 0 or current == math.huge or current % 1 ~= 0 then
 		current = 0

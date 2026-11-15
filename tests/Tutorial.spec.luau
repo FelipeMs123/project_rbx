@@ -2,6 +2,14 @@
 local Tutorial = require("../src/shared/Logic/Tutorial")
 
 return function(t)
+	t.test("correlaciona quebra e recompensa nas duas ordens dentro da janela", function()
+		t.ok(Tutorial.matchBreak(11.5, 11.5, 10, 1.5))
+		t.ok(Tutorial.matchBreak(11.5, 10, 11.5, 1.5))
+		t.eq(Tutorial.matchBreak(11.6, 11.6, 10, 1.5), false)
+		t.eq(Tutorial.matchBreak(11.6, 10, 11.6, 1.5), false)
+		t.eq(Tutorial.matchBreak(10, 10, nil, 1.5), false)
+	end)
+
 	t.test("valida avanço inteiro, finito e dentro do total", function()
 		t.ok(Tutorial.isValidAdvance(0, 1, 5))
 		t.ok(Tutorial.isValidAdvance(1, 5, 5))

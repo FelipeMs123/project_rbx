@@ -22,6 +22,8 @@ local confirmed: number? = nil
 local blockSatisfied: number? = nil
 local hits: { [string]: number } = {}
 local pendingBreaks: { [string]: { time: number, step: number } } = {}
+local lastRewardAt: number? = nil
+local BREAK_REWARD_WINDOW = 1.5
 local retryScheduled = false
 local petsModal: GuiObject? = nil
 local modalConnection: RBXScriptConnection? = nil
@@ -167,6 +169,7 @@ refresh = function()
 		blockSatisfied = nil
 		table.clear(hits)
 		table.clear(pendingBreaks)
+		lastRewardAt = nil
 	end
 	if Tutorial.isDone(stepNumber, total) then
 		UI.Hide()
@@ -249,6 +252,7 @@ function TutorialController.Start()
 				return
 			end
 			if hit and now - hit <= 10 then
+				lastRewardAt = nil
 				blockSatisfied = current
 				refresh()
 				return
@@ -256,7 +260,13 @@ function TutorialController.Start()
 			local character = Players.LocalPlayer.Character
 			local root = if character then character:FindFirstChild("HumanoidRootPart") else nil
 			if root and root:IsA("BasePart") and (root.Position - position).Magnitude <= 30 then
-				pendingBreaks[blockId] = { time = now, step = current }
+				if Tutorial.matchBreak(now, now, lastRewardAt, BREAK_REWARD_WINDOW) then
+					lastRewardAt = nil
+					blockSatisfied = current
+					refresh()
+				else
+					pendingBreaks[blockId] = { time = now, step = current }
+				end
 			end
 		end)
 	)
@@ -270,14 +280,19 @@ function TutorialController.Start()
 				return
 			end
 			local now = os.clock()
+			lastRewardAt = now
 			local satisfied = false
 			for id, pending in pendingBreaks do
-				if now - pending.time <= 1.5 and pending.step == current then
+				if
+					Tutorial.matchBreak(now, pending.time, lastRewardAt, BREAK_REWARD_WINDOW)
+					and pending.step == current
+				then
 					satisfied = true
 				end
 				pendingBreaks[id] = nil
 			end
 			if satisfied then
+				lastRewardAt = nil
 				blockSatisfied = current
 				refresh()
 			end
@@ -294,7 +309,7 @@ function TutorialController.Start()
 				end
 			end
 			for id, pending in pendingBreaks do
-				if now - pending.time > 1.5 then
+				if now - pending.time > BREAK_REWARD_WINDOW then
 					pendingBreaks[id] = nil
 				end
 			end
