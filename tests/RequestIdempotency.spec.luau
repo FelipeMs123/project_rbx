@@ -72,8 +72,8 @@ return function(t)
 		t.eq(idem:IsInFlight(p1, "req-1"), false)
 	end)
 
-	t.test("cacheia resultado bem-sucedido e mantém limite por jogador", function()
-		local idem = RequestIdempotency.new(8)
+	t.test("cacheia resultado bem-sucedido, retém >8 compras e mantém limite padrão de 100 por jogador", function()
+		local idem = RequestIdempotency.new()
 		local player = { UserId = 10 }
 		local executions = 0
 
@@ -91,18 +91,45 @@ return function(t)
 		t.eq(res2.ok, true)
 		t.eq(res2.data.uuid, "pet-1", "replay do mesmo requestId deve retornar resultado cacheado")
 
-		-- Preenche cache até estourar o limite de 8 (req-1 .. req-9 -> req-1 é evictado)
-		for i = 2, 9 do
+		-- Mais de 8 compras novas (ex.: 20 compras) NÃO podem expulsar req-1
+		for i = 2, 21 do
 			local res = idem:Execute(player, `req-{i}`, function()
 				executions += 1
 				return { ok = true, data = { index = i } }
 			end)
 			t.eq(res.ok, true)
 		end
-		t.eq(executions, 9)
-		t.eq(idem:GetCompleted(player, "req-1"), nil, "entrada mais antiga além do limite de 8 deve ser removida")
+		t.eq(executions, 21)
+		t.ok(idem:GetCompleted(player, "req-1") ~= nil, "req-1 deve permanecer retido após 20 compras novas")
+		local replayAfter20 = idem:Execute(player, "req-1", function()
+			executions += 1
+			return { ok = true, data = { uuid = "pet-dup" } }
+		end)
+		t.eq(executions, 21, "replay após 20 compras deve devolver cache sem reexecutar")
+		t.eq(replayAfter20.data.uuid, "pet-1")
+
+		-- Preenche até o cap de 100: req-1 .. req-100 devem permanecer retidos
+		for i = 22, 100 do
+			local res = idem:Execute(player, `req-{i}`, function()
+				executions += 1
+				return { ok = true, data = { index = i } }
+			end)
+			t.eq(res.ok, true)
+		end
+		t.eq(executions, 100)
+		t.ok(idem:GetCompleted(player, "req-1") ~= nil, "req-1 deve permanecer retido até a 100ª entrada")
+		t.ok(idem:GetCompleted(player, "req-100") ~= nil)
+
+		-- 101ª entrada expulsa somente a mais antiga (req-1), mantendo req-2 .. req-101
+		local res101 = idem:Execute(player, "req-101", function()
+			executions += 1
+			return { ok = true, data = { index = 101 } }
+		end)
+		t.eq(res101.ok, true)
+		t.eq(executions, 101)
+		t.eq(idem:GetCompleted(player, "req-1"), nil, "entrada mais antiga além do limite de 100 deve ser removida")
 		t.ok(idem:GetCompleted(player, "req-2") ~= nil)
-		t.ok(idem:GetCompleted(player, "req-9") ~= nil)
+		t.ok(idem:GetCompleted(player, "req-101") ~= nil)
 	end)
 
 	t.test("erro lógico ou exceção libera inFlight garantidamente e não cacheia falha", function()

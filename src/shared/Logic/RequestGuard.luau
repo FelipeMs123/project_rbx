@@ -274,6 +274,29 @@ function RequestGuard.ResolveDefinitive(self: RequestGuard, token: number, reque
 	return true, wasTimedOut
 end
 
+-- Liquida e remove a pendência da chave quando o estado replicado confirma conclusão fora do retorno RPC.
+function RequestGuard.SettlePending(self: RequestGuard, key: string?): string?
+	local targetKey = normalizeKey(key)
+	local requestId = self._pendingByKey[targetKey]
+	if requestId == nil then
+		return nil
+	end
+
+	self:_markSettled(requestId)
+	self._pendingByKey[targetKey] = nil
+	self._requestKeyById[requestId] = nil
+	self._requestGenById[requestId] = nil
+
+	if self._isBusy and self._activeRequestId == requestId then
+		self._timedOut = false
+		self:_clearActiveAttempt(true)
+	elseif not self._isBusy then
+		self._timedOut = false
+	end
+
+	return requestId
+end
+
 function RequestGuard.Reset(self: RequestGuard)
 	self._timedOut = false
 	self._resetGeneration += 1

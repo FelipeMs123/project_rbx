@@ -305,4 +305,33 @@ return function(t)
 		local chocoAccepted, _ = guard:ResolveDefinitive(tChoco :: number, idChoco :: string)
 		t.eq(chocoAccepted, false, "resposta anterior ao Reset deve ser ignorada")
 	end)
+
+	t.test("SettlePending liquida pendência pós-timeout ou em voo e impede dupla liquidação tardia", function()
+		local scheduler = createFakeScheduler()
+		local guard = RequestGuard.new(scheduler.cancel)
+
+		-- Pós-timeout: limpa pendência e marca requestId como liquidado
+		local t1, id1 = guard:Begin("rebirth")
+		local timer1 = guard:ScheduleTimeout(t1 :: number, 8, scheduler.schedule, function() end)
+		scheduler.fire(timer1)
+		t.eq(guard:HasPending("rebirth"), true)
+		t.eq(guard:IsBusy(), false)
+
+		local settledId = guard:SettlePending("rebirth")
+		t.eq(settledId, id1)
+		t.eq(guard:HasPending("rebirth"), false)
+		t.eq(guard:IsSettled(id1 :: string), true)
+		local lateAccepted, _ = guard:ResolveDefinitive(t1 :: number, id1 :: string)
+		t.eq(lateAccepted, false, "resposta tardia após SettlePending não deve reprocessar")
+
+		-- Em voo: cancela timer ativo, libera UI e liquida requestId
+		local t2, id2 = guard:Begin("rebirth")
+		local timer2 = guard:ScheduleTimeout(t2 :: number, 8, scheduler.schedule, function() end)
+		t.eq(guard:IsBusy(), true)
+		local settledInFlight = guard:SettlePending("rebirth")
+		t.eq(settledInFlight, id2)
+		t.eq(guard:IsBusy(), false)
+		t.eq(guard:HasPending("rebirth"), false)
+		t.eq(timer2.cancelled, true)
+	end)
 end

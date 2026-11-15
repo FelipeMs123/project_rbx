@@ -42,6 +42,7 @@ local rebirthGuard = RequestGuard.new(cancelTimeoutThread, generateRequestId)
 local currentCoins = 0
 local currentRebirths = 0
 local currentGems = 0
+local lastRebirths: number? = nil
 
 local function sanitizeNumber(value: any, fallback: number): number
 	if type(value) == "number" and value == value and value > -math.huge and value < math.huge then
@@ -56,6 +57,7 @@ local function pushViewState()
 		Rebirths = currentRebirths,
 		Gems = currentGems,
 		IsBusy = rebirthGuard:IsBusy(),
+		HasPendingRetry = rebirthGuard:HasPending(REBIRTH_REQUEST_KEY),
 	})
 end
 
@@ -65,6 +67,7 @@ local function syncFromSnapshot()
 		currentCoins = sanitizeNumber(snapshot.Coins, currentCoins)
 		currentRebirths = sanitizeNumber(snapshot.Rebirths, currentRebirths)
 		currentGems = sanitizeNumber(snapshot.Gems, currentGems)
+		lastRebirths = currentRebirths
 	end
 	pushViewState()
 end
@@ -153,7 +156,26 @@ function RebirthController.Start()
 	table.insert(connections, coinsConn :: any)
 
 	local rebirthsConn = DataController.Observe("Rebirths", function(value: any)
-		currentRebirths = sanitizeNumber(value, 0)
+		local nextRebirths = sanitizeNumber(value, currentRebirths)
+		local previousRebirths = lastRebirths
+		currentRebirths = nextRebirths
+		lastRebirths = nextRebirths
+
+		if
+			previousRebirths ~= nil
+			and nextRebirths > previousRebirths
+			and rebirthGuard:HasPending(REBIRTH_REQUEST_KEY)
+		then
+			local settledId = rebirthGuard:SettlePending(REBIRTH_REQUEST_KEY)
+			if settledId ~= nil then
+				RebirthUI.ResetConfirmation()
+				pushViewState()
+				RebirthUI.SetModalOpen(false)
+				HudController.Toast(`Rebirth concluído! Você ganhou +{GameConfig.RebirthGemReward} Gemas!`, "reward")
+				return
+			end
+		end
+
 		pushViewState()
 	end)
 	table.insert(connections, rebirthsConn :: any)
@@ -168,6 +190,10 @@ end
 function RebirthController.Destroy()
 	isStarted = false
 	rebirthGuard:Reset()
+	currentCoins = 0
+	currentRebirths = 0
+	currentGems = 0
+	lastRebirths = nil
 
 	for _, conn in connections do
 		conn:Disconnect()

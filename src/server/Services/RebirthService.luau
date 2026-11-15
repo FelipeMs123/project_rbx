@@ -17,9 +17,9 @@ local EconomyService = require(script.Parent.EconomyService)
 
 local REQUEST_REBIRTH_RATE = 2
 local REQUEST_REBIRTH_BURST = 3
-local IDEMPOTENCY_CACHE_LIMIT = 8
+local MAX_CACHED_RESULTS = 100
 
-local rebirthIdempotency = RequestIdempotency.new(IDEMPOTENCY_CACHE_LIMIT)
+local rebirthIdempotency = RequestIdempotency.new(MAX_CACHED_RESULTS)
 local playerRemovingConnected = false
 
 local RebirthService = {}
@@ -53,6 +53,11 @@ local function executeRequestRebirth(player: Player): Types.Result
 		return safeRebirths + 1
 	end)
 	if updatedRebirths == nil then
+		if cost > 0 then
+			DataService.Update(player, "Coins", function(coins: number)
+				return (coins or 0) + cost
+			end)
+		end
 		return { ok = false, err = ErrorCodes.DATA_NOT_LOADED }
 	end
 

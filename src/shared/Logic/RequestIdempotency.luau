@@ -1,11 +1,11 @@
 --!strict
 -- RequestIdempotency.luau (ReplicatedStorage.Shared.Logic.RequestIdempotency)
--- Dono: Squad B. Cache/trava pura de idempotência por jogador e requestId (testável no Lune).
+-- Dono: Squad B. Cache FIFO limitado (até 100 resultados concluídos por jogador) e trava inFlight por requestId (testável no Lune).
 
 local RequestIdempotency = {}
 RequestIdempotency.__index = RequestIdempotency
 
-local DEFAULT_MAX_COMPLETED = 8
+local DEFAULT_MAX_CACHED_RESULTS = 100
 local MAX_REQUEST_ID_LENGTH = 64
 
 export type ResultLike = {
@@ -36,7 +36,7 @@ function RequestIdempotency.new(maxCompleted: number?): RequestIdempotency
 			and maxCompleted == maxCompleted
 			and maxCompleted >= 1
 		then math.floor(maxCompleted)
-		else DEFAULT_MAX_COMPLETED
+		else DEFAULT_MAX_CACHED_RESULTS
 	local self: RequestIdempotencyData = {
 		_maxCompleted = limit,
 		_players = {},

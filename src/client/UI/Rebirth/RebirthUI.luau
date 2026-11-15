@@ -19,6 +19,7 @@ export type RebirthViewState = {
 	Rebirths: number,
 	Gems: number,
 	IsBusy: boolean,
+	HasPendingRetry: boolean?,
 }
 
 local RebirthUI = {}
@@ -58,6 +59,7 @@ local latestState: RebirthViewState = {
 	Rebirths = 0,
 	Gems = 0,
 	IsBusy = false,
+	HasPendingRetry = false,
 }
 
 local function computeResponsiveScale(): number
@@ -212,13 +214,14 @@ local function renderView()
 		gemRewardLabel.Text = `+{mults.GemReward} Gemas`
 	end
 
+	local hasPendingRetry = latestState.HasPendingRetry == true
 	if startRebirthButton then
 		startRebirthButton.AutoButtonColor = not latestState.IsBusy
 		if latestState.IsBusy then
 			startRebirthButton.Text = "Fazendo Rebirth..."
 			startRebirthButton.BackgroundColor3 = Color3.fromRGB(122, 130, 150)
-		elseif progress.CanRebirth then
-			startRebirthButton.Text = "Fazer Rebirth!"
+		elseif progress.CanRebirth or hasPendingRetry then
+			startRebirthButton.Text = if hasPendingRetry then "Tentar Rebirth!" else "Fazer Rebirth!"
 			startRebirthButton.BackgroundColor3 = Color3.fromRGB(168, 85, 247)
 		else
 			startRebirthButton.Text = "Fazer Rebirth!"
@@ -661,7 +664,7 @@ local function createRebirthGui(playerGui: PlayerGui)
 			end
 			local cost = RebirthHelpers.computeCost(latestState.Rebirths, GameConfig)
 			local progress = RebirthHelpers.computeProgress(latestState.Coins, cost)
-			if not progress.CanRebirth then
+			if not progress.CanRebirth and latestState.HasPendingRetry ~= true then
 				local missing = RebirthHelpers.formatShortNumber(progress.MissingCoins)
 				RebirthUI.ShowToast(`Faltam {missing} moedas para fazer Rebirth!`, true)
 				return
@@ -998,7 +1001,7 @@ function RebirthUI.SetModalOpen(open: boolean)
 	end
 	if open then
 		collapseOtherMenus()
-		setConfirmationStep(latestState.IsBusy)
+		setConfirmationStep(latestState.IsBusy or latestState.HasPendingRetry == true)
 		renderView()
 	else
 		setConfirmationStep(false)
@@ -1017,6 +1020,13 @@ end
 function RebirthUI.Destroy()
 	clearGuiResources()
 	confirmCallback = nil
+	latestState = {
+		Coins = 0,
+		Rebirths = 0,
+		Gems = 0,
+		IsBusy = false,
+		HasPendingRetry = false,
+	}
 end
 
 return RebirthUI

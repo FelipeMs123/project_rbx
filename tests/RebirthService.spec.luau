@@ -484,7 +484,6 @@ return function(t)
 			t.eq(failRes.err, "INTERNAL")
 
 			h.setDataServiceUpdateHook(nil)
-			h.getData(p1).Coins = 50000
 			local recoveredRes = h.invokeRemote("RequestRebirth", p1, "req-rebirth-2")
 			t.eq(recoveredRes.ok, true)
 			t.eq(recoveredRes.data.rebirths, 2)
@@ -497,6 +496,57 @@ return function(t)
 			local afterReconnect = h.invokeRemote("RequestRebirth", p1, "req-rebirth-1")
 			t.eq(afterReconnect.ok, true)
 			t.eq(afterReconnect.data.rebirths, 3)
+		end
+	)
+
+	t.test(
+		"RequestRebirth reembolsa cost exato (sem multiplicadores) se DataService.Update de Rebirths retornar nil após Spend",
+		function()
+			local h = loadRebirthServiceHarness()
+			h.RebirthService.Init()
+			-- Registra multiplicador 2x para provar que o estorno não passa por EconomyService.AddCoins
+			h.EconomyService.RegisterCoinMultiplier("DoubleCoins", function()
+				return 2
+			end)
+
+			local p1 = h.makePlayer(1, "Alice")
+			h.setLoadedData(p1, {
+				Version = 1,
+				Coins = 50000,
+				Gems = 5,
+				Rebirths = 1, -- custo do 2º rebirth = 25000
+				UnlockedAreas = { "CandyPlaza", "ChocolateFalls" },
+				Inventory = {},
+				Equipped = {},
+			})
+
+			local rebirthUpdateAttempted = false
+			h.setDataServiceUpdateHook(function(original, player, key, modifier)
+				if key == "Rebirths" then
+					rebirthUpdateAttempted = true
+					return nil
+				end
+				return original(player, key, modifier)
+			end)
+
+			local failRes = h.invokeRemote("RequestRebirth", p1, "req-refund-1")
+			t.eq(rebirthUpdateAttempted, true)
+			t.eq(failRes.ok, false)
+			t.eq(failRes.err, "DATA_NOT_LOADED")
+			t.eq(h.getData(p1).Coins, 50000, "Coins deve ser restaurado exatamente para 50000 após Spend")
+			t.eq(h.getData(p1).Rebirths, 1)
+			t.eq(h.getData(p1).Gems, 5)
+			t.eq(h.getSaveCount(), 0)
+
+			-- Retry sem reposição manual de moedas conclui normalmente com o mesmo requestId
+			h.setDataServiceUpdateHook(nil)
+			local retryRes = h.invokeRemote("RequestRebirth", p1, "req-refund-1")
+			t.eq(retryRes.ok, true)
+			t.eq(retryRes.data.rebirths, 2)
+			t.eq(h.getData(p1).Rebirths, 2)
+			t.eq(h.getData(p1).Coins, 25)
+			t.eq(h.getData(p1).Gems, 10)
+			t.eq(h.getSaveCount(), 1)
 		end
 	)
 end

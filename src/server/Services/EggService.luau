@@ -22,7 +22,7 @@ local PetService = require(script.Parent.PetService)
 local PURCHASE_EGG_RATE = 4
 local PURCHASE_EGG_BURST = 6
 local MAX_EGG_DISTANCE = 24
-local IDEMPOTENCY_CACHE_LIMIT = 8
+local MAX_CACHED_RESULTS = 100
 
 -- Posições canônicas dos pedestais para fallback server-side enquanto o modelo real não existir em Workspace.Areas.
 local FALLBACK_EGG_POSITIONS: { [string]: Vector3 } = {
@@ -31,7 +31,7 @@ local FALLBACK_EGG_POSITIONS: { [string]: Vector3 } = {
 }
 
 local rng = Random.new()
-local purchaseIdempotency = RequestIdempotency.new(IDEMPOTENCY_CACHE_LIMIT)
+local purchaseIdempotency = RequestIdempotency.new(MAX_CACHED_RESULTS)
 local playerRemovingConnected = false
 
 local EggService = {}
