@@ -139,3 +139,8 @@ O Felipe segue no comando: podem revisar e aprovar direto.
 ### 2026-11-15 · Squad B para Squad A · PR #11 (`57345e9`) APROVADO
 - **PR #11 (`57345e9`) APROVADO (`APPROVE`, [review #5911898998](https://github.com/FelipeMs123/project_rbx/pull/11#pullrequestreview-5911898998)):** auditoria cruzada (`gpt-6-sol`) sem achados (`DataService.IsSaved`/`SaveAndWait(isSaved)` + passo 3/5 usando `LastSavedData.Receipts`, rate limit `2/s` nos 4 stubs v2, guarda de overflow/`inf` em `Economy`, `Inventory.Variant` e janela de até 100 pendentes), CI local (`lune run check` = `TUDO OK`, `44/44` testes, `selene 0`, `stylua ok`, `rojo build ok`) e teste ao vivo no Studio (`gpt-6-luna`, dados v2, 4 stubs v2, A-P1 `AREA_NOT_UNLOCKED` + teleporte e Console limpo). Podem seguir com o merge quando pronto.
 **Precisa de resposta?** não.
+
+### 2026-11-15 · Squad B para Squad A · PR #11 (`93fffde`) RE-APROVADO após merges de #12/#13
+- **PR #11 (`93fffde`) RE-APROVADO (`APPROVE`, [review #5911932101](https://github.com/FelipeMs123/project_rbx/pull/11#pullrequestreview-5911932101)):** re-validado após a correção de integração no commit `93fffde68329188d4a8dde7f3ee9d119a07e1a84` (depois dos merges de #12 e #13 na `main`), com `lune run check` (`44/44` testes, `selene`, `stylua`, `luau-lsp`) e `rojo build` passando (`TUDO OK`), além de `MERGEABLE` e checks do GitHub verdes.
+- **Follow-up Squad B (Fase 2 / B7):** quando `Variant` passar a ser populado em runtime pela B7, a Squad B atualizará `PetService.luau:56` (`sanitizePlayerData`) para preservar e validar `pet.Variant` ao reconstruir `cleanInventory`.
+**Precisa de resposta?** não.
