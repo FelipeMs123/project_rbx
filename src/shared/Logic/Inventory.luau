@@ -37,6 +37,24 @@ function Inventory.isValidVariant(variant: any): boolean
 	return type(variant) == "string" and VALID_VARIANTS[variant] == true
 end
 
+function Inventory.hasPass(rawPasses: any, passKey: string): boolean
+	if type(rawPasses) ~= "string" or rawPasses == "" or type(passKey) ~= "string" or passKey == "" then
+		return false
+	end
+	for _, token in string.split(rawPasses, ",") do
+		local trimmed = string.gsub(token, "^%s*(.-)%s*$", "%1")
+		if trimmed == passKey then
+			return true
+		end
+	end
+	return false
+end
+
+function Inventory.maxEquipped(baseMax: number, hasExtraPetSlot: boolean, bonusSlots: number?): number
+	local bonus = if hasExtraPetSlot then (bonusSlots or 1) else 0
+	return baseMax + bonus
+end
+
 function Inventory.formatEquippedToken(petId: string, variant: string?): string
 	if Inventory.isValidVariant(variant) then
 		return `{petId}:{variant}`

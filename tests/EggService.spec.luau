@@ -283,6 +283,7 @@ local function loadEggServiceHarness(options: {
 	local errorCodesNode = makeNode("ErrorCodes", "src/shared/ErrorCodes.luau")
 	local gameConfigNode = makeNode("Game", "src/shared/Config/Game.luau")
 	local fusionConfigNode = makeNode("Fusion", "src/shared/Config/Fusion.luau")
+	local monetizationConfigNode = makeNode("Monetization", "src/shared/Config/Monetization.luau")
 	local petsConfigNode = makeNode("Pets", "src/shared/Config/Pets.luau")
 	local eggsConfigNode = makeNode("Eggs", "src/shared/Config/Eggs.luau")
 	local economyLogicNode = makeNode("Economy", "src/shared/Logic/Economy.luau")
@@ -299,6 +300,7 @@ local function loadEggServiceHarness(options: {
 	configNode.Parent = sharedNode
 	configNode.Game = gameConfigNode
 	configNode.Fusion = fusionConfigNode
+	configNode.Monetization = monetizationConfigNode
 	configNode.Pets = petsConfigNode
 	configNode.Eggs = eggsConfigNode
 
@@ -314,6 +316,7 @@ local function loadEggServiceHarness(options: {
 	errorCodesNode.Parent = sharedNode
 	gameConfigNode.Parent = configNode
 	fusionConfigNode.Parent = configNode
+	monetizationConfigNode.Parent = configNode
 	petsConfigNode.Parent = configNode
 	eggsConfigNode.Parent = configNode
 	economyLogicNode.Parent = logicNode
@@ -326,6 +329,7 @@ local function loadEggServiceHarness(options: {
 	local netNode = makeNode("Net")
 	local dataServiceNode = makeNode("DataService")
 	local economyServiceNode = makeNode("EconomyService", "src/server/Services/EconomyService.luau")
+	local monetizationServiceNode = makeNode("MonetizationService", "src/server/Services/MonetizationService.luau")
 	local petServiceNode = makeNode("PetService", "src/server/Services/PetService.luau")
 	local eggServiceNode = makeNode("EggService", "src/server/Services/EggService.luau")
 	local netServerNode = makeNode("NetServer")
@@ -335,12 +339,14 @@ local function loadEggServiceHarness(options: {
 	servicesNode.Parent = serverNode
 	servicesNode.DataService = dataServiceNode
 	servicesNode.EconomyService = economyServiceNode
+	servicesNode.MonetizationService = monetizationServiceNode
 	servicesNode.PetService = petServiceNode
 	servicesNode.EggService = eggServiceNode
 	netNode.Parent = serverNode
 	netNode.NetServer = netServerNode
 	dataServiceNode.Parent = servicesNode
 	economyServiceNode.Parent = servicesNode
+	monetizationServiceNode.Parent = servicesNode
 	petServiceNode.Parent = servicesNode
 	eggServiceNode.Parent = servicesNode
 	netServerNode.Parent = netNode

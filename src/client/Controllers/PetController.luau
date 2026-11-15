@@ -630,6 +630,13 @@ function PetController.Start()
 	DataController.Observe("Gems", function()
 		PetInventoryUI.Refresh(DataController.Get())
 	end)
+
+	local localPlayer = Players.LocalPlayer
+	if localPlayer and type(localPlayer.GetAttributeChangedSignal) == "function" then
+		localPlayer:GetAttributeChangedSignal("Passes"):Connect(function()
+			PetInventoryUI.Refresh(DataController.Get())
+		end)
+	end
 end
 
 return PetController

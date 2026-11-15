@@ -148,6 +148,7 @@ local function loadPetServiceHarness()
 	local errorCodesNode = makeNode("ErrorCodes", "src/shared/ErrorCodes.luau")
 	local gameConfigNode = makeNode("Game", "src/shared/Config/Game.luau")
 	local fusionConfigNode = makeNode("Fusion", "src/shared/Config/Fusion.luau")
+	local monetizationConfigNode = makeNode("Monetization", "src/shared/Config/Monetization.luau")
 	local petsConfigNode = makeNode("Pets", "src/shared/Config/Pets.luau")
 	local economyLogicNode = makeNode("Economy", "src/shared/Logic/Economy.luau")
 	local inventoryNode = makeNode("Inventory", "src/shared/Logic/Inventory.luau")
@@ -162,6 +163,7 @@ local function loadPetServiceHarness()
 	configNode.Parent = sharedNode
 	configNode.Game = gameConfigNode
 	configNode.Fusion = fusionConfigNode
+	configNode.Monetization = monetizationConfigNode
 	configNode.Pets = petsConfigNode
 
 	logicNode.Parent = sharedNode
@@ -175,6 +177,7 @@ local function loadPetServiceHarness()
 	errorCodesNode.Parent = sharedNode
 	gameConfigNode.Parent = configNode
 	fusionConfigNode.Parent = configNode
+	monetizationConfigNode.Parent = configNode
 	petsConfigNode.Parent = configNode
 	economyLogicNode.Parent = logicNode
 	inventoryNode.Parent = logicNode
@@ -186,6 +189,7 @@ local function loadPetServiceHarness()
 	local petServiceNode = makeNode("PetService", "src/server/Services/PetService.luau")
 	local dataServiceNode = makeNode("DataService")
 	local economyServiceNode = makeNode("EconomyService", "src/server/Services/EconomyService.luau")
+	local monetizationServiceNode = makeNode("MonetizationService")
 	local netServerNode = makeNode("NetServer")
 
 	serverNode.Services = servicesNode
@@ -194,14 +198,25 @@ local function loadPetServiceHarness()
 	servicesNode.PetService = petServiceNode
 	servicesNode.DataService = dataServiceNode
 	servicesNode.EconomyService = economyServiceNode
+	servicesNode.MonetizationService = monetizationServiceNode
 	netNode.Parent = serverNode
 	netNode.NetServer = netServerNode
 	petServiceNode.Parent = servicesNode
 	dataServiceNode.Parent = servicesNode
 	economyServiceNode.Parent = servicesNode
+	monetizationServiceNode.Parent = servicesNode
 	netServerNode.Parent = netNode
 
+	local playerPasses: { [any]: { [string]: boolean } } = {}
+	local mockMonetizationService = {
+		HasPass = function(player, passKey)
+			local passes = playerPasses[player]
+			return passes ~= nil and passes[passKey] == true
+		end,
+	}
+
 	moduleCache[dataServiceNode] = mockDataService
+	moduleCache[monetizationServiceNode] = mockMonetizationService
 	moduleCache[netServerNode] = mockNetServer
 
 	local mockReplicatedStorage = {
@@ -268,6 +283,10 @@ local function loadPetServiceHarness()
 		end,
 		advanceClock = function(seconds)
 			nowClock += seconds
+		end,
+		setPass = function(player, passKey, owned)
+			playerPasses[player] = playerPasses[player] or {}
+			playerPasses[player][passKey] = owned
 		end,
 	}
 end
@@ -592,6 +611,53 @@ return function(t)
 			local badUuid, badErr = h.PetService.AddPet(p1, "CottonCat", "Rainbow")
 			t.eq(badUuid, nil)
 			t.eq(badErr, "INVALID_ARGS")
+		end
+	)
+
+	t.test(
+		"ExtraPetSlot permite equipar 4o pet (incluindo :Golden) e preserva 4 equipados no sanitizePlayerData",
+		function()
+			local h = loadPetServiceHarness()
+			h.PetService.Init()
+
+			local p1 = h.makePlayer(1, "Alice")
+			h.setPass(p1, "ExtraPetSlot", true)
+			h.setLoadedData(p1, {
+				Version = 1,
+				Coins = 25,
+				Gems = 0,
+				Rebirths = 0,
+				UnlockedAreas = { "CandyPlaza" },
+				Inventory = {
+					p1 = { Id = "BearGummy" }, -- 2
+					p2 = { Id = "CottonCat" }, -- 1.5
+					p3 = { Id = "LollipopBunny" }, -- 3
+					p4 = { Id = "ChocolateDragon", Variant = "Golden" }, -- 10 * 2 = 20
+					p5 = { Id = "JellyUnicorn" }, -- 5
+				},
+				Equipped = { "p1", "p2", "p3", "p4", "p5" }, -- 5o deve ser cortado, 4o preservado
+			})
+
+			local data = h.getData(p1)
+			t.eq(#data.Equipped, 4, "com ExtraPetSlot deve preservar 4 pets no load")
+			t.eq(data.Equipped[4], "p4")
+			t.eq(p1:GetAttribute("EquippedPets"), "BearGummy,CottonCat,LollipopBunny,ChocolateDragon:Golden")
+			t.eq(h.PetService.GetDamageBonus(p1), 26.5)
+
+			-- Desequipa o 4o, reequipa via remote, e tenta o 5o
+			local unRes = h.invokeRemote("UnequipPet", p1, "p4")
+			t.eq(unRes.ok, true)
+			t.eq(#data.Equipped, 3)
+
+			local eq4 = h.invokeRemote("EquipPet", p1, "p4")
+			t.eq(eq4.ok, true)
+			t.eq(#data.Equipped, 4)
+			t.eq(p1:GetAttribute("EquippedPets"), "BearGummy,CottonCat,LollipopBunny,ChocolateDragon:Golden")
+
+			local eq5 = h.invokeRemote("EquipPet", p1, "p5")
+			t.eq(eq5.ok, false)
+			t.eq(eq5.err, "MAX_EQUIPPED")
+			t.eq(#data.Equipped, 4)
 		end
 	)
 end

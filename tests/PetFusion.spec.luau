@@ -92,6 +92,7 @@ local function loadFusionHarness()
 	local dataStore = {}
 	local loadedSignal = makeSignal()
 	local changedSignal = makeSignal()
+	local failNextInventoryUpdate = false
 
 	local mockDataService = {
 		Loaded = loadedSignal,
@@ -114,6 +115,10 @@ local function loadFusionHarness()
 		Update = function(player, key, modifier)
 			local data = dataStore[player]
 			if data == nil then
+				return nil
+			end
+			if key == "Inventory" and failNextInventoryUpdate then
+				failNextInventoryUpdate = false
 				return nil
 			end
 			local newValue = modifier(data[key])
@@ -160,6 +165,7 @@ local function loadFusionHarness()
 	local errorCodesNode = makeNode("ErrorCodes", "src/shared/ErrorCodes.luau")
 	local gameConfigNode = makeNode("Game", "src/shared/Config/Game.luau")
 	local fusionConfigNode = makeNode("Fusion", "src/shared/Config/Fusion.luau")
+	local monetizationConfigNode = makeNode("Monetization", "src/shared/Config/Monetization.luau")
 	local petsConfigNode = makeNode("Pets", "src/shared/Config/Pets.luau")
 	local economyLogicNode = makeNode("Economy", "src/shared/Logic/Economy.luau")
 	local inventoryNode = makeNode("Inventory", "src/shared/Logic/Inventory.luau")
@@ -174,6 +180,7 @@ local function loadFusionHarness()
 	configNode.Parent = sharedNode
 	configNode.Game = gameConfigNode
 	configNode.Fusion = fusionConfigNode
+	configNode.Monetization = monetizationConfigNode
 	configNode.Pets = petsConfigNode
 
 	logicNode.Parent = sharedNode
@@ -187,6 +194,7 @@ local function loadFusionHarness()
 	errorCodesNode.Parent = sharedNode
 	gameConfigNode.Parent = configNode
 	fusionConfigNode.Parent = configNode
+	monetizationConfigNode.Parent = configNode
 	petsConfigNode.Parent = configNode
 	economyLogicNode.Parent = logicNode
 	inventoryNode.Parent = logicNode
@@ -198,6 +206,7 @@ local function loadFusionHarness()
 	local petServiceNode = makeNode("PetService", "src/server/Services/PetService.luau")
 	local dataServiceNode = makeNode("DataService")
 	local economyServiceNode = makeNode("EconomyService", "src/server/Services/EconomyService.luau")
+	local monetizationServiceNode = makeNode("MonetizationService")
 	local netServerNode = makeNode("NetServer")
 
 	serverNode.Services = servicesNode
@@ -206,11 +215,13 @@ local function loadFusionHarness()
 	servicesNode.PetService = petServiceNode
 	servicesNode.DataService = dataServiceNode
 	servicesNode.EconomyService = economyServiceNode
+	servicesNode.MonetizationService = monetizationServiceNode
 	netNode.Parent = serverNode
 	netNode.NetServer = netServerNode
 	petServiceNode.Parent = servicesNode
 	dataServiceNode.Parent = servicesNode
 	economyServiceNode.Parent = servicesNode
+	monetizationServiceNode.Parent = servicesNode
 	netServerNode.Parent = netNode
 
 	local clientNode = makeNode("Client")
@@ -224,7 +235,16 @@ local function loadFusionHarness()
 	uiPetsNode.PetInventoryUI = petInventoryUINode
 	petInventoryUINode.Parent = uiPetsNode
 
+	local playerPasses: { [any]: { [string]: boolean } } = {}
+	local mockMonetizationService = {
+		HasPass = function(player, passKey)
+			local passes = playerPasses[player]
+			return passes ~= nil and passes[passKey] == true
+		end,
+	}
+
 	moduleCache[dataServiceNode] = mockDataService
+	moduleCache[monetizationServiceNode] = mockMonetizationService
 	moduleCache[netServerNode] = mockNetServer
 
 	local mockReplicatedStorage = {
@@ -302,6 +322,13 @@ local function loadFusionHarness()
 		end,
 		advanceClock = function(seconds)
 			nowClock += seconds
+		end,
+		setPass = function(player, passKey, owned)
+			playerPasses[player] = playerPasses[player] or {}
+			playerPasses[player][passKey] = owned
+		end,
+		setFailNextInventoryUpdate = function(shouldFail)
+			failNextInventoryUpdate = shouldFail
 		end,
 	}
 end
@@ -649,6 +676,7 @@ return function(t)
 			local errorCodesNode = makeNode("ErrorCodes", "src/shared/ErrorCodes.luau")
 			local gameConfigNode = makeNode("Game", "src/shared/Config/Game.luau")
 			local fusionConfigNode = makeNode("Fusion", "src/shared/Config/Fusion.luau")
+			local monetizationConfigNode = makeNode("Monetization", "src/shared/Config/Monetization.luau")
 			local petsConfigNode = makeNode("Pets", "src/shared/Config/Pets.luau")
 			local inventoryNode = makeNode("Inventory", "src/shared/Logic/Inventory.luau")
 
@@ -659,6 +687,7 @@ return function(t)
 			configNode.Parent = sharedNode
 			configNode.Game = gameConfigNode
 			configNode.Fusion = fusionConfigNode
+			configNode.Monetization = monetizationConfigNode
 			configNode.Pets = petsConfigNode
 			logicNode.Parent = sharedNode
 			logicNode.Inventory = inventoryNode
@@ -666,6 +695,7 @@ return function(t)
 			errorCodesNode.Parent = sharedNode
 			gameConfigNode.Parent = configNode
 			fusionConfigNode.Parent = configNode
+			monetizationConfigNode.Parent = configNode
 			petsConfigNode.Parent = configNode
 			inventoryNode.Parent = logicNode
 
@@ -878,6 +908,666 @@ return function(t)
 			t.eq(PetInventoryUI.IsPending("u-1"), false)
 			scheduledDelays[4].callback()
 			t.eq(#toastLog, 4, "EquipPet não deve mostrar timeout falso após resposta")
+		end
+	)
+
+	t.test("FusePets funciona com inventário cheio (50 -> 46, sem INVENTORY_FULL)", function()
+		local h = loadFusionHarness()
+		h.PetService.Init()
+
+		local p1 = h.makePlayer(1, "Alice")
+		local inv = {}
+		local batch = {}
+		for i = 1, 5 do
+			local id = `cat_{i}`
+			inv[id] = { Id = "CottonCat" }
+			table.insert(batch, id)
+		end
+		for i = 1, 45 do
+			inv[`bear_{i}`] = { Id = "BearGummy" }
+		end
+		t.eq(Inventory.count({ Inventory = inv, Equipped = {} }), 50)
+
+		h.setLoadedData(p1, {
+			Version = 1,
+			Coins = 0,
+			Gems = 10,
+			Rebirths = 0,
+			UnlockedAreas = { "CandyPlaza" },
+			Inventory = inv,
+			Equipped = {},
+		})
+
+		local res = h.invokeRemote("FusePets", p1, batch)
+		t.eq(res.ok, true)
+		t.eq(res.err, nil)
+		t.eq(res.data.petId, "CottonCat")
+		t.eq(res.data.variant, "Golden")
+		local data = h.getData(p1)
+		t.eq(Inventory.count(data), 46)
+		t.eq(data.Gems, 5)
+	end)
+
+	t.test("FusePets recusa UUID de outro jogador (misto ou total) sem cobrar gemas", function()
+		local h = loadFusionHarness()
+		h.PetService.Init()
+
+		local p1 = h.makePlayer(1, "Alice")
+		local p2 = h.makePlayer(2, "Bob")
+		h.setLoadedData(p1, {
+			Version = 1,
+			Coins = 0,
+			Gems = 50,
+			Rebirths = 0,
+			UnlockedAreas = { "CandyPlaza" },
+			Inventory = {
+				a1 = { Id = "CottonCat" },
+				a2 = { Id = "CottonCat" },
+				a3 = { Id = "CottonCat" },
+				a4 = { Id = "CottonCat" },
+			},
+			Equipped = {},
+		})
+		h.setLoadedData(p2, {
+			Version = 1,
+			Coins = 0,
+			Gems = 50,
+			Rebirths = 0,
+			UnlockedAreas = { "CandyPlaza" },
+			Inventory = {
+				b1 = { Id = "CottonCat" },
+				b2 = { Id = "CottonCat" },
+				b3 = { Id = "CottonCat" },
+				b4 = { Id = "CottonCat" },
+				b5 = { Id = "CottonCat" },
+			},
+			Equipped = {},
+		})
+
+		-- Mistura 4 da Alice + 1 do Bob
+		local mixed = h.invokeRemote("FusePets", p1, { "a1", "a2", "a3", "a4", "b1" })
+		t.eq(mixed.ok, false)
+		t.eq(mixed.err, "FUSE_INVALID")
+		t.eq(h.getData(p1).Gems, 50)
+		t.ok(h.getData(p2).Inventory.b1 ~= nil)
+
+		-- Todos do Bob
+		local stolen = h.invokeRemote("FusePets", p1, { "b1", "b2", "b3", "b4", "b5" })
+		t.eq(stolen.ok, false)
+		t.eq(stolen.err, "FUSE_INVALID")
+		t.eq(h.getData(p1).Gems, 50)
+		t.eq(Inventory.count(h.getData(p2)), 5)
+	end)
+
+	t.test("FusePets cobra custo exato de cada raridade (Common..Legendary)", function()
+		local h = loadFusionHarness()
+		h.PetService.Init()
+
+		local p1 = h.makePlayer(1, "Alice")
+		h.setLoadedData(p1, {
+			Version = 1,
+			Coins = 0,
+			Gems = 100,
+			Rebirths = 0,
+			UnlockedAreas = { "CandyPlaza" },
+			Inventory = {
+				c1 = { Id = "CottonCat" },
+				c2 = { Id = "CottonCat" },
+				c3 = { Id = "CottonCat" },
+				c4 = { Id = "CottonCat" },
+				c5 = { Id = "CottonCat" },
+				u1 = { Id = "LollipopBunny" },
+				u2 = { Id = "LollipopBunny" },
+				u3 = { Id = "LollipopBunny" },
+				u4 = { Id = "LollipopBunny" },
+				u5 = { Id = "LollipopBunny" },
+				r1 = { Id = "JellyUnicorn" },
+				r2 = { Id = "JellyUnicorn" },
+				r3 = { Id = "JellyUnicorn" },
+				r4 = { Id = "JellyUnicorn" },
+				r5 = { Id = "JellyUnicorn" },
+				l1 = { Id = "ChocolateDragon" },
+				l2 = { Id = "ChocolateDragon" },
+				l3 = { Id = "ChocolateDragon" },
+				l4 = { Id = "ChocolateDragon" },
+				l5 = { Id = "ChocolateDragon" },
+			},
+			Equipped = {},
+		})
+
+		-- Common = 5 (100 -> 95)
+		local rCommon = h.invokeRemote("FusePets", p1, { "c1", "c2", "c3", "c4", "c5" })
+		t.eq(rCommon.ok, true)
+		t.eq(h.getData(p1).Gems, 95)
+
+		-- Uncommon = 10 (95 -> 85)
+		h.advanceClock(2)
+		local rUncommon = h.invokeRemote("FusePets", p1, { "u1", "u2", "u3", "u4", "u5" })
+		t.eq(rUncommon.ok, true)
+		t.eq(h.getData(p1).Gems, 85)
+
+		-- Rare = 20 (85 -> 65)
+		h.advanceClock(2)
+		local rRare = h.invokeRemote("FusePets", p1, { "r1", "r2", "r3", "r4", "r5" })
+		t.eq(rRare.ok, true)
+		t.eq(h.getData(p1).Gems, 65)
+
+		-- Legendary = 50 (65 -> 15)
+		h.advanceClock(2)
+		local rLegend = h.invokeRemote("FusePets", p1, { "l1", "l2", "l3", "l4", "l5" })
+		t.eq(rLegend.ok, true)
+		t.eq(h.getData(p1).Gems, 15)
+
+		-- Epic = 35 no config e getFusableGroups
+		t.eq(FusionConfig.GemCostByRarity.Epic, 35)
+		local epicPets = {
+			EpicCandy = { Name = "Doce Épico", Rarity = "Epic", Multiplier = 7 },
+		}
+		local epicData = {
+			Inventory = {
+				e1 = { Id = "EpicCandy" },
+				e2 = { Id = "EpicCandy" },
+				e3 = { Id = "EpicCandy" },
+				e4 = { Id = "EpicCandy" },
+				e5 = { Id = "EpicCandy" },
+			},
+			Equipped = {},
+		}
+		local epicGroups = Inventory.getFusableGroups(epicData, epicPets, FusionConfig)
+		t.eq(#epicGroups, 1)
+		t.eq(epicGroups[1].gemCost, 35)
+	end)
+
+	t.test(
+		"FusePets rejeita payloads hostis (NaN, math.huge, chaves negativas/fracionárias, tabelas aninhadas)",
+		function()
+			local h = loadFusionHarness()
+			h.PetService.Init()
+
+			local p1 = h.makePlayer(1, "Alice")
+			h.setLoadedData(p1, {
+				Version = 1,
+				Coins = 0,
+				Gems = 60,
+				Rebirths = 0,
+				UnlockedAreas = { "CandyPlaza" },
+				Inventory = {
+					c1 = { Id = "CottonCat" },
+					c2 = { Id = "CottonCat" },
+					c3 = { Id = "CottonCat" },
+					c4 = { Id = "CottonCat" },
+					c5 = { Id = "CottonCat" },
+				},
+				Equipped = {},
+			})
+
+			local hostilePayloads = {
+				0 / 0, -- NaN
+				math.huge,
+				-math.huge,
+				-1,
+				1.5,
+				true,
+				"c1",
+				{},
+				{ [-1] = "c1", [1] = "c2", [2] = "c3", [3] = "c4", [4] = "c5" },
+				{ [1.5] = "c1", [1] = "c2", [2] = "c3", [3] = "c4", [4] = "c5" },
+				{ [math.huge] = "c1", [1] = "c2", [2] = "c3", [3] = "c4", [4] = "c5" },
+				{ { "c1" }, "c2", "c3", "c4", "c5" }, -- tabela aninhada no índice 1
+				{ "c1", "c2", "c3", "c4", { id = "c5" } }, -- tabela aninhada no índice 5
+				{ 0 / 0, "c2", "c3", "c4", "c5" }, -- NaN dentro do array
+				{ math.huge, "c2", "c3", "c4", "c5" }, -- math.huge dentro do array
+			}
+
+			for idx, payload in hostilePayloads do
+				h.advanceClock(2)
+				local res = h.invokeRemote("FusePets", p1, payload)
+				t.eq(res.ok, false, `payload hostil #{idx} deveria falhar`)
+				t.eq(res.err, "FUSE_INVALID", `payload hostil #{idx} deveria retornar FUSE_INVALID`)
+				t.eq(h.getData(p1).Gems, 60)
+				t.eq(Inventory.count(h.getData(p1)), 5)
+			end
+		end
+	)
+
+	t.test("FusePets devolve gemas exatas e preserva inventário quando DataService.Update retorna nil", function()
+		local h = loadFusionHarness()
+		h.PetService.Init()
+
+		local p1 = h.makePlayer(1, "Alice")
+		h.setLoadedData(p1, {
+			Version = 1,
+			Coins = 0,
+			Gems = 75,
+			Rebirths = 0,
+			UnlockedAreas = { "CandyPlaza" },
+			Inventory = {
+				l1 = { Id = "ChocolateDragon" }, -- Legendary = 50 gemas
+				l2 = { Id = "ChocolateDragon" },
+				l3 = { Id = "ChocolateDragon" },
+				l4 = { Id = "ChocolateDragon" },
+				l5 = { Id = "ChocolateDragon" },
+			},
+			Equipped = {},
+		})
+
+		h.setFailNextInventoryUpdate(true)
+		local res = h.invokeRemote("FusePets", p1, { "l1", "l2", "l3", "l4", "l5" })
+		t.eq(res.ok, false)
+		t.eq(res.err, "DATA_NOT_LOADED")
+		t.eq(h.getData(p1).Gems, 75, "gemas gastas (50) devem ser reembolsadas integralmente")
+		t.eq(Inventory.count(h.getData(p1)), 5, "nenhum pet deve ser removido se Update falhar")
+		t.eq(h.getSaveCount(), 0, "Save não deve rodar quando Update falha")
+	end)
+
+	t.test(
+		"PetInventoryUI calcula métricas responsivas sem transbordar abas nem esmagar conteúdo em telas baixas",
+		function()
+			local h = loadFusionHarness()
+			local UI = h.PetInventoryUI
+
+			-- 667x375 (iPhone SE/8 deitado) e 720x360 (Android deitado)
+			for _, vp in { { 667, 375 }, { 720, 360 } } do
+				local m = UI.ComputeResponsiveMetrics(vp[1], vp[2])
+				t.ok(m.tabsHeightPx >= m.minTouchLocal, `abas precisam acompanhar minTouchLocal em {vp[1]}x{vp[2]}`)
+				t.ok(m.headerHeightPx >= m.minTouchLocal, `header precisa comportar CloseButton em {vp[1]}x{vp[2]}`)
+				t.ok(m.tabsHeightPx * m.scale >= 44, `área real de toque das abas >= 44px em {vp[1]}x{vp[2]}`)
+				t.ok(m.modalHeightScale >= 0.88, `modal cresce em tela baixa ({vp[1]}x{vp[2]})`)
+
+				local modalLocalH = (vp[2] * m.modalHeightScale) / m.scale
+				local innerH = modalLocalH - (m.modalPaddingPx * 2)
+				local gridH = innerH - m.contentTopOffsetPx
+				local fusionListH = gridH - (m.fusionPanelPadPx * 2) - m.fusionListTopOffsetPx
+				t.ok(gridH >= 140, `grade deve caber ao menos 1 card inteiro em {vp[1]}x{vp[2]} (veio {gridH})`)
+				t.ok(
+					fusionListH >= 110,
+					`FusionList deve caber ao menos 1 card inteiro em {vp[1]}x{vp[2]} (veio {fusionListH})`
+				)
+			end
+
+			-- Desktop 1920x1080
+			local desktop = UI.ComputeResponsiveMetrics(1920, 1080)
+			t.eq(desktop.isCompactHeight, false)
+			t.eq(desktop.modalHeightScale, 0.78)
+			t.ok(desktop.tabsHeightPx >= desktop.minTouchLocal)
+		end
+	)
+
+	t.test(
+		"PetInventoryUI bloqueia fusão sem gemas, exige confirmação com Active=true, respeita ExtraPetSlot e não trava botão",
+		function()
+			local moduleCache = {}
+			local scheduledDelays = {}
+			local mockTask = {
+				delay = function(seconds, fn)
+					local handle = { seconds = seconds, callback = fn }
+					table.insert(scheduledDelays, handle)
+					return handle
+				end,
+				cancel = function() end,
+				spawn = function(fn, ...)
+					return fn(...)
+				end,
+			}
+
+			local function makeUINode(className)
+				local children = {}
+				local attributes = {}
+				local propSignals = {}
+				local inst = {
+					ClassName = className,
+					Name = className,
+					Visible = true,
+					Active = false,
+					Text = "",
+					Scale = 1,
+					AutoButtonColor = true,
+					AbsoluteSize = { X = 600, Y = 300 },
+					MinSize = { X = 0, Y = 0 },
+					MaxSize = { X = 0, Y = 0 },
+					Activated = makeSignal(),
+					IsA = function(self, target)
+						if target == "GuiObject" then
+							return self.ClassName == "Frame"
+								or self.ClassName == "TextButton"
+								or self.ClassName == "TextLabel"
+								or self.ClassName == "ScrollingFrame"
+						end
+						return self.ClassName == target
+					end,
+					FindFirstChild = function(self, name)
+						for _, child in children do
+							if child.Name == name then
+								return child
+							end
+						end
+						return nil
+					end,
+					FindFirstChildOfClass = function(self, targetClass)
+						for _, child in children do
+							if child.ClassName == targetClass then
+								return child
+							end
+						end
+						return nil
+					end,
+					GetChildren = function()
+						local copy = {}
+						for _, child in children do
+							table.insert(copy, child)
+						end
+						return copy
+					end,
+					SetAttribute = function(_, key, value)
+						attributes[key] = value
+					end,
+					GetAttribute = function(_, key)
+						return attributes[key]
+					end,
+					GetPropertyChangedSignal = function(_, prop)
+						if not propSignals[prop] then
+							propSignals[prop] = makeSignal()
+						end
+						return propSignals[prop]
+					end,
+					Destroy = function(self)
+						self.Parent = nil
+						table.clear(children)
+					end,
+				}
+				local parentRef = nil
+				setmetatable(inst, {
+					__index = function(_, key)
+						if key == "Parent" then
+							return parentRef
+						end
+						return nil
+					end,
+					__newindex = function(self, key, value)
+						if key == "Parent" then
+							if parentRef and parentRef._removeChild then
+								parentRef._removeChild(self)
+							end
+							parentRef = value
+							if value and value._addChild then
+								value._addChild(self)
+							end
+							return
+						end
+						rawset(self, key, value)
+					end,
+				})
+				inst._addChild = function(child)
+					table.insert(children, child)
+				end
+				inst._removeChild = function(child)
+					for i = #children, 1, -1 do
+						if children[i] == child then
+							table.remove(children, i)
+						end
+					end
+				end
+				return inst
+			end
+
+			local playerGui = makeUINode("PlayerGui")
+			local playerAttrs = {}
+			local passSignal = makeSignal()
+			local localPlayer = {
+				Name = "Alice",
+				GetAttribute = function(_, key)
+					return playerAttrs[key]
+				end,
+				SetAttribute = function(_, key, value)
+					playerAttrs[key] = value
+					if key == "Passes" then
+						passSignal:Fire()
+					end
+				end,
+				GetAttributeChangedSignal = function(_, key)
+					if key == "Passes" then
+						return passSignal
+					end
+					return makeSignal()
+				end,
+				WaitForChild = function(_, name)
+					if name == "PlayerGui" then
+						return playerGui
+					end
+					error(`WaitForChild inesperado: {name}`)
+				end,
+			}
+
+			local cameraPropSignal = makeSignal()
+			local mockCamera = {
+				ViewportSize = { X = 720, Y = 360 },
+				GetPropertyChangedSignal = function()
+					return cameraPropSignal
+				end,
+			}
+			local mockWorkspace = {
+				CurrentCamera = mockCamera,
+				GetPropertyChangedSignal = function()
+					return makeSignal()
+				end,
+			}
+			local mockPlayers = {
+				LocalPlayer = localPlayer,
+			}
+
+			local function makeNode(name, path)
+				return { Name = name, _path = path }
+			end
+
+			local sharedNode = makeNode("Shared")
+			local configNode = makeNode("Config")
+			local logicNode = makeNode("Logic")
+			local typesNode = makeNode("Types", "src/shared/Types.luau")
+			local errorCodesNode = makeNode("ErrorCodes", "src/shared/ErrorCodes.luau")
+			local gameConfigNode = makeNode("Game", "src/shared/Config/Game.luau")
+			local fusionConfigNode = makeNode("Fusion", "src/shared/Config/Fusion.luau")
+			local monetizationConfigNode = makeNode("Monetization", "src/shared/Config/Monetization.luau")
+			local petsConfigNode = makeNode("Pets", "src/shared/Config/Pets.luau")
+			local inventoryNode = makeNode("Inventory", "src/shared/Logic/Inventory.luau")
+
+			sharedNode.Config = configNode
+			sharedNode.Logic = logicNode
+			sharedNode.Types = typesNode
+			sharedNode.ErrorCodes = errorCodesNode
+			configNode.Parent = sharedNode
+			configNode.Game = gameConfigNode
+			configNode.Fusion = fusionConfigNode
+			configNode.Monetization = monetizationConfigNode
+			configNode.Pets = petsConfigNode
+			logicNode.Parent = sharedNode
+			logicNode.Inventory = inventoryNode
+			typesNode.Parent = sharedNode
+			errorCodesNode.Parent = sharedNode
+			gameConfigNode.Parent = configNode
+			fusionConfigNode.Parent = configNode
+			monetizationConfigNode.Parent = configNode
+			petsConfigNode.Parent = configNode
+			inventoryNode.Parent = logicNode
+
+			local mockReplicatedStorage = {
+				Shared = sharedNode,
+				WaitForChild = function(_, name)
+					if name == "Shared" then
+						return sharedNode
+					end
+					error(`WaitForChild inesperado: {name}`)
+				end,
+			}
+			local mockGame = {
+				GetService = function(_, serviceName)
+					if serviceName == "Players" then
+						return mockPlayers
+					elseif serviceName == "ReplicatedStorage" then
+						return mockReplicatedStorage
+					elseif serviceName == "Workspace" then
+						return mockWorkspace
+					end
+					error(`Serviço não mockado: {serviceName}`)
+				end,
+			}
+			local mockEnum = {
+				ZIndexBehavior = { Sibling = "Sibling" },
+				ApplyStrokeMode = { Border = "Border" },
+				Font = { GothamBold = "GothamBold", GothamMedium = "GothamMedium" },
+				TextXAlignment = { Left = "Left", Right = "Right" },
+				AutomaticSize = { Y = "Y" },
+				ScrollingDirection = { Y = "Y" },
+				SortOrder = { LayoutOrder = "LayoutOrder" },
+			}
+
+			local function loadModule(node)
+				if moduleCache[node] ~= nil then
+					return moduleCache[node]
+				end
+				local source = fs.readFile(node._path)
+				local bytecode = luau.compile(source)
+				local env = {
+					game = mockGame,
+					script = node,
+					typeof = type,
+					warn = function() end,
+					task = mockTask,
+					Instance = { new = makeUINode },
+					Vector2 = {
+						new = function(x, y)
+							return { X = x or 0, Y = y or 0 }
+						end,
+					},
+					UDim = {
+						new = function(s, o)
+							return { Scale = s or 0, Offset = o or 0 }
+						end,
+					},
+					UDim2 = {
+						fromScale = function(xs, ys)
+							return { X = { Scale = xs, Offset = 0 }, Y = { Scale = ys, Offset = 0 } }
+						end,
+						fromOffset = function(xo, yo)
+							return { X = { Scale = 0, Offset = xo }, Y = { Scale = 0, Offset = yo } }
+						end,
+						new = function(xs, xo, ys, yo)
+							return { X = { Scale = xs, Offset = xo }, Y = { Scale = ys, Offset = yo } }
+						end,
+					},
+					Color3 = {
+						fromRGB = function(r, g, b)
+							return { r = r, g = g, b = b }
+						end,
+					},
+					Enum = mockEnum,
+					require = loadModule,
+				}
+				setmetatable(env, { __index = _G })
+				local fn = luau.load(bytecode, { debugName = node._path, environment = env })
+				local result = fn()
+				moduleCache[node] = result
+				return result
+			end
+
+			local PetInventoryUI = loadModule(makeNode("PetInventoryUI", "src/client/UI/Pets/PetInventoryUI.luau"))
+			local fuseCalls = {}
+			PetInventoryUI.Mount(function() end, function(uuids)
+				table.insert(fuseCalls, uuids)
+			end)
+
+			local gui = playerGui:FindFirstChild("PetInventoryGui")
+			t.ok(gui ~= nil, "ScreenGui deve ser montado em PlayerGui")
+			local modal = gui:FindFirstChild("PetsModal")
+			local statsBar = modal:FindFirstChild("StatsBar")
+			local eqLabel = statsBar:FindFirstChild("EquippedCountLabel")
+			local toggleBtn = gui:FindFirstChild("PetsToggleButton")
+			local tabsBar = modal:FindFirstChild("TabsBar")
+			local fusionPanel = modal:FindFirstChild("FusionPanel")
+			local fusionList = fusionPanel:FindFirstChild("FusionList")
+			local toastBanner = modal:FindFirstChild("ToastBanner")
+			local confirmOverlay = gui:FindFirstChild("FusionConfirmOverlay")
+			local confirmModal = confirmOverlay:FindFirstChild("FusionConfirmModal")
+			local confirmSummary = confirmModal:FindFirstChild("ConfirmSummary")
+			local confirmCost = confirmModal:FindFirstChild("ConfirmCost")
+			local confirmActions = confirmModal:FindFirstChild("ConfirmActions")
+			local cancelBtn = confirmActions:FindFirstChild("CancelFuseButton")
+			local confirmBtn = confirmActions:FindFirstChild("ConfirmFuseButton")
+
+			-- Altura da TabsBar acompanha minTouchLocal no viewport 720x360
+			t.ok(tabsBar.Size.Y.Offset >= 58, "TabsBar deve ter altura >= 58 em viewport 720x360")
+
+			-- Sem passe: limite 3; com ExtraPetSlot: limite 4
+			local sampleData = {
+				Gems = 10, -- insuficiente para JellyUnicorn (20 gemas)
+				Inventory = {
+					j1 = { Id = "JellyUnicorn" },
+					j2 = { Id = "JellyUnicorn" },
+					j3 = { Id = "JellyUnicorn" },
+					j4 = { Id = "JellyUnicorn" },
+					j5 = { Id = "JellyUnicorn" },
+				},
+				Equipped = {},
+			}
+			PetInventoryUI.Refresh(sampleData)
+			t.eq(eqLabel.Text, "Equipados: 0/3")
+			t.eq(toggleBtn.Text, "Pets (0/3)")
+			t.ok(string.find(PetInventoryUI.TranslateError("MAX_EQUIPPED"), "3", 1, true) ~= nil)
+
+			localPlayer:SetAttribute("Passes", "AutoClicker,ExtraPetSlot")
+			PetInventoryUI.Refresh(sampleData)
+			t.eq(eqLabel.Text, "Equipados: 0/4")
+			t.eq(toggleBtn.Text, "Pets (0/4)")
+			t.ok(string.find(PetInventoryUI.TranslateError("MAX_EQUIPPED"), "4", 1, true) ~= nil)
+
+			-- Sem gemas suficientes: clique no FuseButton bloqueia envio, não abre confirmação e mostra aviso
+			local card = fusionList:FindFirstChild("FusionCard_JellyUnicorn")
+			t.ok(card ~= nil)
+			local fuseBtn = card:FindFirstChild("FuseButton")
+			t.eq(fuseBtn.AutoButtonColor, false)
+			fuseBtn.Activated:Fire()
+			t.eq(#fuseCalls, 0, "não deve chamar onFuse sem gemas suficientes")
+			t.eq(confirmOverlay.Visible, false, "não deve abrir confirmação sem gemas suficientes")
+			t.eq(toastBanner.Visible, true, "deve exibir aviso de gemas insuficientes")
+
+			-- Com gemas suficientes: abre confirmação com Active=true, pet, RequiredCount e custo; Cancelar não envia
+			sampleData.Gems = 25
+			PetInventoryUI.Refresh(sampleData)
+			card = fusionList:FindFirstChild("FusionCard_JellyUnicorn")
+			fuseBtn = card:FindFirstChild("FuseButton")
+			t.eq(fuseBtn.AutoButtonColor, true)
+			fuseBtn.Activated:Fire()
+
+			t.eq(#fuseCalls, 0, "clique em Fundir não deve enviar direto sem confirmar")
+			t.eq(confirmOverlay.Visible, true, "deve abrir overlay de confirmação")
+			t.eq(confirmOverlay.Active, true, "overlay de confirmação deve ter Active=true")
+			t.eq(confirmModal.Active, true, "modal de confirmação deve ter Active=true")
+			t.ok(string.find(confirmSummary.Text, "Unicórnio de Gelatina", 1, true) ~= nil)
+			t.ok(string.find(confirmSummary.Text, tostring(FusionConfig.RequiredCount), 1, true) ~= nil)
+			t.ok(string.find(confirmCost.Text, "20 Gemas", 1, true) ~= nil)
+			t.eq(confirmBtn.Text, "Fundir!")
+			t.eq(cancelBtn.Text, "Cancelar")
+
+			cancelBtn.Activated:Fire()
+			t.eq(confirmOverlay.Visible, false)
+			t.eq(#fuseCalls, 0, "Cancelar não pode disparar fusão")
+
+			-- Reabre e confirma com "Fundir!"
+			fuseBtn.Activated:Fire()
+			t.eq(confirmOverlay.Visible, true)
+			confirmBtn.Activated:Fire()
+			t.eq(confirmOverlay.Visible, false)
+			t.eq(#fuseCalls, 1, "Fundir! deve disparar fusão uma vez")
+			t.eq(#fuseCalls[1], FusionConfig.RequiredCount)
+
+			-- SetFusePending(true) -> "Fundindo..." e SetFusePending(false) -> restaura "Fundir"
+			PetInventoryUI.SetFusePending(true)
+			t.eq(fuseBtn.Text, "Fundindo...")
+			t.eq(fuseBtn.AutoButtonColor, false)
+			PetInventoryUI.SetFusePending(false)
+			t.eq(fuseBtn.Text, "Fundir")
+			t.eq(fuseBtn.AutoButtonColor, true)
+
+			PetInventoryUI.Destroy()
 		end
 	)
 end

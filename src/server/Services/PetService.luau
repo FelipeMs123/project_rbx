@@ -9,6 +9,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared = ReplicatedStorage.Shared
 local FusionConfig = require(Shared.Config.Fusion)
 local GameConfig = require(Shared.Config.Game)
+local MonetizationConfig = require(Shared.Config.Monetization)
 local PetsConfig = require(Shared.Config.Pets)
 local ErrorCodes = require(Shared.ErrorCodes)
 local Inventory = require(Shared.Logic.Inventory)
@@ -16,11 +17,13 @@ local Types = require(Shared.Types)
 local NetServer = require(script.Parent.Parent.Net.NetServer)
 local DataService = require(script.Parent.DataService)
 local EconomyService = require(script.Parent.EconomyService)
+local MonetizationService = require(script.Parent.MonetizationService)
 
 local PET_REMOTE_RATE = 8
 local PET_REMOTE_BURST = 8
 local FUSE_REMOTE_RATE = 2
 local FUSE_REMOTE_BURST = 3
+local EXTRA_PET_SLOT_BONUS = MonetizationConfig.GamePasses.ExtraPetSlot.BonusSlots or 1
 
 local PetService = {}
 
@@ -28,6 +31,11 @@ local initializedPlayers: { [Player]: boolean } = {}
 
 local function isValidUuid(value: any): boolean
 	return typeof(value) == "string" and #value >= 1 and #value <= 64
+end
+
+local function getMaxEquipped(player: Player): number
+	local hasExtraSlot = MonetizationService.HasPass(player, "ExtraPetSlot")
+	return Inventory.maxEquipped(GameConfig.MaxEquipped, hasExtraSlot, EXTRA_PET_SLOT_BONUS)
 end
 
 local function buildEquippedAttribute(data: Types.PlayerData): string
@@ -75,6 +83,7 @@ local function sanitizePlayerData(player: Player, data: Types.PlayerData)
 	local seenEquipped: { [string]: boolean } = {}
 	local equippedChanged = type(data.Equipped) ~= "table"
 	local rawEquippedCount = 0
+	local maxEquipped = getMaxEquipped(player)
 
 	for index, uuid in rawEquipped do
 		rawEquippedCount += 1
@@ -83,7 +92,7 @@ local function sanitizePlayerData(player: Player, data: Types.PlayerData)
 			and isValidUuid(uuid)
 			and cleanInventory[uuid] ~= nil
 			and not seenEquipped[uuid]
-			and #cleanEquipped < GameConfig.MaxEquipped
+			and #cleanEquipped < maxEquipped
 		then
 			seenEquipped[uuid] = true
 			table.insert(cleanEquipped, uuid)
@@ -133,7 +142,8 @@ local function equipPet(player: Player, uuid: any): Types.Result
 	if data == nil or player.Parent ~= Players then
 		return { ok = false, err = ErrorCodes.DATA_NOT_LOADED }
 	end
-	local canEquip, equipErr = Inventory.canEquip(data, uuid, GameConfig.MaxEquipped)
+	local maxEquipped = getMaxEquipped(player)
+	local canEquip, equipErr = Inventory.canEquip(data, uuid, maxEquipped)
 	if not canEquip then
 		return { ok = false, err = equipErr }
 	end
