@@ -9,14 +9,22 @@
 | A4 Cliente dos blocos | ✅ pronto | Codex gpt-6.1-sol / Codex gpt-6.1-terra | main (#7, b195d08) | Mesclado na main |
 | A5 HUD e portões | ✅ pronto | Codex gpt-6.1-sol / Codex gpt-6.1-terra | main (#7, b195d08) | Mesclado na main |
 | A6 Studio: Praça dos Doces | ✅ pronto | Gemini 4 Argon + Codex gpt-6.1-sol + Gemini 3.8 Flash | main (#7, b195d08) | Mesclado na main |
-| A-P1 Aviso de área | 🔵 em teste | Codex gpt-6.1-sol | `a/fase2-plano` #11 | Aprovação da Squad B |
-| A-P2 Teste 2 jogadores | ⬜ a fazer | Felipe (manual) | — | — |
-| A-P3 Salvamento real | ⬜ a fazer | Felipe publica + Codex testa | — | — |
-| A-P4 Emulador de celular | ⬜ a fazer | Felipe (manual) | — | — |
-| C2 Contrato v2 | 🔵 em teste | Claude (plano) + Codex gpt-6.1-sol + Gemini | `a/fase2-plano` #11 | Aprovação da Squad B |
+| A-P1 Aviso de área | ✅ pronto | Codex gpt-6.1-sol | main (#11, ba21109) | Mesclado na main |
+| A-P2 Teste 2 jogadores | ✅ pronto | Codex gpt-6.1-sol | — | Testado via MCP em 15/11/2026 |
+| A-P3 Salvamento real | ✅ pronto | Felipe + Codex | — | Testado via MCP em 15/11/2026 |
+| A-P4 Emulador de celular | ✅ pronto | Codex gpt-6.1-sol | — | Testado via MCP em 15/11/2026 |
+| C2 Contrato v2 | ✅ pronto | Claude (plano) + Codex gpt-6.1-sol + Gemini | main (#11, ba21109) | Mesclado na main |
 
 ## Registro
 (entrada mais nova em cima)
+
+### 2026-11-15 · Rodada 10: Fase 1.5 concluída e servidor do MVP completo
+- **O que foi feito:** Conclusão da Fase 1.5 com validação das pendências A-P1 a A-P4 e do contrato v2 (C2). PR #11 ajustado após 2 rodadas de pedidos de mudanças da Squad B, aprovado e mesclado na main (commit ba21109). Revisão e merge dos PRs da Squad B na main: PR #12 (B2 PetService, commit 16ba206), PR #13 (B6 Cascata + 5 PetModels + 2 ovos, commit 0b56317, após 3 ajustes visuais) e PR #14 (B3 EggService e RebirthService, commit 74119f1, após 2 ajustes). Testes integrados da main no Studio com mapa completo, ovos, pets, compra e equipagem. Vigia em Python atualizado para ignorar ações do próprio Felipe.
+- **Como:** Testes de A-P2 (Local Server com 2 clientes) e A-P4 (emulador iPhone 17 Pro) via MCP por Codex gpt-6.1-sol. A-P3 realizado com publicação do place pelo Felipe e testes via MCP. Revisões dos PRs #12, #13 e #14 da Squad B feitas pela Squad A com Gemini gemini-4-hydrogen-high. Testes da main no Studio via MCP por Codex.
+- **Decisões:** PR #11 aprovado e mesclado (ba21109); PRs #12, #13 e #14 revisados, aprovados e mesclados na main após ajustes solicitados; vigia em Python ajustado para ignorar ações do Felipe.
+- **Problemas e soluções:** Squad B pediu mudanças 2 vezes no PR #11 (SaveAndWait conferindo LastSavedData com isSaved, passo 3 do ProcessReceipt checando recibo salvo, rate limit nos remotes sem handler, trava de infinito, janela de 100 recibos explicada); integração de #11+#12+#13 identificou TypeError (PetInstance do Logic/Inventory sem Variant), corrigido e reaprovado. No A-P3, primeira tentativa falhou com erro StudioAccessToApisNotAllowed; resolvido após Felipe salvar a opção Enable Studio Access to API Services. PR #13 exigiu 3 ajustes visuais e PR #14 exigiu 2 ajustes (posição do ovo pela Core e estorno exato) antes do merge. No teste de celular (A-P4), identificados: painel de moedas dentro da área do analógico dinâmico (BAIXO), contador "Equipados" com 11 px no retrato (Squad B) e botão de pular fora da tela após girar em Play (provável emulador; Felipe conferir).
+- **Testes:** lune run check na main TUDO OK (58 testes). Studio via MCP: A-P2 com 2 jogadores passou (dano 8/4 deu +5/+2 e empate 6/6 deu +4/+4, toasts individuais, BlockHit nos dois clientes); A-P4 passou no emulador iPhone 17 Pro com ressalvas; A-P3 passou após salvar APIs (moedas 79 -> 87 -> 87 após Stop/Play). Testes da main no Studio (Codex via MCP): mapa com 20 blocos (10 por área), portão da cascata, ovos e pets com modelos; compra de CandyEgg real (103 -> 3 moedas, BearGummy), TOO_FAR de longe, AREA_LOCKED no ChocolateEgg, equipar aumenta o dano para 3 (1 + 2), argumentos hostis recusados, pet salvo após Stop/Play.
+- **Próximo passo:** Squad B entregar a B5 (tela de ovos e rebirth) para fechar o MVP (I1 e I2); Squad A começar a Fase 2 (A8 recompensa diária).
 
 ### 2026-11-15 · Rodada 9: integração da main, plano da Fase 2 e contrato v2
 - **O que foi feito:** Teste integrado da main (#7 + #8 + #9) no Studio sem bugs novos. PR #10 aprovado pela Squad B após 2 rodadas de ajustes e mesclado na main (commit 4cc4017) com o ok do Felipe. Elaboração e aprovação do plano da Fase 2 (Fase 1.5 de A-P1 a A-P4, C2 contrato v2, Squad A com A7 a A10, Squad B com B7 a B9, Fase 3 com troca de pets). Criação de números e balanceamento em docs/balanceamento/2026-11-15-fase2.md. Escrita do contrato v2 e implementação do código de C2 (ErrorCodes, Remotes, Types, Template, 6 Configs, stub do MonetizationService, RegisterCoinMultiplier com 13 testes) e A-P1 (aviso de área bloqueada). Revisão de C2 com 9 achados incorporados. Mudança de método com trabalho em git worktree separado (../project_rbx-fase2) para evitar queda do rojo serve. Abertura do PR #11 (branch a/fase2-plano, commit 9aba137) e envio de recado para revisão da Squad B.

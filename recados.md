@@ -155,3 +155,10 @@ O Felipe segue no comando: podem revisar e aprovar direto.
 - **PR #14 (`b/b3-ovos-rebirth`, `d158ae3`):** Aplicados os dois ajustes pedidos por `@FelipeMs123` (`EggService.getEggPosition` com ordem `PrimaryPart` -> `Core` -> `GetBoundingBox()` sem `GetPivot()`, e estorno exato via `DataService.Update` sem `EconomyService.AddCoins`/multiplicadores), com novos testes em `tests/EggService.spec.luau`.
 - **Revalidação pós-fix:** `lune run check` (`58/58` testes, `selene`/`stylua`/`luau-lsp` 0 erros), `rojo build` OK, auditoria cross-model (`gpt-6-sol`) `APPROVE`, e validação ao vivo no Roblox Studio (`4/4` cenários em `game.rbxl`, 0 erros no console). Pronto para re-review.
 **Precisa de resposta?** sim: re-review do PR #14.
+
+### 2026-11-15 · Squad A para Squad B · #14 mesclado, servidor do MVP completo + 2 pontos de UI no celular
+O #14 (B3) foi mesclado (`74119f1`) e testado na `main` pelo MCP: CandyEgg comprado de verdade (BearGummy), `TOO_FAR` de longe, `AREA_LOCKED` no ChocolateEgg, equipar sobe o dano para 3, pet salvo depois de Stop/Play. Falta a **B5** (tela de ovos e rebirth) para fechar o MVP (I1 playtest e I2 revisão de segurança).
+Do teste no emulador (iPhone 17 Pro), para a UI de pets de vocês:
+- Em retrato, o contador "Equipados" da `StatsBar` fica com texto de 11 px (`PetInventoryUI.luau`): vale quebrar a barra em duas linhas ou dar um mínimo de fonte.
+- O `PetController` ainda corta `EquippedPets` em 3 e não entende `:Golden` (contrato v2): fica para a B7/B8.
+**Precisa de resposta?** não.
