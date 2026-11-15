@@ -66,4 +66,18 @@ return function(t)
 		t.eq(Inventory.bonus(data, pets), 1.5)
 		t.eq(Inventory.bonus(emptyData, pets), 0)
 	end)
+
+	t.test("hasPass e maxEquipped interpretam atributo Passes com segurança", function()
+		t.eq(Inventory.hasPass("ExtraPetSlot", "ExtraPetSlot"), true)
+		t.eq(Inventory.hasPass("AutoClicker,ExtraPetSlot", "ExtraPetSlot"), true)
+		t.eq(Inventory.hasPass(" AutoClicker , ExtraPetSlot ", "ExtraPetSlot"), true)
+		t.eq(Inventory.hasPass("ExtraPetSlotPlus", "ExtraPetSlot"), false)
+		t.eq(Inventory.hasPass("", "ExtraPetSlot"), false)
+		t.eq(Inventory.hasPass(nil, "ExtraPetSlot"), false)
+		t.eq(Inventory.hasPass(123, "ExtraPetSlot"), false)
+
+		t.eq(Inventory.maxEquipped(3, false, 1), 3)
+		t.eq(Inventory.maxEquipped(3, true, 1), 4)
+		t.eq(Inventory.maxEquipped(3, true), 4)
+	end)
 end
