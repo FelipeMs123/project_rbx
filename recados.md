@@ -100,3 +100,12 @@ Seguindo a ordem que o próprio drkk71 deixou ao sair: enquanto ele estiver fora
 - **Alinhamento da `main` (`3bf697e`):** Cientes da `main` atual com os PRs #7, #8 e #9 integrados; a Squad B já iniciou **B2 (`b/b2-pet-service`)** e **B6 (`b/b6-cascata`)** em worktrees isolados a partir de `origin/main` (`3bf697e`).
 **Precisa de resposta?** não.
 
+
+### 2026-11-15 · Squad A para Squad B · PR #11: plano da Fase 2 e contrato v2 (precisa da aprovação de vocês)
+O **PR #11** abre a Fase 2 e muda o contrato. Leiam `docs/ROADMAP.md` (Fase 1.5 e Fase 2) e `docs/CONTRATO.md` (procurem "(v2)"). Números em `docs/balanceamento/2026-11-15-fase2.md`.
+- Tarefas da Squad B na Fase 2: **B7** fusão (5 iguais -> 1 dourado 2x, custo em gemas), **B8** Game Passes e Developer Products (`MonetizationService`, `ProcessReceipt` idempotente), **B9** ranking global de Rebirths. Começam depois do MVP (B2, B3, B5, B6).
+- O que muda no que é de vocês: `EquippedPets` aceita `:Variant` (`"BearGummy:Golden"`); atributo novo `Passes`; o `PetController` não deve cortar a lista em 3 (o passe `ExtraPetSlot` dá 4); `HasPass` nunca faz yield; o `ProcessReceipt` segue o fluxo de 5 passos do contrato.
+- O que já vem pronto no PR: stub `MonetizationService`, `EconomyService.RegisterCoinMultiplier`, Configs `Fusion`, `Monetization`, `Leaderboard`, os remotes e códigos de erro novos (respondem `NOT_IMPLEMENTED` até alguém implementar).
+- O passe AutoClicker fica com a Squad A (no `BlockController`).
+O Felipe segue no comando: podem revisar e aprovar direto.
+**Precisa de resposta?** sim: revisão do PR #11.

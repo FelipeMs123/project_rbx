@@ -9,9 +9,22 @@
 | A4 Cliente dos blocos | ✅ pronto | Codex gpt-6.1-sol / Codex gpt-6.1-terra | main (#7, b195d08) | Mesclado na main |
 | A5 HUD e portões | ✅ pronto | Codex gpt-6.1-sol / Codex gpt-6.1-terra | main (#7, b195d08) | Mesclado na main |
 | A6 Studio: Praça dos Doces | ✅ pronto | Gemini 4 Argon + Codex gpt-6.1-sol + Gemini 3.8 Flash | main (#7, b195d08) | Mesclado na main |
+| A-P1 Aviso de área | 🔵 em teste | Codex gpt-6.1-sol | `a/fase2-plano` #11 | Aprovação da Squad B |
+| A-P2 Teste 2 jogadores | ⬜ a fazer | Felipe (manual) | — | — |
+| A-P3 Salvamento real | ⬜ a fazer | Felipe publica + Codex testa | — | — |
+| A-P4 Emulador de celular | ⬜ a fazer | Felipe (manual) | — | — |
+| C2 Contrato v2 | 🔵 em teste | Claude (plano) + Codex gpt-6.1-sol + Gemini | `a/fase2-plano` #11 | Aprovação da Squad B |
 
 ## Registro
 (entrada mais nova em cima)
+
+### 2026-11-15 · Rodada 9: integração da main, plano da Fase 2 e contrato v2
+- **O que foi feito:** Teste integrado da main (#7 + #8 + #9) no Studio sem bugs novos. PR #10 aprovado pela Squad B após 2 rodadas de ajustes e mesclado na main (commit 4cc4017) com o ok do Felipe. Elaboração e aprovação do plano da Fase 2 (Fase 1.5 de A-P1 a A-P4, C2 contrato v2, Squad A com A7 a A10, Squad B com B7 a B9, Fase 3 com troca de pets). Criação de números e balanceamento em docs/balanceamento/2026-11-15-fase2.md. Escrita do contrato v2 e implementação do código de C2 (ErrorCodes, Remotes, Types, Template, 6 Configs, stub do MonetizationService, RegisterCoinMultiplier com 13 testes) e A-P1 (aviso de área bloqueada). Revisão de C2 com 9 achados incorporados. Mudança de método com trabalho em git worktree separado (../project_rbx-fase2) para evitar queda do rojo serve. Abertura do PR #11 (branch a/fase2-plano, commit 9aba137) e envio de recado para revisão da Squad B.
+- **Como:** Teste integrado da main no Studio por Codex gpt-6.1-sol via MCP. PR #10 ajustado e mesclado após ok do Felipe. Plano da Fase 2 feito pelo líder (Claude) e aprovado pelo Felipe. Números e conteúdo por Gemini gemini-4-hydrogen-high (rbx-design). Contrato v2 escrito pelo líder; código por Codex gpt-6.1-sol e A-P1. Revisão por Gemini gemini-4-hydrogen-high com incorporação de achados pelo líder.
+- **Decisões:** Aprovação do plano da Fase 2 pelo Felipe; incorporação integral dos 9 achados da revisão ao contrato v2 pelo líder; trabalho realizado fora da main em git worktree separado (../project_rbx-fase2) para o rojo serve não cair na troca de branch.
+- **Problemas e soluções:** Queda do rojo serve na troca de branch resolvida passando a trabalhar fora da main em git worktree separado (../project_rbx-fase2). Revisão apontou 9 achados (3 ALTO: passes no cliente, yield e corrida, ProcessReceipt incompleto), todos incorporados ao contrato pelo líder. PR #10 precisou de 2 rodadas de ajustes antes de ser aprovado pela Squad B.
+- **Testes:** lune run check TUDO OK (42 testes). Studio via MCP (Codex): no teste integrado da main, 10 de 10 passos ok (7 services, dados, HUD e botão Pets sem sobreposição, remotes de pets NOT_IMPLEMENTED, pets seguindo, +8 moedas, área bloqueada, botões >= 44 px com escala 0,78; sem bug novo); no teste do contrato v2 e A-P1, ok (8 services, dados v2, remotes novos NOT_IMPLEMENTED, configs, aviso da área, moedas 25 -> 33).
+- **Próximo passo:** Squad B revisar o PR #11; Felipe fazer A-P2, A-P3 e A-P4 (testes manuais).
 
 ### 2026-11-15 · Rodada 8: merge do PR #7 e melhorias do time
 - **O que foi feito:** Merge do PR #7 com squash na main (commit b195d08) após aprovação da Squad B e autorização do Felipe; branch a/fase1 apagado. Análise do orquestrador Overclock (usado pela Squad B) pelo líder e Gemini. Abertura do PR #10 (branch a/melhorias-time, commit 2ff2019) contendo docs/LICOES.md, docs/agentes/receitas/ com 5 receitas de prompt e README, tools/ia/delegar.sh com modelo reserva quando a cota acaba, tools/ia/teste-delegar.sh, citação dos documentos em AGENTS.md e .gitignore ignorando .alethe/.
