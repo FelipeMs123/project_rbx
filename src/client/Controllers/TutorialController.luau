@@ -78,7 +78,8 @@ local function updateGuide()
 	local hidden = nextModal ~= nil and nextModal.Visible
 	UI.SetBannerVisible(not hidden)
 	HudController.SetTopReserve(if hidden then 0 else UI.Height + 8)
-	local button = if pets and step.Id == "EquipPet" then pets:FindFirstChild("PetsToggleButton", true) else nil
+	local hud = if playerGui then playerGui:FindFirstChild("CandyHud") else nil
+	local button = if hud and step.Id == "EquipPet" then hud:FindFirstChild("PetsButton", true) else nil
 	UI.Highlight(if button and button:IsA("GuiObject") then button else nil)
 	local target: BasePart? = nil
 	if step.Id == "BuyCandyEgg" then
