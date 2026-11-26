@@ -57,7 +57,7 @@ tests/       -> testes Lune dos módulos puros (src/shared/Logic)
 - Lógica testável sem Roblox (fórmulas, sorteio, inventário) vai em `src/shared/Logic/`
   como módulo **puro**: sem `game`, sem `require` (receba config por parâmetro), tempo e
   aleatoriedade injetados. Cada módulo puro tem `tests/<Nome>.spec.luau`.
-- Identificadores em inglês; comentários e textos de UI em português do Brasil.
+- Identificadores em inglês; comentários em português do Brasil; textos de UI em inglês (o Roblox traduz automaticamente para o idioma do jogador).
 - Cabeçalho de cada arquivo: caminho no Roblox, dono (Squad A/B/fundação) e o que faz.
 - Não adicione dependência no `wally.toml` sem pedir.
 
