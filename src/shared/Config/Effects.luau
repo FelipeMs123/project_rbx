@@ -26,6 +26,10 @@ local Effects = {
 	CacheSweepIntervalSeconds = 5,
 	AnchorLifetime = 0.9,
 
+	-- Billboard de vida dos blocos
+	BlockBillboardMaxDistance = 30,
+	BlockBillboardAttackVisibleSeconds = 3,
+
 	-- Confete ao quebrar bloco
 	ConfettiCount = 24,
 	ConfettiLifetimeMin = 0.4,

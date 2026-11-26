@@ -27,6 +27,8 @@ type View = {
 	shake: Tween?,
 	offset: CFrameValue?,
 	origin: CFrame?,
+	attackVisibleUntil: number,
+	lastHp: number?,
 }
 
 type CachedPosition = {
@@ -58,6 +60,28 @@ end
 
 local function isValidId(value: unknown): boolean
 	return typeof(value) == "string" and #value > 0 and #value <= Effects.MaxIdentifierLength
+end
+
+local function getLocalRootPosition(): Vector3?
+	local player = Players.LocalPlayer
+	local character = if player then player.Character else nil
+	local root = if character then character:FindFirstChild("HumanoidRootPart") else nil
+	if root and root:IsA("BasePart") then
+		return root.Position
+	end
+	return nil
+end
+
+local function updateBillboardVisibility(view: View, now: number, rootPosition: Vector3?)
+	local primaryPart = view.model.PrimaryPart
+	if not primaryPart then
+		view.gui.Enabled = false
+		return
+	end
+	local isAttacked = now < view.attackVisibleUntil
+	local isNear = rootPosition ~= nil
+		and (rootPosition - primaryPart.Position).Magnitude <= Effects.BlockBillboardMaxDistance
+	view.gui.Enabled = isAttacked or isNear
 end
 
 local function prunePositionCache(now: number)
@@ -194,7 +218,7 @@ local function add(instance: Instance)
 	-- Escala do mundo + mínimo em pixels: legível de perto e de longe
 	gui.Size = UDim2.new(6, 40, 1.2, 24)
 	gui.StudsOffsetWorldSpace = Vector3.new(0, 4, 0)
-	gui.MaxDistance = 60
+	gui.MaxDistance = Effects.BlockBillboardMaxDistance
 	gui.AlwaysOnTop = true
 	local label = Instance.new("TextLabel")
 	label.Size = UDim2.fromScale(1, 0.6)
@@ -218,11 +242,18 @@ local function add(instance: Instance)
 	fill.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
 	fill.BorderSizePixel = 0
 	fill.Parent = background
-	local view: View = { model = model, gui = gui, label = label, fill = fill, connections = {} }
+	local view: View = {
+		model = model,
+		gui = gui,
+		label = label,
+		fill = fill,
+		connections = {},
+		attackVisibleUntil = -math.huge,
+		lastHp = nil,
+	}
 	views[model] = view
 	local function update()
 		local primaryPart = model.PrimaryPart
-		gui.Enabled = primaryPart ~= nil
 		if primaryPart then
 			gui.Adornee = primaryPart
 			cacheBlockPosition(model:GetAttribute("BlockId"), primaryPart.Position)
@@ -231,6 +262,16 @@ local function add(instance: Instance)
 		local definition = if typeof(blockType) == "string" then Blocks[blockType] else nil
 		local hp = model:GetAttribute("HP")
 		local maxHp = model:GetAttribute("MaxHP")
+		local now = os.clock()
+		if typeof(hp) == "number" then
+			if view.lastHp ~= nil and hp < view.lastHp then
+				view.attackVisibleUntil = now + Effects.BlockBillboardAttackVisibleSeconds
+			end
+			view.lastHp = hp
+		else
+			view.lastHp = nil
+		end
+		updateBillboardVisibility(view, now, getLocalRootPosition())
 		local ratio = 0
 		if typeof(hp) == "number" and typeof(maxHp) == "number" and maxHp > 0 then
 			ratio = math.clamp(hp / maxHp, 0, 1)
@@ -281,6 +322,11 @@ local function click(model: Model)
 	local now = os.clock()
 	if typeof(id) == "string" and #id > 0 and #id <= 64 and now - lastClick >= 0.1 then
 		lastClick = now
+		local view = views[model]
+		if view then
+			view.attackVisibleUntil = now + Effects.BlockBillboardAttackVisibleSeconds
+			updateBillboardVisibility(view, now, getLocalRootPosition())
+		end
 		NetClient.Fire("RequestClick", id)
 	end
 end
@@ -296,6 +342,9 @@ function BlockController.Init()
 			if model:GetAttribute("BlockId") ~= blockId or not part or not visible(part.Position) then
 				continue
 			end
+			local now = os.clock()
+			view.attackVisibleUntil = now + Effects.BlockBillboardAttackVisibleSeconds
+			updateBillboardVisibility(view, now, getLocalRootPosition())
 			local own = attacker == Players.LocalPlayer
 			if view.shake then
 				view.shake:Cancel()
@@ -420,6 +469,11 @@ function BlockController.Start()
 	task.spawn(function()
 		while true do
 			task.wait(0.1)
+			local now = os.clock()
+			local rootPosition = getLocalRootPosition()
+			for _, view in views do
+				updateBillboardVisibility(view, now, rootPosition)
+			end
 			local input, model = heldInput, heldModel
 			if input and model then
 				local position = if input.UserInputType == Enum.UserInputType.Touch
