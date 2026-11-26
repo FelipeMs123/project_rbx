@@ -11,8 +11,10 @@ local GuiService = game:GetService("GuiService")
 local Workspace = game:GetService("Workspace")
 
 local Blocks = require(ReplicatedStorage.Shared.Config.Blocks)
+local Effects = require(ReplicatedStorage.Shared.Config.Effects)
 local Format = require(ReplicatedStorage.Shared.Logic.Format)
 local NetClient = require(script.Parent.Parent.Net.NetClient)
+local BlockEffects = require(script.Parent.Parent.UI.Effects.BlockEffects)
 local BlockController = {}
 
 type View = {
@@ -25,15 +27,117 @@ type View = {
 	shake: Tween?,
 	offset: CFrameValue?,
 	origin: CFrame?,
+	attackVisibleUntil: number,
+	lastHp: number?,
+}
+
+type CachedPosition = {
+	position: Vector3,
+	expiresAt: number,
 }
 
 local views: { [Model]: View } = {}
+local positionCache: { [string]: CachedPosition } = {}
+local lastCacheSweep = -math.huge
+local cacheSweepThread: thread? = nil
 local folder: Instance? = nil
 local heldInput: InputObject? = nil
 local heldModel: Model? = nil
 local lastClick = -math.huge
 local initialized = false
 local started = false
+
+local function isFiniteNumber(value: unknown): boolean
+	return typeof(value) == "number" and value == value and math.abs(value) ~= math.huge
+end
+
+local function isValidVector3(value: unknown): boolean
+	if typeof(value) ~= "Vector3" then
+		return false
+	end
+	return isFiniteNumber(value.X) and isFiniteNumber(value.Y) and isFiniteNumber(value.Z)
+end
+
+local function isValidId(value: unknown): boolean
+	return typeof(value) == "string" and #value > 0 and #value <= Effects.MaxIdentifierLength
+end
+
+local function getLocalRootPosition(): Vector3?
+	local player = Players.LocalPlayer
+	local character = if player then player.Character else nil
+	local root = if character then character:FindFirstChild("HumanoidRootPart") else nil
+	if root and root:IsA("BasePart") then
+		return root.Position
+	end
+	return nil
+end
+
+local function updateBillboardVisibility(view: View, now: number, rootPosition: Vector3?)
+	local primaryPart = view.model.PrimaryPart
+	if not primaryPart then
+		view.gui.Enabled = false
+		return
+	end
+	local isAttacked = now < view.attackVisibleUntil
+	local isNear = rootPosition ~= nil
+		and (rootPosition - primaryPart.Position).Magnitude <= Effects.BlockBillboardMaxDistance
+	view.gui.Enabled = isAttacked or isNear
+end
+
+local function prunePositionCache(now: number)
+	for id, entry in positionCache do
+		if now > entry.expiresAt then
+			positionCache[id] = nil
+		end
+	end
+end
+
+local function scheduleCacheSweep()
+	if cacheSweepThread or next(positionCache) == nil then
+		return
+	end
+	-- Agenda varredura única enquanto houver entradas no cache; encerra quando esvaziar.
+	cacheSweepThread = task.delay(Effects.CacheSweepIntervalSeconds, function()
+		cacheSweepThread = nil
+		local now = os.clock()
+		prunePositionCache(now)
+		lastCacheSweep = now
+		scheduleCacheSweep()
+	end)
+end
+
+local function cacheBlockPosition(blockId: unknown, position: unknown)
+	if not isValidId(blockId) or not isValidVector3(position) then
+		return
+	end
+	local validId = blockId :: string
+	local validPosition = position :: Vector3
+	local now = os.clock()
+	if now - lastCacheSweep >= Effects.CacheSweepIntervalSeconds then
+		prunePositionCache(now)
+		lastCacheSweep = now
+	end
+	positionCache[validId] = {
+		position = validPosition,
+		expiresAt = now + Effects.PositionCacheTtlSeconds,
+	}
+	scheduleCacheSweep()
+end
+
+local function getCachedPosition(blockId: unknown): Vector3?
+	if not isValidId(blockId) then
+		return nil
+	end
+	local entry = positionCache[blockId :: string]
+	if not entry then
+		return nil
+	end
+	if os.clock() > entry.expiresAt then
+		positionCache[blockId :: string] = nil
+		return nil
+	end
+	return entry.position
+end
 
 local function visible(position: Vector3): boolean
 	local camera = Workspace.CurrentCamera
@@ -79,6 +183,9 @@ local function remove(model: Model)
 	if not view then
 		return
 	end
+	local primaryPart = model.PrimaryPart
+	local cachedPos = if primaryPart then primaryPart.Position else model:GetPivot().Position
+	cacheBlockPosition(model:GetAttribute("BlockId"), cachedPos)
 	views[model] = nil
 	if heldModel == model then
 		heldModel = nil
@@ -111,7 +218,7 @@ local function add(instance: Instance)
 	-- Escala do mundo + mínimo em pixels: legível de perto e de longe
 	gui.Size = UDim2.new(6, 40, 1.2, 24)
 	gui.StudsOffsetWorldSpace = Vector3.new(0, 4, 0)
-	gui.MaxDistance = 60
+	gui.MaxDistance = Effects.BlockBillboardMaxDistance
 	gui.AlwaysOnTop = true
 	local label = Instance.new("TextLabel")
 	label.Size = UDim2.fromScale(1, 0.6)
@@ -135,18 +242,36 @@ local function add(instance: Instance)
 	fill.BackgroundColor3 = Color3.fromRGB(255, 105, 180)
 	fill.BorderSizePixel = 0
 	fill.Parent = background
-	local view: View = { model = model, gui = gui, label = label, fill = fill, connections = {} }
+	local view: View = {
+		model = model,
+		gui = gui,
+		label = label,
+		fill = fill,
+		connections = {},
+		attackVisibleUntil = -math.huge,
+		lastHp = nil,
+	}
 	views[model] = view
 	local function update()
 		local primaryPart = model.PrimaryPart
-		gui.Enabled = primaryPart ~= nil
 		if primaryPart then
 			gui.Adornee = primaryPart
+			cacheBlockPosition(model:GetAttribute("BlockId"), primaryPart.Position)
 		end
 		local blockType = model:GetAttribute("BlockType")
 		local definition = if typeof(blockType) == "string" then Blocks[blockType] else nil
 		local hp = model:GetAttribute("HP")
 		local maxHp = model:GetAttribute("MaxHP")
+		local now = os.clock()
+		if typeof(hp) == "number" then
+			if view.lastHp ~= nil and hp < view.lastHp then
+				view.attackVisibleUntil = now + Effects.BlockBillboardAttackVisibleSeconds
+			end
+			view.lastHp = hp
+		else
+			view.lastHp = nil
+		end
+		updateBillboardVisibility(view, now, getLocalRootPosition())
 		local ratio = 0
 		if typeof(hp) == "number" and typeof(maxHp) == "number" and maxHp > 0 then
 			ratio = math.clamp(hp / maxHp, 0, 1)
@@ -159,7 +284,7 @@ local function add(instance: Instance)
 		view.tween = tween
 		tween:Play()
 	end
-	for _, attribute in { "HP", "MaxHP", "BlockType" } do
+	for _, attribute in { "HP", "MaxHP", "BlockType", "BlockId" } do
 		table.insert(view.connections, model:GetAttributeChangedSignal(attribute):Connect(update))
 	end
 	table.insert(view.connections, model:GetPropertyChangedSignal("PrimaryPart"):Connect(update))
@@ -197,6 +322,11 @@ local function click(model: Model)
 	local now = os.clock()
 	if typeof(id) == "string" and #id > 0 and #id <= 64 and now - lastClick >= 0.1 then
 		lastClick = now
+		local view = views[model]
+		if view then
+			view.attackVisibleUntil = now + Effects.BlockBillboardAttackVisibleSeconds
+			updateBillboardVisibility(view, now, getLocalRootPosition())
+		end
 		NetClient.Fire("RequestClick", id)
 	end
 end
@@ -212,6 +342,9 @@ function BlockController.Init()
 			if model:GetAttribute("BlockId") ~= blockId or not part or not visible(part.Position) then
 				continue
 			end
+			local now = os.clock()
+			view.attackVisibleUntil = now + Effects.BlockBillboardAttackVisibleSeconds
+			updateBillboardVisibility(view, now, getLocalRootPosition())
 			local own = attacker == Players.LocalPlayer
 			if view.shake then
 				view.shake:Cancel()
@@ -271,19 +404,21 @@ function BlockController.Init()
 			break
 		end
 	end)
-	NetClient.On("BlockBroken", function(_blockId: string, position: Vector3, _blockType: string)
-		if not visible(position) then
+	NetClient.On("BlockBroken", function(blockId: unknown, position: unknown, blockType: unknown)
+		if
+			not isValidVector3(position)
+			or typeof(blockType) ~= "string"
+			or #blockType > Effects.MaxIdentifierLength
+		then
 			return
 		end
-		local anchor = effectPart(position)
-		particles(anchor, 30)
-		local sound = Instance.new("Sound")
-		-- TODO: definir asset de som de doce quebrando quando estiver aprovado.
-		sound.SoundId = ""
-		sound.Parent = anchor
-		if sound.SoundId ~= "" then
-			sound:Play()
+		local validPosition = position :: Vector3
+		local validBlockType = blockType :: string
+		cacheBlockPosition(blockId, validPosition)
+		if not visible(validPosition) then
+			return
 		end
+		BlockEffects.PlayBreak(validPosition, validBlockType)
 	end)
 end
 
@@ -292,6 +427,18 @@ function BlockController.Start()
 		return
 	end
 	started = true
+	NetClient.On("Notify", function(code: unknown, payload: unknown)
+		if code ~= "REWARD" or type(payload) ~= "table" then
+			return
+		end
+		local reward = payload :: { [string]: unknown }
+		if not isValidId(reward.blockId) then
+			return
+		end
+		local coins = if typeof(reward.coins) == "number" then reward.coins else 0
+		local gems = if typeof(reward.gems) == "number" then reward.gems else 0
+		BlockEffects.PlayReward(coins, gems, getCachedPosition(reward.blockId))
+	end)
 	UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		if gameProcessed or heldInput then
 			return
@@ -322,6 +469,11 @@ function BlockController.Start()
 	task.spawn(function()
 		while true do
 			task.wait(0.1)
+			local now = os.clock()
+			local rootPosition = getLocalRootPosition()
+			for _, view in views do
+				updateBillboardVisibility(view, now, rootPosition)
+			end
 			local input, model = heldInput, heldModel
 			if input and model then
 				local position = if input.UserInputType == Enum.UserInputType.Touch
