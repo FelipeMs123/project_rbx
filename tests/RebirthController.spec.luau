@@ -252,6 +252,11 @@ local function loadRebirthClientHarness()
 			table.insert(toasts, { message = msg, kind = kind })
 		end,
 	}
+	local mockMenuCoordinator = {
+		Register = function(_key, _setter)
+			return function() end
+		end,
+	}
 
 	local mockNetClient = {
 		Invoke = function(name: string, ...)
@@ -298,6 +303,8 @@ local function loadRebirthClientHarness()
 	local netNode = makeNode("Net")
 	local uiNode = makeNode("UI")
 	local rebirthUiDir = makeNode("Rebirth")
+	local hudUiDir = makeNode("Hud")
+	local menuCoordinatorNode = makeNode("MenuCoordinator")
 
 	local netClientNode = makeNode("NetClient")
 	local dataControllerNode = makeNode("DataController")
@@ -314,6 +321,10 @@ local function loadRebirthClientHarness()
 	uiNode.Parent = clientNode
 	uiNode.Rebirth = rebirthUiDir
 	rebirthUiDir.Parent = uiNode
+	uiNode.Hud = hudUiDir
+	hudUiDir.Parent = uiNode
+	hudUiDir.MenuCoordinator = menuCoordinatorNode
+	menuCoordinatorNode.Parent = hudUiDir
 
 	controllersNode.DataController = dataControllerNode
 	controllersNode.HudController = hudControllerNode
@@ -331,6 +342,7 @@ local function loadRebirthClientHarness()
 
 	moduleCache[dataControllerNode] = mockDataController
 	moduleCache[hudControllerNode] = mockHudController
+	moduleCache[menuCoordinatorNode] = mockMenuCoordinator
 	moduleCache[netClientNode] = mockNetClient
 
 	local mockReplicatedStorage = {

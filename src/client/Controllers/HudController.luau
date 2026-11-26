@@ -234,12 +234,19 @@ function HudController.Start()
 		local bottomTopY = size.Y - bottomMargin - bottomHeight * bottomScale
 		local factor = math.clamp(size.X / 1100, 0.8, 1.15)
 		top.Scale.Scale = factor
-		-- Reserva a área do RebirthToggleButton original em paisagem compacta (leitura real ou fallback por fórmula).
+		-- Reserva a área do RebirthToggleButton original apenas quando ele estiver visível.
 		local toggleLeft = 0.98 * size.X - 126
 		local rebirthTop = topInset + 0.37 * coreY - 52
 		local rebirthBottom = topInset + 0.37 * coreY + 8
 		local toggle = rebirthToggle
-		if toggle and toggle.Parent and toggle.AbsoluteSize.X > 0 and toggle.AbsoluteSize.Y > 0 then
+		local toggleHidden = toggle ~= nil and not toggle.Visible
+		if
+			not toggleHidden
+			and toggle
+			and toggle.Parent
+			and toggle.AbsoluteSize.X > 0
+			and toggle.AbsoluteSize.Y > 0
+		then
 			local togglePos = toggle.AbsolutePosition - screen.AbsolutePosition
 			local toggleSize = toggle.AbsoluteSize
 			toggleLeft = togglePos.X
@@ -251,7 +258,7 @@ function HudController.Start()
 			then topReserve + 8
 			elseif compact then (if topReserve > 0 then topInset + topReserve + 2 else 6)
 			else topReserve + 2
-		local avoidsRebirthTop = compact and (topY + 56 * factor) > rebirthTop
+		local avoidsRebirthTop = not toggleHidden and compact and (topY + 56 * factor) > rebirthTop
 		local availableWidth = if avoidsRebirthTop
 			then math.min(size.X - 262, math.max(260, rebirthLeft - 246))
 			elseif compact then size.X - 262
@@ -299,7 +306,10 @@ function HudController.Start()
 		stack.ClipsDescendants = true
 		local compactToastWidth = math.min(260, math.max(160, (size.X - 12 - 168 - 12 - size.X / 2) * 2))
 		local stackTop = topY + 62 * factor + 10
-		local portraitOverlapsRebirth = portrait and (stackTop + 110) > rebirthTop and stackTop < rebirthBottom
+		local portraitOverlapsRebirth = not toggleHidden
+			and portrait
+			and (stackTop + 110) > rebirthTop
+			and stackTop < rebirthBottom
 		local portraitToastWidth = if portraitOverlapsRebirth
 			then math.clamp(toggleLeft - 8 - 16, 160, size.X - 32)
 			else size.X - 32
@@ -331,7 +341,7 @@ function HudController.Start()
 		local badgeWidth = if compact or portrait then 168 else 200
 		local badgeHeight = if compact then 45 elseif portrait then 48 else 54
 		top.Rebirth.Size = UDim2.fromOffset(badgeWidth, badgeHeight)
-		local minBadgeY = rebirthBottom + 6
+		local minBadgeY = if toggleHidden then topInset + 6 else rebirthBottom + 6
 		local maxBadgeY = math.max(minBadgeY, bottomTopY - 8 - badgeHeight)
 		local desiredBadgeY = topInset + (coreY - badgeHeight) / 2
 		local badgeRightMargin = if compact or portrait then 12 else 16
@@ -367,6 +377,38 @@ function HudController.Start()
 		if button then
 			table.insert(rebirthConns, button:GetPropertyChangedSignal("AbsolutePosition"):Connect(resize))
 			table.insert(rebirthConns, button:GetPropertyChangedSignal("AbsoluteSize"):Connect(resize))
+			table.insert(rebirthConns, button:GetPropertyChangedSignal("Visible"):Connect(resize))
+			local function watchReadyBadge(child: Instance)
+				if child.Name ~= "ReadyBadge" or not child:IsA("GuiObject") then
+					return
+				end
+				local function syncReadyDot()
+					top.ReadyDot.Visible = child.Visible
+				end
+				table.insert(rebirthConns, child:GetPropertyChangedSignal("Visible"):Connect(syncReadyDot))
+				syncReadyDot()
+			end
+			local readyBadge = button:FindFirstChild("ReadyBadge")
+			if readyBadge then
+				watchReadyBadge(readyBadge)
+			else
+				top.ReadyDot.Visible = false
+				local childConn: RBXScriptConnection? = nil
+				childConn = button.ChildAdded:Connect(function(child: Instance)
+					if child.Name == "ReadyBadge" and child:IsA("GuiObject") then
+						if childConn then
+							childConn:Disconnect()
+							childConn = nil
+						end
+						watchReadyBadge(child)
+					end
+				end)
+				if childConn then
+					table.insert(rebirthConns, childConn)
+				end
+			end
+		else
+			top.ReadyDot.Visible = false
 		end
 		resize()
 	end)
