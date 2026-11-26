@@ -11,8 +11,10 @@ local GuiService = game:GetService("GuiService")
 local Workspace = game:GetService("Workspace")
 
 local Blocks = require(ReplicatedStorage.Shared.Config.Blocks)
+local Effects = require(ReplicatedStorage.Shared.Config.Effects)
 local Format = require(ReplicatedStorage.Shared.Logic.Format)
 local NetClient = require(script.Parent.Parent.Net.NetClient)
+local BlockEffects = require(script.Parent.Parent.UI.Effects.BlockEffects)
 local BlockController = {}
 
 type View = {
@@ -27,13 +29,91 @@ type View = {
 	origin: CFrame?,
 }
 
+type CachedPosition = {
+	position: Vector3,
+	expiresAt: number,
+}
+
 local views: { [Model]: View } = {}
+local positionCache: { [string]: CachedPosition } = {}
+local lastCacheSweep = -math.huge
+local cacheSweepThread: thread? = nil
 local folder: Instance? = nil
 local heldInput: InputObject? = nil
 local heldModel: Model? = nil
 local lastClick = -math.huge
 local initialized = false
 local started = false
+
+local function isFiniteNumber(value: unknown): boolean
+	return typeof(value) == "number" and value == value and math.abs(value) ~= math.huge
+end
+
+local function isValidVector3(value: unknown): boolean
+	if typeof(value) ~= "Vector3" then
+		return false
+	end
+	return isFiniteNumber(value.X) and isFiniteNumber(value.Y) and isFiniteNumber(value.Z)
+end
+
+local function isValidId(value: unknown): boolean
+	return typeof(value) == "string" and #value > 0 and #value <= Effects.MaxIdentifierLength
+end
+
+local function prunePositionCache(now: number)
+	for id, entry in positionCache do
+		if now > entry.expiresAt then
+			positionCache[id] = nil
+		end
+	end
+end
+
+local function scheduleCacheSweep()
+	if cacheSweepThread or next(positionCache) == nil then
+		return
+	end
+	-- Agenda varredura única enquanto houver entradas no cache; encerra quando esvaziar.
+	cacheSweepThread = task.delay(Effects.CacheSweepIntervalSeconds, function()
+		cacheSweepThread = nil
+		local now = os.clock()
+		prunePositionCache(now)
+		lastCacheSweep = now
+		scheduleCacheSweep()
+	end)
+end
+
+local function cacheBlockPosition(blockId: unknown, position: unknown)
+	if not isValidId(blockId) or not isValidVector3(position) then
+		return
+	end
+	local validId = blockId :: string
+	local validPosition = position :: Vector3
+	local now = os.clock()
+	if now - lastCacheSweep >= Effects.CacheSweepIntervalSeconds then
+		prunePositionCache(now)
+		lastCacheSweep = now
+	end
+	positionCache[validId] = {
+		position = validPosition,
+		expiresAt = now + Effects.PositionCacheTtlSeconds,
+	}
+	scheduleCacheSweep()
+end
+
+local function getCachedPosition(blockId: unknown): Vector3?
+	if not isValidId(blockId) then
+		return nil
+	end
+	local entry = positionCache[blockId :: string]
+	if not entry then
+		return nil
+	end
+	if os.clock() > entry.expiresAt then
+		positionCache[blockId :: string] = nil
+		return nil
+	end
+	return entry.position
+end
 
 local function visible(position: Vector3): boolean
 	local camera = Workspace.CurrentCamera
@@ -79,6 +159,9 @@ local function remove(model: Model)
 	if not view then
 		return
 	end
+	local primaryPart = model.PrimaryPart
+	local cachedPos = if primaryPart then primaryPart.Position else model:GetPivot().Position
+	cacheBlockPosition(model:GetAttribute("BlockId"), cachedPos)
 	views[model] = nil
 	if heldModel == model then
 		heldModel = nil
@@ -142,6 +225,7 @@ local function add(instance: Instance)
 		gui.Enabled = primaryPart ~= nil
 		if primaryPart then
 			gui.Adornee = primaryPart
+			cacheBlockPosition(model:GetAttribute("BlockId"), primaryPart.Position)
 		end
 		local blockType = model:GetAttribute("BlockType")
 		local definition = if typeof(blockType) == "string" then Blocks[blockType] else nil
@@ -159,7 +243,7 @@ local function add(instance: Instance)
 		view.tween = tween
 		tween:Play()
 	end
-	for _, attribute in { "HP", "MaxHP", "BlockType" } do
+	for _, attribute in { "HP", "MaxHP", "BlockType", "BlockId" } do
 		table.insert(view.connections, model:GetAttributeChangedSignal(attribute):Connect(update))
 	end
 	table.insert(view.connections, model:GetPropertyChangedSignal("PrimaryPart"):Connect(update))
@@ -271,19 +355,21 @@ function BlockController.Init()
 			break
 		end
 	end)
-	NetClient.On("BlockBroken", function(_blockId: string, position: Vector3, _blockType: string)
-		if not visible(position) then
+	NetClient.On("BlockBroken", function(blockId: unknown, position: unknown, blockType: unknown)
+		if
+			not isValidVector3(position)
+			or typeof(blockType) ~= "string"
+			or #blockType > Effects.MaxIdentifierLength
+		then
 			return
 		end
-		local anchor = effectPart(position)
-		particles(anchor, 30)
-		local sound = Instance.new("Sound")
-		-- TODO: definir asset de som de doce quebrando quando estiver aprovado.
-		sound.SoundId = ""
-		sound.Parent = anchor
-		if sound.SoundId ~= "" then
-			sound:Play()
+		local validPosition = position :: Vector3
+		local validBlockType = blockType :: string
+		cacheBlockPosition(blockId, validPosition)
+		if not visible(validPosition) then
+			return
 		end
+		BlockEffects.PlayBreak(validPosition, validBlockType)
 	end)
 end
 
@@ -292,6 +378,18 @@ function BlockController.Start()
 		return
 	end
 	started = true
+	NetClient.On("Notify", function(code: unknown, payload: unknown)
+		if code ~= "REWARD" or type(payload) ~= "table" then
+			return
+		end
+		local reward = payload :: { [string]: unknown }
+		if not isValidId(reward.blockId) then
+			return
+		end
+		local coins = if typeof(reward.coins) == "number" then reward.coins else 0
+		local gems = if typeof(reward.gems) == "number" then reward.gems else 0
+		BlockEffects.PlayReward(coins, gems, getCachedPosition(reward.blockId))
+	end)
 	UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		if gameProcessed or heldInput then
 			return
