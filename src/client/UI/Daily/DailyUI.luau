@@ -143,11 +143,17 @@ function DailyUI.Create(onClaim: () -> ())
 	grid.BackgroundTransparency = 1
 	grid.BorderSizePixel = 0
 	grid.Position = UDim2.fromOffset(12, 66)
-	grid.Size = UDim2.new(1, -24, 1, -196)
-	grid.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	grid.Size = UDim2.new(1, -24, 1, -204)
+	grid.AutomaticCanvasSize = Enum.AutomaticSize.None
 	grid.CanvasSize = UDim2.new()
 	grid.ScrollBarThickness = 6
 	grid.Parent = panel
+	local gridPadding = Instance.new("UIPadding")
+	gridPadding.PaddingTop = UDim.new(0, 4)
+	gridPadding.PaddingBottom = UDim.new(0, 4)
+	gridPadding.PaddingLeft = UDim.new(0, 4)
+	gridPadding.PaddingRight = UDim.new(0, 8)
+	gridPadding.Parent = grid
 	local layout = Instance.new("UIGridLayout")
 	layout.SortOrder = Enum.SortOrder.LayoutOrder
 	layout.CellPadding = UDim2.fromOffset(8, 8)
@@ -171,12 +177,12 @@ function DailyUI.Create(onClaim: () -> ())
 	bonusNote.TextColor3 = Color3.fromRGB(185, 180, 200)
 	bonusNote.Font = Enum.Font.Gotham
 	bonusNote.TextScaled = true
-	bonusNote.Size = UDim2.new(1, -24, 0, 20)
-	bonusNote.Position = UDim2.new(0, 12, 1, -130)
+	bonusNote.Size = UDim2.new(1, -24, 0, 22)
+	bonusNote.Position = UDim2.new(0, 12, 1, -132)
 	bonusNote.Parent = panel
 	local bonusTextLimit = Instance.new("UITextSizeConstraint")
 	bonusTextLimit.MinTextSize = 12
-	bonusTextLimit.MaxTextSize = 14
+	bonusTextLimit.MaxTextSize = 16
 	bonusTextLimit.Parent = bonusNote
 	local status = Instance.new("TextLabel")
 	status.BackgroundTransparency = 1
@@ -197,18 +203,53 @@ function DailyUI.Create(onClaim: () -> ())
 		if size.X <= 0 or size.Y <= 0 then
 			return
 		end
+		local compact = size.Y < 440
 		local factor = math.clamp(math.min(size.X, size.Y) / 520, 0.85, 1.15)
 		scale.Scale = factor
 		openScale.Scale = factor
 		openLimit.MinSize = Vector2.new(math.max(96, math.ceil(96 / factor)), math.max(48, math.ceil(48 / factor)))
 		local width = math.min(620, size.X * 0.94 / factor)
-		-- O rodapé do modal termina antes da faixa dos controles de movimento.
-		panel.Size = UDim2.fromOffset(width, math.min(520, size.Y * 0.72 / factor))
+		-- No celular deitado (compact), usa mais altura útil para a grade sem cortar cartões.
+		local heightRatio = if compact then 0.88 else 0.72
+		panel.Size = UDim2.fromOffset(width, math.min(520, size.Y * heightRatio / factor))
+		if compact then
+			title.Size = UDim2.new(1, -76, 0, 44)
+			close.Size = UDim2.fromOffset(52, 52)
+			close.Position = UDim2.new(1, -56, 0, 4)
+			grid.Position = UDim2.fromOffset(12, 58)
+			grid.Size = UDim2.new(1, -24, 1, -184)
+			bonusNote.Size = UDim2.new(1, -24, 0, 22)
+			bonusNote.Position = UDim2.new(0, 12, 1, -118)
+			status.Size = UDim2.new(1, -24, 0, 28)
+			status.Position = UDim2.new(0, 12, 1, -88)
+			claim.Size = UDim2.new(1, -24, 0, 52)
+			claim.Position = UDim2.new(0, 12, 1, -56)
+		else
+			title.Size = UDim2.new(1, -80, 0, 52)
+			close.Size = UDim2.fromOffset(56, 56)
+			close.Position = UDim2.new(1, -60, 0, 4)
+			grid.Position = UDim2.fromOffset(12, 66)
+			grid.Size = UDim2.new(1, -24, 1, -204)
+			bonusNote.Size = UDim2.new(1, -24, 0, 22)
+			bonusNote.Position = UDim2.new(0, 12, 1, -132)
+			status.Size = UDim2.new(1, -24, 0, 40)
+			status.Position = UDim2.new(0, 12, 1, -104)
+			claim.Size = UDim2.new(1, -24, 0, 56)
+			claim.Position = UDim2.new(0, 12, 1, -60)
+		end
 		local columns = if width >= 500 then 4 else 2
-		layout.CellSize = UDim2.fromOffset(math.floor((width - 32 - (columns - 1) * 8) / columns), 120)
+		local cardHeight = 120
+		layout.CellSize = UDim2.fromOffset(math.floor((width - 36 - (columns - 1) * 8) / columns), cardHeight)
+		local rows = math.ceil(#DailyRewards.Days / columns)
+		grid.CanvasSize = UDim2.fromOffset(0, rows * cardHeight + math.max(0, rows - 1) * 8 + 8)
 		for _, descendant in panel:GetDescendants() do
 			if descendant:IsA("UITextSizeConstraint") then
-				descendant.MinTextSize = math.ceil((if descendant == bonusTextLimit then 12 else 14) / factor)
+				if descendant == bonusTextLimit then
+					descendant.MinTextSize = math.ceil(12 / factor)
+					descendant.MaxTextSize = math.max(14, math.ceil(14 / factor))
+				else
+					descendant.MinTextSize = math.ceil(14 / factor)
+				end
 			end
 		end
 	end
