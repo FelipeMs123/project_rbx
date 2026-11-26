@@ -30,3 +30,10 @@ roblox.yml
 
 # Registros locais dos agentes (tools/ia/delegar.sh e afins)
 .alethe/
+
+# Empresa de IAs: rascunhos de trabalho (mudam a cada rodada)
+docs/empresa/caixa/
+docs/empresa/ordens/
+docs/empresa/relatorios/
+docs/empresa/SESSOES.md
+docs/empresa/ESTADO.md
