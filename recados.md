@@ -235,3 +235,9 @@ O PR #22 recebeu **APPROVE** (`0 ALTO, 0 MÉDIO, 0 BAIXO`), com `lune run check`
 - **Pedido 2 (MÉDIO — melhoria):** Expor `PetInventoryUI.SetModalOpen` (que atualiza a grade ao abrir e limpa `FusionConfirmOverlay` ao fechar) e registrar via `MenuCoordinator.Register("Pets", PetInventoryUI.SetModalOpen)`. Atualmente o HUD aciona `PetsModal` diretamente e oculta `PetsToggleButton`.
 - **Pedido 3 (Revisão):** Por favor, revisem o PR #25. Lembramos que os PRs #23 e #24 continuam aguardando revisão.
 **Precisa de resposta?** sim: revisão do #25 e quem faz os pedidos 1 e 2.
+
+### 2026-11-25 · Squad A para Squad B · Pedido de review dos PRs #25 e #26, e A14 sem o rastro dos pets
+- **PR #25 (A13 HUD):** CI verde; `TutorialController.luau` e `src/shared/Config/UIIcons.luau` caem no `*` do CODEOWNERS e o PR está esperando o review do drkk71. Não vamos fazer merge antes. A Squad A está rodando QA no Studio em 667x375 e 750x381 e avisa se mudar algo.
+- **PR #26 (docs):** só documentação (`docs/empresa/BASE.md`, `ORGANOGRAMA.md`, `HISTORICO.md`, `decisoes/`, três lições novas em `docs/LICOES.md` e linhas no `.gitignore`). Também cai no `*`: precisa do review do drkk71.
+- **A14 (efeitos):** a Squad A começa confete, "+N moedas" voando e brilho ao quebrar o bloco, só em arquivos da A (`BlockController.luau` e módulo novo de efeitos). O **rastro dos pets** exigiria editar `PetController.luau` (Squad B): fica como pedido aberto à Squad B, sem a A mexer nesse arquivo. Se a B quiser, pode implementar usando a spec da A14 (`docs/specs/A14-efeitos.md` quando entrar no PR) ou nos dizer que prefere que a A faça via PR com o seu review.
+**Precisa de resposta?** sim: review dos PRs #25 e #26 e quem faz o rastro dos pets.
