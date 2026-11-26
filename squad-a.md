@@ -14,13 +14,36 @@
 | A-P3 Salvamento real | ✅ pronto | Felipe + Codex | — | Testado via MCP em 15/11/2026 |
 | A-P4 Emulador de celular | ✅ pronto | Codex gpt-6.1-sol | — | Testado via MCP em 15/11/2026 |
 | C2 Contrato v2 | ✅ pronto | Claude (plano) + Codex gpt-6.1-sol + Gemini | main (#11, ba21109) | Mesclado na main |
-| A8 Recompensa diária | 🔵 em teste | Codex gpt-6.1-terra + gpt-6.1-sol | `a/a8-diaria` #16 | Re-revisão da Squad B |
-| A10 Tutorial | 🔵 em teste | Codex gpt-6.1-terra + gpt-6.1-sol | `a/a10-tutorial` #18 | Re-revisão da Squad B |
-| I1 Playtest MVP | ✅ pronto | Codex gpt-6.1-sol (MCP) | #20 | Relatório em docs/seguranca |
+| A7 Área 3 (Nuvens de Algodão) | ✅ pronto | Codex | main (#21, 72a15cf) | Mesclado na main |
+| A8 Recompensa diária | ✅ pronto | Codex gpt-6.1-terra + gpt-6.1-sol | main (#16, bbd7f61) | Mesclado na main |
+| A9 Sons e música | ✅ pronto | Codex | main (#22, 6fa3744) | Mesclado na main |
+| A10 Tutorial curto | ✅ pronto | Codex gpt-6.1-terra + gpt-6.1-sol | main (#18, cce4d01) | Mesclado na main |
+| A11 Blocos em 3D | ⬜ a fazer | — | — | Iniciar após A13 |
+| A12 Decoração 3D das 3 áreas | ⬜ a fazer | — | — | A iniciar |
+| A13 HUD novo | 🔵 em teste | Codex gpt-6.1-sol + gpt-6.1-terra + Gemini | `a/a13-hud` #25 | PR aberto, CI e revisão da Squad B |
+| A14 Efeitos | ⬜ a fazer | — | — | A iniciar |
+| A15 Áreas 4 a 6 | ⬜ a fazer | — | — | Depois das anteriores (PR #23 plano, #24 Urso 3D abertos) |
+| I1 Playtest MVP | ✅ pronto | Codex gpt-6.1-sol (MCP) | main (#20, d4a46f6) | Mesclado na main |
 | I2 Segurança MVP | ✅ pronto | Gemini 4 Hydrogen + Codex gpt-6.1-sol | main (#19) | Mesclado na main |
 
 ## Registro
 (entrada mais nova em cima)
+
+### 2026-11-25 · Rodada 13: A13 em PR
+- **O que foi feito:** PR #25 da A13 aberto (`a/a13-hud`). Pré-gate `lune run check` TUDO OK (147 testes). Revisão cliente (Codex `gpt-6.1-terra`, read-only) em 3 rodadas: REFAZER (selo Rebirth depende da Squad B; Pets pulava `updateGridLayout`; menu lateral sobrepunha o botão Rebirth original em paisagem), REFAZER (reserva de 108 px menor que o mínimo de 112 px do botão), APROVADO (reserva de 120 px). Argumento do achado de Pets: `PetInventoryUI.luau:1425` já recalcula a grade por `AbsoluteSize`; documentado no README do HUD.
+- **Como:** Correções por agy `gemini-4-hydrogen-medium` e `gemini-3.8-flash-medium`; pré-gate por Codex `gpt-6.1-terra` low com `-s danger-full-access`; gate final por agy `gemini-4-argon-medium`.
+- **Decisões:** Chefe autorizou o pré-gate com `-s danger-full-access` (sandbox do Codex no Windows não tem perfil de usuário). `docs/empresa/` vai em PR separado (`a/empresa-docs`).
+- **Problemas e soluções:** Gerente Infra (agy) falhou 2x com `ReadFile` negado; pré-gate falhou 3x com `home directory not found`. Revisor read-only respondeu que não podia ler o patch porque o brief dizia "NÃO rode nada".
+- **Testes:** Estática apenas em 667x375 e 750x381; teste no Studio nessas resoluções ainda pendente.
+- **Próximo passo:** CI verde e merge pelo chefe; Squad B atende pedidos 1 e 2; A14 (efeitos).
+
+### 2026-11-15 · Rodada 12: merges do MVP e Fase 2, A13 pronta para PR e Fase 3 aberta
+- **O que foi feito:** Mesclados na `main` após aprovação da Squad B: A8 (recompensa diária, PR #16, commit `bbd7f61`), I1 (playtest MVP, PR #20, commit `d4a46f6`), A7 (Área 3 Nuvens de Algodão, PR #21, commit `72a15cf`), A10 (tutorial curto de 5 passos, PR #18, commit `cce4d01`) e A9 (sons e música, PR #22, commit `6fa3744`). Abertura da Fase 3 com dois PRs aguardando revisão da Squad B: PR #23 (plano da Fase 3 em `docs/ROADMAP.md`, commit `b274e86`) e PR #24 (Urso de Goma 3D em Blender via MCP, pipeline em `art/README.md` e `tools/art/prepare_pet.luau`, commit `311d159`). Conclusão e testes da A13 (HUD novo no branch `a/a13-hud`), pronta para abertura de PR.
+- **Como:** Merges autorizados e executados na `main`. A13 implementada por Codex `gpt-6.1-sol` (`TopBar`, `SideMenu`, `BottomBar`, `Theme`, `UIIcons`, `HudController`, commit `d529836`). Revisão de código com Gemini `gemini-4-hydrogen-high`. Correções com Codex `gpt-6.1-sol` e líder (`MenuCoordinator.luau`). Testes e ajustes no Roblox Studio via MCP com Codex `gpt-6.1-sol` e `gpt-6.1-terra`. Worktrees antigos mesclados (`project_rbx-a7`, `-a9`, `-a10`, `-mvp`, `-integ`) removidos. Modelos operando em effort `medium` a pedido do Felipe.
+- **Decisões:** Modelos configurados em effort `medium` para economizar limite. Na A13, criação de `MenuCoordinator.luau` sem `require` cíclico; ajuste ergonômico no HUD com `compact` restrito a `size.Y < 440` para manter `SideMenu` vertical à esquerda centralizado (`AnchorPoint(0, 0.5)`), botões `~81x75 px` (`Daily` `81x45 px`), e `TopBar`/`RebirthBadge` no topo central em PC/Studio (`1316x573`), aprovado pelo Felipe no Play.
+- **Problemas e soluções:** Na A13, revisão Gemini apontou 10 achados (4 ALTO, 4 MÉDIO, 2 BAIXO) registrados em `.alethe/gemini-a13.md`, corrigidos por Codex e líder (incluindo `TypeError` em `MenuCoordinator.luau:168-170`). Teste ao vivo no Studio via MCP detectou sobreposição de toast/RebirthBadge sobre `BottomBar` em modo compacto (13,6 px e 6,6 px); corrigido por Codex `gpt-6.1-terra` com cálculo do topo real escalado da `BottomBar`. Reteste no Studio confirmou folga de 10,40 px e cliques funcionais com 0 erros Luau.
+- **Testes:** `lune run check fix` = `TUDO OK` (147 testes passaram, 0 falharam; `luau-lsp`, `selene`, `stylua` e `rojo build` ok). Studio via MCP: Urso de Goma testado seguindo o personagem no jogo; A13 testada ao vivo no Studio (`1316x573`) com folga de 10,40 px acima da `BottomBar`, cliques reais em `Shop`, `Pets`, `Daily`, `Settings` e `MOCHILA` funcionando, 0 erros no console (apenas ressalva no `X` da Diária pelo clique simulado do MCP) e aprovado pelo Felipe no Play.
+- **Próximo passo:** Fazer commit e abrir PR da A13 (`a/a13-hud`), enviar pedido de integração do selo Rebirth (`RebirthUI.SetModalOpen`) para a Squad B em `recados.md`, acompanhar revisões dos PRs #23 e #24, e iniciar A14 (efeitos) / A11 (blocos 3D).
 
 ### 2026-11-15 · Rodada 11: MVP fechado, A8 e A10, I1 e I2
 - **O que foi feito:** Revisão e aprovação dos PRs #15 (B5) e #17 (B7) da Squad B, mesclados pelo Felipe na main. Implementação de A8 (recompensa diária, PR #16) e A10 (tutorial, PR #18), ambos corrigidos após apontamentos da Squad B e aguardando re-revisão. Execução da revisão de segurança geral do MVP (I2), com PR #19 corrigido, aprovado pela Squad B e mesclado na main. Playtest completo do MVP no Studio (I1). Abertura do PR #20 com o ROADMAP fechando a Fase 1 e o relatório do playtest.
