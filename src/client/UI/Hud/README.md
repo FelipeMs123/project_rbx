@@ -1,0 +1,62 @@
+# HUD A13 — integração e validação
+
+Dono: Squad A. `HudController` orquestra `TopBar`, `SideMenu`, `BottomBar` e `Theme`.
+`Config/UIIcons` reserva IDs vazios para a futura arte; o HUD usa emojis e formas nativas enquanto isso.
+
+## Layout e rótulos (inglês)
+
+- **TopBar**: cápsulas `Coins` (disco dourado nativo, valor amarelo, botão `+`) e `Gems` (`💎`, valor azul, botão `+`). No PC (não compacto, `topReserve == 0`), sobe para a faixa vertical dos botões do Roblox (`topY = 6 - GuiService:GetGuiInset().Y` em coordenada local de `CoreUISafeInsets`, ficando em `y = 6 px` na tela), centralizada e respeitando `x >= 216 px` em larguras estreitas do PC para não cobrir os botões do Roblox; quando `topReserve > 0`, desce abaixo do tutorial (`topY = topReserve + 2`). Em retrato (`size.X < 620`), permanece abaixo da faixa do Roblox (`topY = topReserve + 8`) porque a barra ocupa quase toda a largura e cobriria os botões do topo. Em paisagem compacta encosta no topo à direita (`topY = 6`, ou abaixo do tutorial quando `topReserve > 0`). Os toasts no PC continuam logo abaixo da `TopBar` (`stackTop = topY + 62 * factor + 10`), sem sobrepor.
+- **SideMenu**: grade de 2 colunas na borda esquerda, no meio da altura — linha 1: `DAILY` (`DailyButton`, bolinha vermelha `DailyBadge` no canto superior direito quando há recompensa), `SHOP` (`ShopButton`); linha 2: `PETS` (`PetsButton`), `BACKPACK` (`InventoryButton`); linha 3: `SETTINGS` (`SettingsButton`, coluna da esquerda). Em paisagem compacta fica abaixo dos botões do Roblox e acima do analógico inferior esquerdo, com margem esquerda segura.
+- **RebirthBadge**: selo `Rebirth [N]` roxo escuro alinhado à borda direita segura, no meio da altura, sempre abaixo de `RebirthToggleButton` (leitura real em `PlayerGui` com fallback por fórmula) e acima da `BottomBar`/toasts. Começa escondido (`Visible = false`) e só aparece depois que `"Rebirth"` for registrado no `MenuCoordinator`; até lá, apenas `RebirthToggleButton` fica visível.
+- **BottomBar**: `AUTO-CLICK` (`AutoClick`, `🖱️`) e `x3 EGGS` (`TripleEggs`, `🥚`) centralizados na parte inferior, sem selo de Robux.
+- **Toasts**: `"Shop coming soon!"` (SHOP e botões `+`), `"Coming soon!"` (`AUTO-CLICK` e `x3 EGGS`) e `"+N coins"` / `"+N coins · +M gems"` (recompensas). Em PC estreito, quando a pilha cruza a faixa vertical do `SideMenu` ou dos controles de Rebirth à direita, a largura (mínimo 200 px) e o `x` da pilha são ajustados para manter folga `>= 8 px` sem mudar nada em telas largas (`>= 800 px`). Em retrato, quando a pilha cruza a faixa vertical do `RebirthToggleButton`, a largura é reduzida para terminar `>= 8 px` à esquerda dele (mínimo 160 px). Nota: nomes de área em português (ex.: `"Cascata de Chocolate"` vindo de `Config/Areas.luau` em `Messages.luau`) ficam para a rodada de textos (`PR a/textos-en`).
+
+## Integração com os painéis
+
+- O HUD não importa UI/Rebirth, UI/Pets, UI/Eggs nem seus Controllers.
+  TopBar, SideMenu e BottomBar importam somente Theme; Theme e MenuCoordinator não têm requires.
+- `MenuCoordinator` coordena `Pets`, `Rebirth`, `Daily`, `Settings` e `Eggs`, fechando os
+  demais modais ao abrir um deles (inclusive `FusionConfirmOverlay` ao sair de Pets).
+- `PETS` e `BACKPACK` (`PetsButton` / `InventoryButton`) abrem `PetsModal` diretamente (`Visible = true`) e escondem
+  `PetsToggleButton`. A grade de pets já se recalcula automaticamente sem chamar
+  `openBtn.Activated`, pois em `src/client/UI/Pets/PetInventoryUI.luau`:
+  - `scrolling:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateGridLayout)` (linha 1425)
+    recalcula `FillDirectionMaxCells`, `CellPadding` e `CellSize` sempre que o `AbsoluteSize`
+    do `PetGrid` muda (inclusive ao montar/exibir o modal);
+  - `updateResponsiveScale()` (linhas 386-402) chama `updateGridLayout()` no `Mount()` (linha 1612)
+    e em toda mudança de `ViewportSize` (linha 1599);
+  - `updateGridLayout()` (linhas 260-287) depende apenas de `uiScale.Scale`, `grid.AbsoluteSize.X`
+    e `isCompactViewport`.
+- O selo `Rebirth [N]` usa `MenuCoordinator.Open("Rebirth")`, que aguarda o registro de
+  `RebirthUI.SetModalOpen` pela Squad B (ver `.alethe/a13-pendencias-squad-b.md`).
+  Enquanto não há setter registrado, `top.Rebirth` fica escondido (`Visible = false`, observado via
+  `MenuCoordinator.SetRebirthRegisteredObserver`) e `RebirthToggleButton` segue como único caminho.
+- `SETTINGS` (`SettingsButton`) abre `SoundSettings.ModalOverlay` e esconde `OpenSettings`.
+  `DAILY` (`DailyButton`) abre `DailyRewards.ModalOverlay` e esconde `OpenDaily`, espelhando
+  `AvailableBadge` na bolinha vermelha `DailyBadge` no canto superior direito do botão.
+- Start espera PlayerGui por no máximo 10 s. Os cliques procuram as instâncias
+  novamente, sem espera; se Pets/Rebirth ainda não existe, exibem aviso para tentar novamente.
+- `SetTopReserve` reposiciona o topo e os avisos abaixo da faixa do tutorial.
+  `CandyToasts` mantém DisplayOrder 100.
+- Nas telas baixas (`compact`, `ViewportSize.Y - GuiService:GetGuiInset().Y < 440`, ex.: 667x375, 750x381 e 844x390), `CandyHud` e
+  `CandyToasts` usam `DeviceSafeInsets`.
+
+## Como testar no Studio (humano/líder)
+
+1. Conectar Rojo nesta cópia e iniciar Play no PC (1316x573). Conferir saldos abreviados,
+   menu lateral em grade 2 colunas à esquerda (`DAILY`, `SHOP`, `PETS`, `BACKPACK`, `SETTINGS`),
+   `AUTO-CLICK` / `x3 EGGS` no rodapé e selo `Rebirth [N]` escondido até o registro pela Squad B
+   (quando registrado, aparece à direita abaixo de `RebirthToggleButton`).
+2. Clicar `SHOP` e nos dois `+`: `"Shop coming soon!"`. Clicar `AUTO-CLICK` e `x3 EGGS`:
+   `"Coming soon!"`. Abrir um modal e conferir avisos acima dele.
+3. Clicar `PETS` e `BACKPACK`; conferir grade, equipar/desequipar, abas e fechar.
+   Clicar `SETTINGS` e alterar música/sons. Clicar `DAILY` e conferir bolinha vermelha quando houver recompensa.
+4. Usar perfil novo para conferir faixa e destaque do tutorial: faixa, topo e
+   grade não podem se cruzar. O destaque de equipar deve cercar `PetsButton`.
+5. Emular 844x390, 750x381, 667x375 e retrato 401x778, girando durante Play. Conferir
+   botões do Roblox, notch, analógico, pulo, `RebirthToggleButton` e rodapé sem sobreposição;
+   medir `AbsoluteSize` dos botões (mínimo 44 px reais). Conferir com tutorial ativo/inativo.
+6. Conferir Output sem erros. O líder roda `lune run check` e formatação.
+
+Não houve teste no Studio nem execução de lune/stylua pelo worker.
+Loja, auto-click, ovos triplos e imagens finais continuam fora desta tarefa.

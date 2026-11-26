@@ -1,9 +1,14 @@
 --!strict
 -- StarterPlayerScripts.Client.Controllers.HudController | Dono: Squad A. Saldos e avisos.
+local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
-local GuiService = game:GetService("GuiService")
+local Workspace = game:GetService("Workspace")
+local TopBar = require(script.Parent.Parent.UI.Hud.TopBar)
+local SideMenu = require(script.Parent.Parent.UI.Hud.SideMenu)
+local BottomBar = require(script.Parent.Parent.UI.Hud.BottomBar)
+local Menus = require(script.Parent.Parent.UI.Hud.MenuCoordinator)
 local DataController = require(script.Parent.DataController)
 local NetClient = require(script.Parent.Parent.Net.NetClient)
 local Format = require(ReplicatedStorage.Shared.Logic.Format)
@@ -13,6 +18,8 @@ local HudController = {}
 local gui: ScreenGui? = nil
 local toastStack: Frame? = nil
 local topReserve = 0
+local resizeHud: (() -> ())? = nil
+local toastLimit = 3
 local pending: { { text: string, kind: string } } = {}
 local colors =
 	{ info = Color3.fromRGB(50, 70, 110), error = Color3.fromRGB(165, 45, 65), reward = Color3.fromRGB(30, 115, 80) }
@@ -42,10 +49,22 @@ function HudController.Toast(text: string, kind: string)
 		table.insert(pending, { text = text, kind = kind })
 		return
 	end
+	local items: { TextLabel } = {}
+	for _, child in stack:GetChildren() do
+		if child:IsA("TextLabel") then
+			table.insert(items, child)
+		end
+	end
+	while #items >= toastLimit do
+		local oldest = table.remove(items, 1)
+		if oldest then
+			oldest:Destroy()
+		end
+	end
 	local item = label(stack, text)
 	item.Active = false
 	item.Size = UDim2.new(1, 0, 0, 52)
-	item.AutomaticSize = Enum.AutomaticSize.Y
+	item.AutomaticSize = Enum.AutomaticSize.None
 	item.BackgroundColor3 = colors[kind] or colors.info
 	task.delay(2.5, function()
 		item:Destroy()
@@ -57,9 +76,8 @@ function HudController.SetTopReserve(pixels: number)
 		return
 	end
 	topReserve = math.max(0, pixels)
-	local stack = toastStack
-	if stack then
-		stack.Position = UDim2.new(0.5, 0, 0, topReserve)
+	if resizeHud then
+		resizeHud()
 	end
 end
 
@@ -71,8 +89,14 @@ function HudController.Start()
 	if gui then
 		return
 	end
+	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui", 10)
+	if not playerGui then
+		warn("[HUD] PlayerGui indisponível após 10 segundos.")
+		return
+	end
 	local screen = Instance.new("ScreenGui")
 	screen.Name = "CandyHud"
+	screen.DisplayOrder = -1
 	screen.ResetOnSpawn = false
 	screen.IgnoreGuiInset = false
 	screen.ScreenInsets = Enum.ScreenInsets.CoreUISafeInsets
@@ -94,52 +118,69 @@ function HudController.Start()
 	toastRoot.Active = false
 	toastRoot.Size = UDim2.fromScale(1, 1)
 	toastRoot.Parent = toastScreen
-	-- O ScreenGui aplica o inset; a consulta também acompanha alterações da barra superior.
-	local function updateInset()
-		local topLeft = GuiService:GetGuiInset()
-		root.Position = UDim2.fromOffset(0, if topLeft.Y > 0 then 8 else 12)
-		toastRoot.Position = root.Position
+	local function shop()
+		HudController.Toast("Shop coming soon!", "info")
 	end
-	updateInset()
-	GuiService:GetPropertyChangedSignal("TopbarInset"):Connect(updateInset)
-	local panel = Instance.new("Frame")
-	panel.BackgroundTransparency = 1
-	-- Meio da lateral esquerda: o canto superior esquerdo é do chat do Roblox.
-	panel.AnchorPoint = Vector2.new(0, 0.5)
-	panel.Position = UDim2.fromScale(0.02, 0.5)
-	panel.Size = UDim2.fromScale(0.32, 0.18)
-	panel.Parent = root
-	local constraint = Instance.new("UISizeConstraint")
-	constraint.MinSize = Vector2.new(110, 100)
-	constraint.MaxSize = Vector2.new(240, 112)
-	constraint.Parent = panel
-	for index, key in { "Coins", "Gems" } do
-		local name = if key == "Coins" then "● Moedas" else "◆ Gemas"
-		local item = label(panel, name .. ": 0")
-		item.Position = UDim2.fromScale(0, (index - 1) * 0.5)
-		item.Size = UDim2.new(1, 0, 0.5, -4)
-		item.TextColor3 = if key == "Coins" then Color3.fromRGB(255, 220, 80) else Color3.fromRGB(100, 225, 255)
-		local scale = Instance.new("UIScale")
-		scale.Parent = item
+	local disconnectors: { () -> () } = {}
+	-- Observe usa Signal.Connection; os demais eventos usam RBXScriptConnection.
+	local function track(connection: any)
+		table.insert(disconnectors, function()
+			connection:Disconnect()
+		end)
+	end
+	local unmountMenus = Menus.Mount(playerGui)
+	local function openMenu(key: string)
+		Menus.Open(key)
+	end
+	local function openPets()
+		openMenu("Pets")
+	end
+	local top = TopBar.Create(root, shop, function()
+		openMenu("Rebirth")
+	end)
+	local side = SideMenu.Create(root, {
+		Shop = shop,
+		Pets = openPets,
+		Inventory = openPets,
+		Daily = function()
+			openMenu("Daily")
+		end,
+		Settings = function()
+			openMenu("Settings")
+		end,
+	})
+	Menus.SetDailyBadge(function(available: boolean)
+		side.DailyBadge.Visible = available
+	end)
+	local bottom = BottomBar.Create(root, function()
+		HudController.Toast("Coming soon!", "info")
+	end)
+	for _, key in { "Coins", "Gems" } do
 		local previous: number? = nil
 		local animation: Tween? = nil
-		DataController.Observe(key, function(value: any)
+		track(DataController.Observe(key, function(value: any)
 			if type(value) ~= "number" then
 				return
 			end
-			item.Text = name .. ": " .. Format.abbreviate(value)
+			top.Labels[key].Text = Format.abbreviate(value)
 			if previous and value > previous then
 				if animation then
 					animation:Cancel()
 				end
-				scale.Scale = 1.08
-				local tween = TweenService:Create(scale, TweenInfo.new(0.22, Enum.EasingStyle.Back), { Scale = 1 })
+				top.Pops[key].Scale = 1.04
+				local tween =
+					TweenService:Create(top.Pops[key], TweenInfo.new(0.22, Enum.EasingStyle.Back), { Scale = 1 })
 				animation = tween
 				tween:Play()
 			end
 			previous = value
-		end)
+		end))
 	end
+	track(DataController.Observe("Rebirths", function(value: any)
+		if type(value) == "number" then
+			top.RebirthLabel.Text = "Rebirth [" .. Format.abbreviate(value) .. "]"
+		end
+	end))
 	local stack = Instance.new("Frame")
 	stack.BackgroundTransparency = 1
 	stack.Active = false
@@ -156,14 +197,213 @@ function HudController.Start()
 	layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	layout.Parent = stack
 	toastStack = stack
-	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
+	local rebirthToggle: GuiObject? = nil
+	local rebirthRegistered = false
+	local rebirthConns: { RBXScriptConnection } = {}
+	local function clearRebirthConns()
+		for _, connection in rebirthConns do
+			connection:Disconnect()
+		end
+		table.clear(rebirthConns)
+	end
+	table.insert(disconnectors, clearRebirthConns)
+	local function resize()
+		local size = root.AbsoluteSize
+		if size.X <= 0 or size.Y <= 0 then
+			return
+		end
+		local camera = Workspace.CurrentCamera
+		local guiTopInset = GuiService:GetGuiInset().Y
+		local coreViewportY = if camera and camera.ViewportSize.Y > 0
+			then camera.ViewportSize.Y - guiTopInset
+			elseif screen.ScreenInsets == Enum.ScreenInsets.DeviceSafeInsets then size.Y - guiTopInset
+			else size.Y
+		local compact = coreViewportY < 440
+		local targetInsets = if compact then Enum.ScreenInsets.DeviceSafeInsets else Enum.ScreenInsets.CoreUISafeInsets
+		if screen.ScreenInsets ~= targetInsets then
+			screen.ScreenInsets = targetInsets
+			toastScreen.ScreenInsets = targetInsets
+			return
+		end
+		local topInset = if compact then guiTopInset else 0
+		local coreY = math.max(1, size.Y - topInset)
+		local portrait = size.X < 620 and not compact
+		local bottomScale = math.clamp((size.X - 396) / 440, 0.7, 1.15)
+		local bottomHeight = if compact then math.max(48, math.ceil(44 / bottomScale)) else 64
+		local bottomMargin = if portrait then 150 else 18
+		local bottomTopY = size.Y - bottomMargin - bottomHeight * bottomScale
+		local factor = math.clamp(size.X / 1100, 0.8, 1.15)
+		top.Scale.Scale = factor
+		-- Reserva a área do RebirthToggleButton original em paisagem compacta (leitura real ou fallback por fórmula).
+		local toggleLeft = 0.98 * size.X - 126
+		local rebirthTop = topInset + 0.37 * coreY - 52
+		local rebirthBottom = topInset + 0.37 * coreY + 8
+		local toggle = rebirthToggle
+		if toggle and toggle.Parent and toggle.AbsoluteSize.X > 0 and toggle.AbsoluteSize.Y > 0 then
+			local togglePos = toggle.AbsolutePosition - screen.AbsolutePosition
+			local toggleSize = toggle.AbsoluteSize
+			toggleLeft = togglePos.X
+			rebirthTop = togglePos.Y - 4
+			rebirthBottom = togglePos.Y + toggleSize.Y + 4
+		end
+		local rebirthLeft = toggleLeft - 6
+		local inPcTopBand = not portrait and not compact and topReserve == 0
+		local topY = if portrait
+			then topReserve + 8
+			elseif compact then (if topReserve > 0 then topInset + topReserve + 2 else 6)
+			elseif topReserve > 0 then topReserve + 2
+			else 6 - guiTopInset
+		local robloxRight = 216
+		local avoidsRebirthTop = compact and (topY + 56 * factor) > rebirthTop
+		local availableWidth = if avoidsRebirthTop
+			then math.min(size.X - 262, math.max(260, rebirthLeft - 246))
+			elseif compact then size.X - 262
+			elseif inPcTopBand then size.X - robloxRight - 12
+			else size.X - 24
+		local width = math.min(520, availableWidth / factor)
+		top.Root.Size = UDim2.fromOffset(width, 62)
+		local capsuleWidth = (width - 20) / 2
+		for index, key in { "Coins", "Gems" } do
+			local capsule = top.Labels[key].Parent :: Frame
+			capsule.Size = UDim2.fromOffset(capsuleWidth, if compact then 56 else 62)
+			capsule.Position = UDim2.fromOffset((index - 1) * (capsuleWidth + 20), 0)
+			top.Labels[key].Size = UDim2.fromOffset(capsuleWidth - 118, 52)
+			top.Labels[key].Position = UDim2.new(0, 56, 0.5, 0)
+			local plus = capsule:FindFirstChild("Add" .. key) :: TextButton
+			plus.Size = UDim2.fromOffset(56, 56)
+			plus.Position = UDim2.new(0, capsuleWidth - 58, 0.5, 0)
+		end
+		local topRight = if avoidsRebirthTop then math.min(size.X - 12, rebirthLeft) else size.X - 12
+		local topX = if compact
+			then topRight - width * factor / 2
+			elseif inPcTopBand then math.max(size.X / 2, robloxRight + width * factor / 2)
+			else size.X / 2
+		top.Root.Position = UDim2.fromOffset(topX, topY)
+		local sideFactor = if compact
+			then 0.56
+			elseif portrait then 0.72
+			else math.clamp((size.Y - 145) / 268, 0.75, 0.95)
+		side.Scale.Scale = sideFactor
+		side.Root.Size = UDim2.fromOffset(176, 268)
+		side.Root.AnchorPoint = if compact then Vector2.new(0, 0) else Vector2.new(0, 0.5)
+		if compact then
+			local sideHeight = 268 * sideFactor
+			local minSideY = topInset + 6
+			local maxSideY = math.max(minSideY, size.Y - 124 - sideHeight)
+			local desiredSideY = topInset + (coreY - sideHeight) / 2
+			side.Root.Position = UDim2.fromOffset(12, math.clamp(desiredSideY, minSideY, maxSideY))
+		else
+			side.Root.Position = UDim2.new(0, if portrait then 12 else 16, 0.5, 0)
+		end
+		bottom.Scale.Scale = bottomScale
+		bottom.Root.Size = UDim2.fromOffset(440, bottomHeight)
+		for _, button in bottom.Buttons do
+			button.Size = UDim2.fromOffset(212, bottomHeight)
+		end
+		bottom.Root.Position = UDim2.new(0.5, 0, 1, -bottomMargin)
+		local badgeWidth = if compact or portrait then 168 else 200
+		local badgeHeight = if compact then 45 elseif portrait then 48 else 54
+		local minBadgeY = rebirthBottom + 6
+		local maxBadgeY = math.max(minBadgeY, bottomTopY - 8 - badgeHeight)
+		local desiredBadgeY = topInset + (coreY - badgeHeight) / 2
+		local badgeY = math.clamp(desiredBadgeY, minBadgeY, maxBadgeY)
+		local badgeRightMargin = if compact or portrait then 12 else 16
+		-- Em paisagem, apenas um aviso ocupa a faixa central livre entre os controles.
+		toastLimit = if compact then 1 elseif portrait then 2 else 3
+		stack.ClipsDescendants = true
+		local compactToastWidth = math.min(260, math.max(160, (size.X - 12 - 168 - 12 - size.X / 2) * 2))
+		local stackTop = topY + 62 * factor + 10
+		local portraitOverlapsRebirth = portrait and (stackTop + 110) > rebirthTop and stackTop < rebirthBottom
+		local portraitToastWidth = if portraitOverlapsRebirth
+			then math.clamp(toggleLeft - 8 - 16, 160, size.X - 32)
+			else size.X - 32
+		local portraitToastX = if portraitOverlapsRebirth then 16 + portraitToastWidth / 2 else size.X / 2
+		local sideRight = 16 + 176 * sideFactor
+		local sideHalfHeight = 134 * sideFactor
+		local sideTop = size.Y / 2 - sideHalfHeight
+		local sideBottom = size.Y / 2 + sideHalfHeight
+		local pcStackBottom = stackTop + 168
+		local pcSafeLeft = if pcStackBottom > sideTop and stackTop < sideBottom then sideRight + 8 else 16
+		local pcSafeRight = size.X - 16
+		if pcStackBottom > rebirthTop and stackTop < rebirthBottom then
+			pcSafeRight = math.min(pcSafeRight, toggleLeft - 8)
+		end
+		if rebirthRegistered and pcStackBottom > badgeY and stackTop < badgeY + badgeHeight then
+			pcSafeRight = math.min(pcSafeRight, size.X - badgeRightMargin - badgeWidth - 8)
+		end
+		local pcToastWidth = math.min(360, math.max(200, pcSafeRight - pcSafeLeft))
+		local pcMinX = pcSafeLeft + pcToastWidth / 2
+		local pcMaxX = math.max(pcMinX, pcSafeRight - pcToastWidth / 2)
+		local pcToastX = math.clamp(size.X / 2, pcMinX, pcMaxX)
+		stack.Size = UDim2.fromOffset(
+			if compact then compactToastWidth elseif portrait then portraitToastWidth else pcToastWidth,
+			if compact then 52 elseif portrait then 110 else 168
+		)
+		stack.Position = if compact
+			then UDim2.fromOffset(size.X / 2, bottomTopY - 62)
+			elseif portrait then UDim2.fromOffset(portraitToastX, stackTop)
+			else UDim2.fromOffset(pcToastX, stackTop)
+		local count = 0
+		for _, child in stack:GetChildren() do
+			if child:IsA("TextLabel") then
+				count += 1
+				if count > toastLimit then
+					child:Destroy()
+				end
+			end
+		end
+		-- Selo Rebirth [N] só aparece após Register("Rebirth", setter); até lá fica escondido.
+		top.Rebirth.Parent = root
+		top.Rebirth.Visible = rebirthRegistered
+		if not rebirthRegistered then
+			return
+		end
+		top.Rebirth.AnchorPoint = Vector2.new(1, 0)
+		top.Rebirth.Size = UDim2.fromOffset(badgeWidth, badgeHeight)
+		top.Rebirth.Position = UDim2.fromOffset(size.X - badgeRightMargin, badgeY)
+	end
+	screen.Destroying:Connect(function()
+		for _, disconnect in disconnectors do
+			disconnect()
+		end
+		unmountMenus()
+		gui = nil
+		resizeHud = nil
+		toastStack = nil
+		toastScreen:Destroy()
+	end)
+	track(toastScreen.Destroying:Connect(function()
+		toastStack = nil
+		if gui == screen then
+			screen:Destroy()
+		end
+	end))
+	resizeHud = resize
+	track(root:GetPropertyChangedSignal("AbsoluteSize"):Connect(resize))
+	track(root:GetPropertyChangedSignal("AbsolutePosition"):Connect(resize))
+	track(stack.ChildAdded:Connect(resize))
+	track(stack.ChildRemoved:Connect(resize))
 	screen.Parent = playerGui
 	toastScreen.Parent = playerGui
+	Menus.SetRebirthToggleObserver(function(button: GuiObject?)
+		clearRebirthConns()
+		rebirthToggle = button
+		if button then
+			table.insert(rebirthConns, button:GetPropertyChangedSignal("AbsolutePosition"):Connect(resize))
+			table.insert(rebirthConns, button:GetPropertyChangedSignal("AbsoluteSize"):Connect(resize))
+		end
+		resize()
+	end)
+	Menus.SetRebirthRegisteredObserver(function(registered: boolean)
+		rebirthRegistered = registered
+		top.Rebirth.Visible = registered
+		resize()
+	end)
 	for _, entry in pending do
 		HudController.Toast(entry.text, entry.kind)
 	end
 	table.clear(pending)
-	NetClient.On("Notify", function(code: any, payload: any)
+	track(NetClient.On("Notify", function(code: any, payload: any)
 		if code == "REWARD" and type(payload) == "table" then
 			local coins = if type(payload.coins) == "number" then payload.coins else 0
 			local gems = if type(payload.gems) == "number" then payload.gems else 0
@@ -173,14 +413,14 @@ function HudController.Start()
 			HudController.Toast(
 				"+"
 					.. Format.abbreviate(coins)
-					.. " moedas"
-					.. (if gems > 0 then " · +" .. Format.abbreviate(gems) .. " gemas" else ""),
+					.. " coins"
+					.. (if gems > 0 then " · +" .. Format.abbreviate(gems) .. " gems" else ""),
 				"reward"
 			)
 		else
 			HudController.Toast(Messages.message(code, payload), "error")
 		end
-	end)
+	end))
 end
 
 return HudController
