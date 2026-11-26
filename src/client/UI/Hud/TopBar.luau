@@ -113,6 +113,32 @@ function TopBar.Create(parent: Instance, shop: () -> (), rebirth: () -> ())
 	Theme.Text(rebirthLabel, "Rebirth [0]", 24)
 	rebirthLabel.TextXAlignment = Enum.TextXAlignment.Left
 	rebirthLabel.Parent = badge
-	return { Root = root, Scale = scale, Labels = labels, Pops = pops, Rebirth = badge, RebirthLabel = rebirthLabel }
+	local readyDot = Instance.new("Frame")
+	readyDot.Name = "ReadyDot"
+	readyDot.AnchorPoint = Vector2.new(0.5, 0.5)
+	readyDot.Position = UDim2.new(1, -6, 0, 6)
+	readyDot.Size = UDim2.fromOffset(18, 18)
+	readyDot.BackgroundColor3 = Color3.fromRGB(52, 199, 89)
+	readyDot.BorderSizePixel = 0
+	readyDot.ZIndex = 4
+	readyDot.Visible = false
+	readyDot.Parent = badge
+	local readyCorner = Instance.new("UICorner")
+	readyCorner.CornerRadius = UDim.new(1, 0)
+	readyCorner.Parent = readyDot
+	local readyStroke = Instance.new("UIStroke")
+	readyStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	readyStroke.Color = Theme.Colors.Ink
+	readyStroke.Thickness = 2
+	readyStroke.Parent = readyDot
+	return {
+		Root = root,
+		Scale = scale,
+		Labels = labels,
+		Pops = pops,
+		Rebirth = badge,
+		RebirthLabel = rebirthLabel,
+		ReadyDot = readyDot,
+	}
 end
 return TopBar

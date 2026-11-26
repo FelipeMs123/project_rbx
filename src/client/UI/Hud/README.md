@@ -7,7 +7,7 @@ Dono: Squad A. `HudController` orquestra `TopBar`, `SideMenu`, `BottomBar` e `Th
 
 - **TopBar**: cápsulas `Coins` (disco dourado nativo, valor amarelo, botão `+`) e `Gems` (`💎`, valor azul, botão `+`). No PC (não compacto, `topReserve == 0`), sobe para a faixa vertical dos botões do Roblox (`topY = 6 - GuiService:GetGuiInset().Y` em coordenada local de `CoreUISafeInsets`, ficando em `y = 6 px` na tela), centralizada e respeitando `x >= 216 px` em larguras estreitas do PC para não cobrir os botões do Roblox; quando `topReserve > 0`, desce abaixo do tutorial (`topY = topReserve + 2`). Em retrato (`size.X < 620`), permanece abaixo da faixa do Roblox (`topY = topReserve + 8`) porque a barra ocupa quase toda a largura e cobriria os botões do topo. Em paisagem compacta encosta no topo à direita (`topY = 6`, ou abaixo do tutorial quando `topReserve > 0`). Os toasts no PC continuam logo abaixo da `TopBar` (`stackTop = topY + 62 * factor + 10`), sem sobrepor.
 - **SideMenu**: grade de 2 colunas na borda esquerda, no meio da altura — linha 1: `DAILY` (`DailyButton`, bolinha vermelha `DailyBadge` no canto superior direito quando há recompensa), `SHOP` (`ShopButton`); linha 2: `PETS` (`PetsButton`), `BACKPACK` (`InventoryButton`); linha 3: `SETTINGS` (`SettingsButton`, coluna da esquerda). Em paisagem compacta fica abaixo dos botões do Roblox e acima do analógico inferior esquerdo, com margem esquerda segura.
-- **RebirthBadge**: selo `Rebirth [N]` roxo escuro alinhado à borda direita segura, no meio da altura, sempre abaixo de `RebirthToggleButton` (leitura real em `PlayerGui` com fallback por fórmula) e acima da `BottomBar`/toasts. Começa escondido (`Visible = false`) e só aparece depois que `"Rebirth"` for registrado no `MenuCoordinator`; até lá, apenas `RebirthToggleButton` fica visível.
+- **RebirthBadge**: selo `Rebirth [N]` roxo escuro alinhado à borda direita segura, no meio da altura, acima da `BottomBar`/toasts. Começa escondido (`Visible = false`) e passa a aparecer depois que `RebirthUI` registra `"Rebirth"` no `MenuCoordinator` e esconde o `RebirthToggleButton` (`Visible = false`); enquanto o botão roxo estiver `Visible = false`, o `HudController` o ignora no layout (sem reserva de espaço) e reaplica o layout caso `Visible` mude. Possui a bolinha verde `ReadyDot` (18 px, canto superior direito, invisível por padrão) que espelha `ReadyBadge.Visible` do `RebirthToggleButton`.
 - **BottomBar**: `AUTO-CLICK` (`AutoClick`, `🖱️`) e `x3 EGGS` (`TripleEggs`, `🥚`) centralizados na parte inferior, sem selo de Robux.
 - **Toasts**: `"Shop coming soon!"` (SHOP e botões `+`), `"Coming soon!"` (`AUTO-CLICK` e `x3 EGGS`) e `"+N coins"` / `"+N coins · +M gems"` (recompensas). Em PC estreito, quando a pilha cruza a faixa vertical do `SideMenu` ou dos controles de Rebirth à direita, a largura (mínimo 200 px) e o `x` da pilha são ajustados para manter folga `>= 8 px` sem mudar nada em telas largas (`>= 800 px`). Em retrato, quando a pilha cruza a faixa vertical do `RebirthToggleButton`, a largura é reduzida para terminar `>= 8 px` à esquerda dele (mínimo 160 px). Nota: nomes de área em português (ex.: `"Cascata de Chocolate"` vindo de `Config/Areas.luau` em `Messages.luau`) ficam para a rodada de textos (`PR a/textos-en`).
 
@@ -27,10 +27,7 @@ Dono: Squad A. `HudController` orquestra `TopBar`, `SideMenu`, `BottomBar` e `Th
     e em toda mudança de `ViewportSize` (linha 1599);
   - `updateGridLayout()` (linhas 260-287) depende apenas de `uiScale.Scale`, `grid.AbsoluteSize.X`
     e `isCompactViewport`.
-- O selo `Rebirth [N]` usa `MenuCoordinator.Open("Rebirth")`, que aguarda o registro de
-  `RebirthUI.SetModalOpen` pela Squad B (ver `.alethe/a13-pendencias-squad-b.md`).
-  Enquanto não há setter registrado, `top.Rebirth` fica escondido (`Visible = false`, observado via
-  `MenuCoordinator.SetRebirthRegisteredObserver`) e `RebirthToggleButton` segue como único caminho.
+- O selo `Rebirth [N]` usa `MenuCoordinator.Open("Rebirth")`. `RebirthUI` agora registra `RebirthUI.SetModalOpen` via `MenuCoordinator.Register("Rebirth", RebirthUI.SetModalOpen)` no `Mount()` (removendo o registro em `Destroy()`/desmontagem) e esconde o botão roxo `RebirthToggleButton` (`Visible = false`), deixando o selo `Rebirth [N]` como único acesso ao Rebirth. Enquanto não há setter registrado, `top.Rebirth` fica escondido (`Visible = false`, observado via `MenuCoordinator.SetRebirthRegisteredObserver`).
 - `SETTINGS` (`SettingsButton`) abre `SoundSettings.ModalOverlay` e esconde `OpenSettings`.
   `DAILY` (`DailyButton`) abre `DailyRewards.ModalOverlay` e esconde `OpenDaily`, espelhando
   `AvailableBadge` na bolinha vermelha `DailyBadge` no canto superior direito do botão.
@@ -45,8 +42,7 @@ Dono: Squad A. `HudController` orquestra `TopBar`, `SideMenu`, `BottomBar` e `Th
 
 1. Conectar Rojo nesta cópia e iniciar Play no PC (1316x573). Conferir saldos abreviados,
    menu lateral em grade 2 colunas à esquerda (`DAILY`, `SHOP`, `PETS`, `BACKPACK`, `SETTINGS`),
-   `AUTO-CLICK` / `x3 EGGS` no rodapé e selo `Rebirth [N]` escondido até o registro pela Squad B
-   (quando registrado, aparece à direita abaixo de `RebirthToggleButton`).
+   `AUTO-CLICK` / `x3 EGGS` no rodapé e selo `Rebirth [N]` visível à direita (com `RebirthToggleButton` escondido pela `RebirthUI`), abrindo o modal de Rebirth pelo fluxo original.
 2. Clicar `SHOP` e nos dois `+`: `"Shop coming soon!"`. Clicar `AUTO-CLICK` e `x3 EGGS`:
    `"Coming soon!"`. Abrir um modal e conferir avisos acima dele.
 3. Clicar `PETS` e `BACKPACK`; conferir grade, equipar/desequipar, abas e fechar.

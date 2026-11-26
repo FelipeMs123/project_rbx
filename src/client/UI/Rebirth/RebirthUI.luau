@@ -9,6 +9,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local GameConfig = require(Shared.Config.Game)
 local HudController = require(script.Parent.Parent.Parent.Controllers.HudController)
+local MenuCoordinator = require(script.Parent.Parent.Hud.MenuCoordinator)
 local RebirthHelpers = require(script.Parent.RebirthHelpers)
 
 local MIN_UI_SCALE = 0.85
@@ -51,6 +52,7 @@ local petGuiWatchConnections: { RBXScriptConnection } = {}
 local petsModalWatchConnections: { RBXScriptConnection } = {}
 local watchedPetGui: Instance? = nil
 local watchedPetsModal: GuiObject? = nil
+local unregisterMenu: (() -> ())? = nil
 local isCleaningUp = false
 
 local confirmCallback: (() -> ())? = nil
@@ -336,6 +338,7 @@ local function createRebirthGui(playerGui: PlayerGui)
 	toggle.Text = "Rebirth"
 	toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
 	toggle.TextScaled = true
+	toggle.Visible = false
 	toggle.Parent = gui
 	toggleButton = toggle
 	attachResponsiveScale(toggle)
@@ -756,6 +759,11 @@ local function clearGuiResources()
 	disconnectAllMutualExclusivityWatchers()
 	disconnectList(rebirthGuiLifecycleConnections)
 
+	if unregisterMenu then
+		unregisterMenu()
+		unregisterMenu = nil
+	end
+
 	if currentCameraConnection then
 		currentCameraConnection:Disconnect()
 		currentCameraConnection = nil
@@ -979,6 +987,7 @@ function RebirthUI.Mount()
 
 	clearGuiResources()
 	createRebirthGui(playerGui)
+	unregisterMenu = MenuCoordinator.Register("Rebirth", RebirthUI.SetModalOpen)
 
 	if rebirthGui then
 		bindRebirthGuiLifecycle(rebirthGui, playerGui)
