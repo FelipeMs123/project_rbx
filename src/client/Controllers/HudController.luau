@@ -247,14 +247,18 @@ function HudController.Start()
 			rebirthBottom = togglePos.Y + toggleSize.Y + 4
 		end
 		local rebirthLeft = toggleLeft - 6
+		local inPcTopBand = not portrait and not compact and topReserve == 0
 		local topY = if portrait
 			then topReserve + 8
 			elseif compact then (if topReserve > 0 then topInset + topReserve + 2 else 6)
-			else topReserve + 2
+			elseif topReserve > 0 then topReserve + 2
+			else 6 - guiTopInset
+		local robloxRight = 216
 		local avoidsRebirthTop = compact and (topY + 56 * factor) > rebirthTop
 		local availableWidth = if avoidsRebirthTop
 			then math.min(size.X - 262, math.max(260, rebirthLeft - 246))
 			elseif compact then size.X - 262
+			elseif inPcTopBand then size.X - robloxRight - 12
 			else size.X - 24
 		local width = math.min(520, availableWidth / factor)
 		top.Root.Size = UDim2.fromOffset(width, 62)
@@ -270,7 +274,10 @@ function HudController.Start()
 			plus.Position = UDim2.new(0, capsuleWidth - 58, 0.5, 0)
 		end
 		local topRight = if avoidsRebirthTop then math.min(size.X - 12, rebirthLeft) else size.X - 12
-		local topX = if compact then topRight - width * factor / 2 else size.X / 2
+		local topX = if compact
+			then topRight - width * factor / 2
+			elseif inPcTopBand then math.max(size.X / 2, robloxRight + width * factor / 2)
+			else size.X / 2
 		top.Root.Position = UDim2.fromOffset(topX, topY)
 		local sideFactor = if compact
 			then 0.56
@@ -294,6 +301,13 @@ function HudController.Start()
 			button.Size = UDim2.fromOffset(212, bottomHeight)
 		end
 		bottom.Root.Position = UDim2.new(0.5, 0, 1, -bottomMargin)
+		local badgeWidth = if compact or portrait then 168 else 200
+		local badgeHeight = if compact then 45 elseif portrait then 48 else 54
+		local minBadgeY = rebirthBottom + 6
+		local maxBadgeY = math.max(minBadgeY, bottomTopY - 8 - badgeHeight)
+		local desiredBadgeY = topInset + (coreY - badgeHeight) / 2
+		local badgeY = math.clamp(desiredBadgeY, minBadgeY, maxBadgeY)
+		local badgeRightMargin = if compact or portrait then 12 else 16
 		-- Em paisagem, apenas um aviso ocupa a faixa central livre entre os controles.
 		toastLimit = if compact then 1 elseif portrait then 2 else 3
 		stack.ClipsDescendants = true
@@ -304,14 +318,31 @@ function HudController.Start()
 			then math.clamp(toggleLeft - 8 - 16, 160, size.X - 32)
 			else size.X - 32
 		local portraitToastX = if portraitOverlapsRebirth then 16 + portraitToastWidth / 2 else size.X / 2
+		local sideRight = 16 + 176 * sideFactor
+		local sideHalfHeight = 134 * sideFactor
+		local sideTop = size.Y / 2 - sideHalfHeight
+		local sideBottom = size.Y / 2 + sideHalfHeight
+		local pcStackBottom = stackTop + 168
+		local pcSafeLeft = if pcStackBottom > sideTop and stackTop < sideBottom then sideRight + 8 else 16
+		local pcSafeRight = size.X - 16
+		if pcStackBottom > rebirthTop and stackTop < rebirthBottom then
+			pcSafeRight = math.min(pcSafeRight, toggleLeft - 8)
+		end
+		if rebirthRegistered and pcStackBottom > badgeY and stackTop < badgeY + badgeHeight then
+			pcSafeRight = math.min(pcSafeRight, size.X - badgeRightMargin - badgeWidth - 8)
+		end
+		local pcToastWidth = math.min(360, math.max(200, pcSafeRight - pcSafeLeft))
+		local pcMinX = pcSafeLeft + pcToastWidth / 2
+		local pcMaxX = math.max(pcMinX, pcSafeRight - pcToastWidth / 2)
+		local pcToastX = math.clamp(size.X / 2, pcMinX, pcMaxX)
 		stack.Size = UDim2.fromOffset(
-			if compact then compactToastWidth elseif portrait then portraitToastWidth else 360,
+			if compact then compactToastWidth elseif portrait then portraitToastWidth else pcToastWidth,
 			if compact then 52 elseif portrait then 110 else 168
 		)
 		stack.Position = if compact
 			then UDim2.fromOffset(size.X / 2, bottomTopY - 62)
 			elseif portrait then UDim2.fromOffset(portraitToastX, stackTop)
-			else UDim2.fromOffset(size.X / 2, stackTop)
+			else UDim2.fromOffset(pcToastX, stackTop)
 		local count = 0
 		for _, child in stack:GetChildren() do
 			if child:IsA("TextLabel") then
@@ -328,15 +359,8 @@ function HudController.Start()
 			return
 		end
 		top.Rebirth.AnchorPoint = Vector2.new(1, 0)
-		local badgeWidth = if compact or portrait then 168 else 200
-		local badgeHeight = if compact then 45 elseif portrait then 48 else 54
 		top.Rebirth.Size = UDim2.fromOffset(badgeWidth, badgeHeight)
-		local minBadgeY = rebirthBottom + 6
-		local maxBadgeY = math.max(minBadgeY, bottomTopY - 8 - badgeHeight)
-		local desiredBadgeY = topInset + (coreY - badgeHeight) / 2
-		local badgeRightMargin = if compact or portrait then 12 else 16
-		top.Rebirth.Position =
-			UDim2.fromOffset(size.X - badgeRightMargin, math.clamp(desiredBadgeY, minBadgeY, maxBadgeY))
+		top.Rebirth.Position = UDim2.fromOffset(size.X - badgeRightMargin, badgeY)
 	end
 	screen.Destroying:Connect(function()
 		for _, disconnect in disconnectors do
