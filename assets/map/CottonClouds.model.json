@@ -3226,6 +3226,1182 @@
             ],
             "Transparency": 0
           }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudArch_PillarN",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  246,
+                  6,
+                  -9.5
+                ]
+              }
+            },
+            "CanCollide": true,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              12,
+              2.4,
+              2.4
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudArch_PillarS",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    6.123233995736766e-17,
+                    -1,
+                    0
+                  ],
+                  [
+                    1,
+                    6.123233995736766e-17,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  246,
+                  6,
+                  9.5
+                ]
+              }
+            },
+            "CanCollide": true,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              12,
+              2.4,
+              2.4
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudArch_Beam",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  246,
+                  12.5,
+                  0
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              2,
+              2.2,
+              20
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudArch_PuffN",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  246,
+                  12.6,
+                  -9.5
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              4.2,
+              3.6,
+              4.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudArch_PuffS",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  246,
+                  12.6,
+                  9.5
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.5686274509803921,
+              0.8627450980392157,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              4.2,
+              3.6,
+              4.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CloudArch_StarTop",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.7071067811865476,
+                    0.5000000000000001,
+                    0.5000000000000001
+                  ],
+                  [
+                    0,
+                    0.7071067811865476,
+                    -0.7071067811865476
+                  ],
+                  [
+                    -0.7071067811865476,
+                    0.5000000000000001,
+                    0.5000000000000001
+                  ]
+                ],
+                "position": [
+                  246,
+                  15,
+                  0
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.9019607843137255,
+              0.37254901960784315
+            ],
+            "Material": "Neon",
+            "Shape": "Block",
+            "Size": [
+              2.4,
+              2.4,
+              2.4
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CottonHillNW_Base",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  260,
+                  2,
+                  -56
+                ]
+              }
+            },
+            "CanCollide": true,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              16,
+              9,
+              16
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CottonHillNW_Top",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  260,
+                  5.4,
+                  -56
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              11,
+              5.5,
+              11
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CottonHillNE_Base",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  304,
+                  2,
+                  -56
+                ]
+              }
+            },
+            "CanCollide": true,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.5686274509803921,
+              0.8627450980392157,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              16,
+              9,
+              16
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CottonHillNE_Top",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  304,
+                  5.4,
+                  -56
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              11,
+              5.5,
+              11
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CottonHillSW_Base",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  260,
+                  2,
+                  56
+                ]
+              }
+            },
+            "CanCollide": true,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              16,
+              9,
+              16
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CottonHillSW_Top",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  260,
+                  5.4,
+                  56
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              11,
+              5.5,
+              11
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CottonHillSE_Base",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  304,
+                  2,
+                  56
+                ]
+              }
+            },
+            "CanCollide": true,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              16,
+              9,
+              16
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "CottonHillSE_Top",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  304,
+                  5.4,
+                  56
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              11,
+              5.5,
+              11
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_01",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9063077870366499,
+                    0,
+                    0.42261826174069944
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    -0.42261826174069944,
+                    0,
+                    0.9063077870366499
+                  ]
+                ],
+                "position": [
+                  234,
+                  0.2,
+                  -24
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_02",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.8660254037844387,
+                    -0.0,
+                    -0.49999999999999994
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0.49999999999999994,
+                    0,
+                    0.8660254037844387
+                  ]
+                ],
+                "position": [
+                  234,
+                  0.2,
+                  24
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.5686274509803921,
+              0.8627450980392157,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_03",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.6427876096865394,
+                    0,
+                    0.766044443118978
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    -0.766044443118978,
+                    0,
+                    0.6427876096865394
+                  ]
+                ],
+                "position": [
+                  258,
+                  0.2,
+                  -34
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.9019607843137255,
+              0.37254901960784315
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_04",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9396926207859084,
+                    -0.0,
+                    -0.3420201433256687
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0.3420201433256687,
+                    0,
+                    0.9396926207859084
+                  ]
+                ],
+                "position": [
+                  258,
+                  0.2,
+                  34
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_05",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.8191520442889918,
+                    0,
+                    0.573576436351046
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    -0.573576436351046,
+                    0,
+                    0.8191520442889918
+                  ]
+                ],
+                "position": [
+                  298,
+                  0.2,
+                  -34
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.37254901960784315,
+              0.6352941176470588
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_06",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.7071067811865476,
+                    -0.0,
+                    -0.7071067811865476
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0.7071067811865476,
+                    0,
+                    0.7071067811865476
+                  ]
+                ],
+                "position": [
+                  298,
+                  0.2,
+                  34
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.5686274509803921,
+              0.8627450980392157,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_07",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9659258262890683,
+                    0,
+                    0.25881904510252074
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    -0.25881904510252074,
+                    0,
+                    0.9659258262890683
+                  ]
+                ],
+                "position": [
+                  322,
+                  0.2,
+                  -36
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.9019607843137255,
+              0.37254901960784315
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_08",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.8191520442889918,
+                    -0.0,
+                    -0.573576436351046
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0.573576436351046,
+                    0,
+                    0.8191520442889918
+                  ]
+                ],
+                "position": [
+                  322,
+                  0.2,
+                  36
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.7137254901960784,
+              0.8352941176470589
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_09",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.5000000000000001,
+                    0,
+                    0.8660254037844386
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    -0.8660254037844386,
+                    0,
+                    0.5000000000000001
+                  ]
+                ],
+                "position": [
+                  338,
+                  0.2,
+                  -34
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.7254901960784313,
+              0.5098039215686274,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_10",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9063077870366499,
+                    -0.0,
+                    -0.42261826174069944
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0.42261826174069944,
+                    0,
+                    0.9063077870366499
+                  ]
+                ],
+                "position": [
+                  338,
+                  0.2,
+                  34
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              1,
+              1
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
         }
       ],
       "ClassName": "Folder",
