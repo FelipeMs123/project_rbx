@@ -6,23 +6,34 @@ Dono: Squad A. `HudController` orquestra `TopBar`, `SideMenu`, `BottomBar` e `Th
 ## Integração com os painéis
 
 - O HUD não importa UI/Rebirth, UI/Pets, UI/Eggs nem seus Controllers.
-  TopBar, SideMenu e BottomBar importam somente Theme; Theme não tem requires.
-- PETS e INVENTORY localizam `PetsToggleButton` com `FindFirstChild(..., true)`,
-  mantêm o botão original visível e o destacam por 2,5 s, com aviso para tocá-lo.
-  Não existe BindableEvent de abertura nessa UI. A escolha preserva o handler
-  original da Squad B, que abre o modal e atualiza a grade; requer um segundo toque.
-- O selo Rebirth localiza `RebirthModal` recursivamente, fecha `PetsModal` e altera
-  `Visible`. Não chama SetModalOpen nem usa require tardio. A confirmação e as
-  ações de fechar/cancelar continuam nos handlers originais da Squad B.
-- SETTINGS abre `SoundSettings.ModalOverlay`. A diária usa `DailyUI.SetOpen(true)`.
-- O HUD esconde `RebirthToggleButton`, `OpenDaily` e `OpenSettings`, inclusive
-  quando surgem depois de sua inicialização. `PetsToggleButton` permanece visível.
+  TopBar, SideMenu e BottomBar importam somente Theme; Theme e MenuCoordinator não têm requires.
+- `MenuCoordinator` coordena `Pets`, `Rebirth`, `Daily`, `Settings` e `Eggs`, fechando os
+  demais modais ao abrir um deles (inclusive `FusionConfirmOverlay` ao sair de Pets).
+- PETS e INVENTORY abrem `PetsModal` diretamente (`Visible = true`) e escondem
+  `PetsToggleButton`. A grade de pets já se recalcula automaticamente sem chamar
+  `openBtn.Activated`, pois em `src/client/UI/Pets/PetInventoryUI.luau`:
+  - `scrolling:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateGridLayout)` (linha 1425)
+    recalcula `FillDirectionMaxCells`, `CellPadding` e `CellSize` sempre que o `AbsoluteSize`
+    do `PetGrid` muda (inclusive ao montar/exibir o modal);
+  - `updateResponsiveScale()` (linhas 386-402) chama `updateGridLayout()` no `Mount()` (linha 1612)
+    e em toda mudança de `ViewportSize` (linha 1599);
+  - `updateGridLayout()` (linhas 260-287) depende apenas de `uiScale.Scale`, `grid.AbsoluteSize.X`
+    e `isCompactViewport`.
+- O selo Rebirth usa `MenuCoordinator.Open("Rebirth")`, que aguarda o registro de
+  `RebirthUI.SetModalOpen` pela Squad B (ver `.alethe/a13-pendencias-squad-b.md`).
+  Enquanto não há setter registrado, `RebirthToggleButton` permanece visível e o selo exibe
+  aviso orientando a usá-lo.
+- SETTINGS abre `SoundSettings.ModalOverlay` e esconde `OpenSettings`. A diária abre
+  `DailyRewards.ModalOverlay` e esconde `OpenDaily`, espelhando `AvailableBadge` no botão
+  diário do menu lateral.
 - Start espera PlayerGui por no máximo 10 s. Os cliques procuram as instâncias
   novamente, sem espera; se Pets/Rebirth ainda não existe, exibem aviso para tentar novamente.
 - `SetTopReserve` reposiciona o topo e os avisos abaixo da faixa do tutorial.
   `CandyToasts` mantém DisplayOrder 100.
-- Nas telas baixas, a coluna fica compacta e deslocada para dentro do analógico.
-  O topo se desloca somente o necessário para não cruzar essa coluna.
+- Nas telas baixas (`compact`, `size.Y < 440`, ex.: 667x375 e 750x381), a coluna fica compacta
+  e deslocada para dentro do analógico, mantendo `sideY` abaixo de `RebirthToggleButton`
+  (`0.37 * size.Y + 8`) e limitando `TopBar` à esquerda de `RebirthToggleButton` quando o
+  tutorial está ativo (`topReserve > 0`), sem invadir o chat nem a faixa do tutorial.
 
 ## Como testar no Studio (humano/líder)
 

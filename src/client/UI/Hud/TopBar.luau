@@ -5,13 +5,14 @@ local TopBar = {}
 function TopBar.Create(parent: Instance, shop: () -> (), rebirth: () -> ())
 	local root = Theme.Frame(parent, "TopBar")
 	root.AnchorPoint = Vector2.new(0.5, 0)
-	root.Size = UDim2.fromOffset(520, 116)
+	root.Size = UDim2.fromOffset(520, 128)
 	local scale = Instance.new("UIScale")
 	scale.Parent = root
 	local labels: { [string]: TextLabel } = {}
 	local pops: { [string]: UIScale } = {}
 	for index, key in { "Coins", "Gems" } do
 		local capsule = Theme.Frame(root, key)
+		capsule.Active = true
 		capsule.BackgroundTransparency = 0
 		capsule.Size = UDim2.fromOffset(250, 62)
 		capsule.Position = UDim2.fromOffset((index - 1) * 270, 0)
