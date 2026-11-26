@@ -152,7 +152,7 @@ function HudController.Start()
 		end,
 	})
 	Menus.SetDailyBadge(function(available: boolean)
-		side.Daily.Text = if available then "🎁  !" else "🎁"
+		side.DailyIcon.Text = if available then "🎁  !" else "🎁"
 	end)
 	local bottom = BottomBar.Create(root, function()
 		HudController.Toast("Disponível em breve!", "info")
@@ -230,8 +230,9 @@ function HudController.Start()
 		local coreY = math.max(1, size.Y - topInset)
 		local portrait = size.X < 620 and not compact
 		local bottomScale = math.clamp((size.X - 396) / 440, 0.7, 1.15)
+		local bottomHeight = if compact then math.max(48, math.ceil(44 / bottomScale)) else 64
 		local bottomMargin = if portrait then 150 else 18
-		local bottomTopY = size.Y - bottomMargin - 64 * bottomScale
+		local bottomTopY = size.Y - bottomMargin - bottomHeight * bottomScale
 		local factor = math.clamp(size.X / 1100, 0.8, 1.15)
 		top.Scale.Scale = factor
 		-- Reserva a área do RebirthToggleButton original em paisagem compacta (leitura real ou fallback por fórmula).
@@ -306,6 +307,10 @@ function HudController.Start()
 			end
 		end
 		bottom.Scale.Scale = bottomScale
+		bottom.Root.Size = UDim2.fromOffset(440, bottomHeight)
+		for _, button in bottom.Buttons do
+			button.Size = UDim2.fromOffset(212, bottomHeight)
+		end
 		bottom.Root.Position = UDim2.new(0.5, if compact then 38 else 0, 1, -bottomMargin)
 		-- Em paisagem, apenas um aviso ocupa a faixa central livre entre os controles.
 		toastLimit = if compact then 1 elseif portrait then 2 else 3

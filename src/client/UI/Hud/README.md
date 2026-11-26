@@ -9,7 +9,7 @@ Dono: Squad A. `HudController` orquestra `TopBar`, `SideMenu`, `BottomBar` e `Th
   TopBar, SideMenu e BottomBar importam somente Theme; Theme e MenuCoordinator não têm requires.
 - `MenuCoordinator` coordena `Pets`, `Rebirth`, `Daily`, `Settings` e `Eggs`, fechando os
   demais modais ao abrir um deles (inclusive `FusionConfirmOverlay` ao sair de Pets).
-- PETS e INVENTORY abrem `PetsModal` diretamente (`Visible = true`) e escondem
+- PETS e MOCHILA (`PetsButton` / `InventoryButton`) abrem `PetsModal` diretamente (`Visible = true`) e escondem
   `PetsToggleButton`. A grade de pets já se recalcula automaticamente sem chamar
   `openBtn.Activated`, pois em `src/client/UI/Pets/PetInventoryUI.luau`:
   - `scrolling:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateGridLayout)` (linha 1425)
@@ -23,8 +23,8 @@ Dono: Squad A. `HudController` orquestra `TopBar`, `SideMenu`, `BottomBar` e `Th
   `RebirthUI.SetModalOpen` pela Squad B (ver `.alethe/a13-pendencias-squad-b.md`).
   Enquanto não há setter registrado, `RebirthToggleButton` permanece visível e o selo exibe
   aviso orientando a usá-lo.
-- SETTINGS abre `SoundSettings.ModalOverlay` e esconde `OpenSettings`. A diária abre
-  `DailyRewards.ModalOverlay` e esconde `OpenDaily`, espelhando `AvailableBadge` no botão
+- AJUSTES (`SettingsButton`) abre `SoundSettings.ModalOverlay` e esconde `OpenSettings`. A diária (DIÁRIO, `DailyButton`) abre
+  `DailyRewards.ModalOverlay` e esconde `OpenDaily`, espelhando `AvailableBadge` no ícone do botão
   diário do menu lateral.
 - Start espera PlayerGui por no máximo 10 s. Os cliques procuram as instâncias
   novamente, sem espera; se Pets/Rebirth ainda não existe, exibem aviso para tentar novamente.
@@ -48,11 +48,11 @@ Dono: Squad A. `HudController` orquestra `TopBar`, `SideMenu`, `BottomBar` e `Th
 1. Conectar Rojo nesta cópia e iniciar Play no PC. Conferir saldos abreviados,
    selo Rebirth e ausência dos três atalhos antigos e presença do botão Pets. Quebrar blocos e conferir
    pop dos saldos e avisos de recompensa.
-2. Clicar SHOP e nos dois +: “Loja em breve!”. Clicar AUTO-CLICK e x3 EGGS:
+2. Clicar LOJA e nos dois +: “Loja em breve!”. Clicar AUTO-CLICK e x3 OVOS:
    “Disponível em breve!”. Abrir um modal e conferir avisos acima dele.
-3. Clicar PETS e INVENTORY; conferir destaque e aviso, tocar o botão Pets original e verificar grade, equipar/desequipar, abas e fechar.
-   Abrir o selo Rebirth e conferir a confirmação original. Abrir SETTINGS e
-   alterar música/sons. Abrir a diária e conferir seu fluxo original.
+3. Clicar PETS e MOCHILA; conferir destaque e aviso, tocar o botão Pets original e verificar grade, equipar/desequipar, abas e fechar.
+   Abrir o selo Rebirth e conferir a confirmação original. Abrir AJUSTES e
+   alterar música/sons. Abrir DIÁRIO e conferir seu fluxo original.
 4. Usar perfil novo para conferir faixa e destaque do tutorial: faixa, topo e
    coluna não podem se cruzar. O destaque de equipar deve cercar o novo PETS.
 5. Emular 667x375 e 750x381, além de retrato, girando durante Play. Conferir

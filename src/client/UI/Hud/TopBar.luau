@@ -21,8 +21,9 @@ function TopBar.Create(parent: Instance, shop: () -> (), rebirth: () -> ())
 		pop.Parent = capsule
 		pops[key] = pop
 		local icon = Instance.new("TextLabel")
+		icon.Name = "Icon"
 		icon.BackgroundTransparency = 1
-		icon.Size = UDim2.fromOffset(58, 60)
+		icon.Size = UDim2.new(0, 58, 1, 0)
 		Theme.Text(icon, if key == "Coins" then "🪙" else "💎", 42)
 		icon.Parent = capsule
 		local value = Instance.new("TextLabel")

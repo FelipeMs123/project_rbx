@@ -8,7 +8,8 @@ function BottomBar.Create(parent: Instance, action: () -> ())
 	root.Size = UDim2.fromOffset(440, 64)
 	local scale = Instance.new("UIScale")
 	scale.Parent = root
-	for index, text in { "AUTO-CLICK", "x3 EGGS" } do
+	local buttons: { TextButton } = {}
+	for index, text in { "AUTO-CLICK", "x3 OVOS" } do
 		local button = Theme.Button(
 			root,
 			if index == 1 then "AutoClick" else "TripleEggs",
@@ -18,7 +19,8 @@ function BottomBar.Create(parent: Instance, action: () -> ())
 		)
 		button.Position = UDim2.fromOffset((index - 1) * 228, 0)
 		button.Size = UDim2.fromOffset(212, 64)
+		table.insert(buttons, button)
 	end
-	return { Root = root, Scale = scale }
+	return { Root = root, Scale = scale, Buttons = buttons }
 end
 return BottomBar
