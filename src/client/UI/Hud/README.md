@@ -30,10 +30,18 @@ Dono: Squad A. `HudController` orquestra `TopBar`, `SideMenu`, `BottomBar` e `Th
   novamente, sem espera; se Pets/Rebirth ainda não existe, exibem aviso para tentar novamente.
 - `SetTopReserve` reposiciona o topo e os avisos abaixo da faixa do tutorial.
   `CandyToasts` mantém DisplayOrder 100.
-- Nas telas baixas (`compact`, `size.Y < 440`, ex.: 667x375 e 750x381), a coluna fica compacta
-  e deslocada para dentro do analógico, mantendo `sideY` abaixo de `RebirthToggleButton`
-  (`0.37 * size.Y + 8`) e limitando `TopBar` à esquerda de `RebirthToggleButton` quando o
-  tutorial está ativo (`topReserve > 0`), sem invadir o chat nem a faixa do tutorial.
+- Nas telas baixas (`compact`, `ViewportSize.Y - GuiService:GetGuiInset().Y < 440`, ex.: 667x375 e 750x381), `CandyHud` e
+  `CandyToasts` usam `DeviceSafeInsets`:
+  - `TopBar` encosta no topo (`topY = 6`) alinhada à direita (`size.X - 12`) na mesma faixa
+    vertical dos botões do Roblox, com largura limitada (`size.X - 262`) para deixar folga
+    após os botões do canto superior esquerdo; se o tutorial estiver ativo (`topReserve > 0`),
+    desce para `topInset + topReserve + 2` e limita a largura à esquerda de `RebirthToggleButton`
+    (medido via `AbsolutePosition`/`AbsoluteSize` em `PlayerGui`, com fallback por fórmula).
+  - `SideMenu` fica compacto e deslocado para dentro do analógico, mantendo `sideY` abaixo de
+    `RebirthToggleButton` (`topInset + 0.37 * coreY + 8`).
+  - `RebirthBadge` sai do centro e fica alinhado à direita (`size.X - 12`), logo abaixo do
+    `SideMenu` (`sideY + 60 * sideFactor + 6`), mantendo o centro livre e sem sobrepor
+    `RebirthToggleButton`, `BottomBar` ou os toasts.
 
 ## Como testar no Studio (humano/líder)
 

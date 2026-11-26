@@ -20,6 +20,8 @@ local pending: string? = nil
 local dailyBadge: ((boolean) -> ())? = nil
 local availableBadge: GuiObject? = nil
 local fusionOverlay: GuiObject? = nil
+local rebirthToggle: GuiObject? = nil
+local rebirthToggleCallback: ((GuiObject?) -> ())? = nil
 local coordinating = false
 
 -- A Squad B pode registrar SetModalOpen sem um require de volta pelo HUD.
@@ -85,6 +87,11 @@ function MenuCoordinator.SetDailyBadge(callback: (boolean) -> ())
 	callback(badge ~= nil and badge.Visible)
 end
 
+function MenuCoordinator.SetRebirthToggleObserver(callback: (GuiObject?) -> ())
+	rebirthToggleCallback = callback
+	callback(rebirthToggle)
+end
+
 function MenuCoordinator.Mount(playerGui: Instance): () -> ()
 	local connections: { RBXScriptConnection } = {}
 	local watched: { [Instance]: boolean } = {}
@@ -119,6 +126,9 @@ function MenuCoordinator.Mount(playerGui: Instance): () -> ()
 		if menuKey == "Pets" then
 			table.insert(required, "FusionConfirmOverlay")
 		end
+		if menuKey == "Rebirth" then
+			table.insert(required, "RebirthToggleButton")
+		end
 		local discovery: RBXScriptConnection? = nil
 		local function inspect(item: Instance)
 			if not item:IsA("GuiObject") or not table.find(required, item.Name) then
@@ -141,6 +151,11 @@ function MenuCoordinator.Mount(playerGui: Instance): () -> ()
 				updateBadge()
 			elseif item.Name == "FusionConfirmOverlay" then
 				fusionOverlay = item
+			elseif item.Name == "RebirthToggleButton" then
+				rebirthToggle = item
+				if rebirthToggleCallback then
+					rebirthToggleCallback(item)
+				end
 			else
 				entry.modal = item
 				track(item:GetPropertyChangedSignal("Visible"):Connect(function()
@@ -181,6 +196,11 @@ function MenuCoordinator.Mount(playerGui: Instance): () -> ()
 				end
 			elseif menuKey == "Pets" then
 				fusionOverlay = nil
+			elseif menuKey == "Rebirth" then
+				rebirthToggle = nil
+				if rebirthToggleCallback then
+					rebirthToggleCallback(nil)
+				end
 			end
 		end))
 	end
@@ -199,6 +219,8 @@ function MenuCoordinator.Mount(playerGui: Instance): () -> ()
 		dailyBadge = nil
 		availableBadge = nil
 		fusionOverlay = nil
+		rebirthToggle = nil
+		rebirthToggleCallback = nil
 	end
 end
 

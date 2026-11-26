@@ -1,8 +1,10 @@
 --!strict
 -- StarterPlayerScripts.Client.Controllers.HudController | Dono: Squad A. Saldos e avisos.
+local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local Workspace = game:GetService("Workspace")
 local TopBar = require(script.Parent.Parent.UI.Hud.TopBar)
 local SideMenu = require(script.Parent.Parent.UI.Hud.SideMenu)
 local BottomBar = require(script.Parent.Parent.UI.Hud.BottomBar)
@@ -197,27 +199,61 @@ function HudController.Start()
 	layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	layout.Parent = stack
 	toastStack = stack
+	local rebirthToggle: GuiObject? = nil
+	local rebirthConns: { RBXScriptConnection } = {}
+	local function clearRebirthConns()
+		for _, connection in rebirthConns do
+			connection:Disconnect()
+		end
+		table.clear(rebirthConns)
+	end
+	table.insert(disconnectors, clearRebirthConns)
 	local function resize()
 		local size = root.AbsoluteSize
 		if size.X <= 0 or size.Y <= 0 then
 			return
 		end
-		local compact = size.Y < 440
+		local camera = Workspace.CurrentCamera
+		local guiTopInset = GuiService:GetGuiInset().Y
+		local coreViewportY = if camera and camera.ViewportSize.Y > 0
+			then camera.ViewportSize.Y - guiTopInset
+			elseif screen.ScreenInsets == Enum.ScreenInsets.DeviceSafeInsets then size.Y - guiTopInset
+			else size.Y
+		local compact = coreViewportY < 440
+		local targetInsets = if compact then Enum.ScreenInsets.DeviceSafeInsets else Enum.ScreenInsets.CoreUISafeInsets
+		if screen.ScreenInsets ~= targetInsets then
+			screen.ScreenInsets = targetInsets
+			toastScreen.ScreenInsets = targetInsets
+			return
+		end
+		local topInset = if compact then guiTopInset else 0
+		local coreY = math.max(1, size.Y - topInset)
 		local portrait = size.X < 620 and not compact
 		local bottomScale = math.clamp((size.X - 396) / 440, 0.7, 1.15)
 		local bottomMargin = if portrait then 150 else 18
 		local bottomTopY = size.Y - bottomMargin - 64 * bottomScale
 		local factor = math.clamp(size.X / 1100, 0.8, 1.15)
 		top.Scale.Scale = factor
-		-- Reserva a área do RebirthToggleButton original (0.98, 0.37) em paisagem compacta até a Squad B registrar o setter.
-		local rebirthLeft = 0.98 * size.X - 120
-		local rebirthTop = 0.37 * size.Y - 52
-		local rebirthBottom = 0.37 * size.Y + 8
-		local topY = if portrait then math.max(260, topReserve + 8) else topReserve + 2
+		-- Reserva a área do RebirthToggleButton original em paisagem compacta (leitura real ou fallback por fórmula).
+		local rebirthLeft = 0.98 * size.X - 132
+		local rebirthTop = topInset + 0.37 * coreY - 52
+		local rebirthBottom = topInset + 0.37 * coreY + 8
+		local toggle = rebirthToggle
+		if toggle and toggle.Parent and toggle.AbsoluteSize.X > 0 and toggle.AbsoluteSize.Y > 0 then
+			local togglePos = toggle.AbsolutePosition - screen.AbsolutePosition
+			local toggleSize = toggle.AbsoluteSize
+			rebirthLeft = togglePos.X - 6
+			rebirthTop = togglePos.Y - 4
+			rebirthBottom = togglePos.Y + toggleSize.Y + 4
+		end
+		local topY = if portrait
+			then math.max(260, topReserve + 8)
+			elseif compact then (if topReserve > 0 then topInset + topReserve + 2 else 6)
+			else topReserve + 2
 		local avoidsRebirthTop = compact and (topY + 56 * factor) > rebirthTop
 		local availableWidth = if avoidsRebirthTop
-			then math.min(size.X - 344, math.max(260, rebirthLeft - 246))
-			elseif compact then size.X - 344
+			then math.min(size.X - 262, math.max(260, rebirthLeft - 246))
+			elseif compact then size.X - 262
 			else size.X - 24
 		local width = math.min(520, availableWidth / factor)
 		top.Root.Size = UDim2.fromOffset(width, 128)
@@ -274,32 +310,31 @@ function HudController.Start()
 		-- Em paisagem, apenas um aviso ocupa a faixa central livre entre os controles.
 		toastLimit = if compact then 1 elseif portrait then 2 else 3
 		stack.ClipsDescendants = true
+		local compactToastWidth = math.min(220, math.max(140, (size.X - 12 - 168 - 8 - (size.X / 2 + 38)) * 2))
 		stack.Size = UDim2.fromOffset(
-			if compact then 220 elseif portrait then size.X - 140 else 360,
+			if compact then compactToastWidth elseif portrait then size.X - 140 else 360,
 			if compact then 52 elseif portrait then 110 else 168
 		)
 		stack.Position = if compact
 			then UDim2.fromOffset(size.X / 2 + 38, bottomTopY - 62)
 			elseif portrait then UDim2.fromOffset((size.X + 120) / 2, sideY)
 			else UDim2.fromOffset(size.X / 2, topY + 128 * factor + 8)
-		local hasToast = false
 		local count = 0
 		for _, child in stack:GetChildren() do
 			if child:IsA("TextLabel") then
 				count += 1
 				if count > toastLimit then
 					child:Destroy()
-				else
-					hasToast = true
 				end
 			end
 		end
-		-- O selo sai da barra superior na paisagem para caber junto ao tutorial.
+		-- O selo sai da barra superior na paisagem para liberar o centro e alinhar à direita abaixo do menu.
 		top.Rebirth.Parent = if compact then root else top.Root
-		top.Rebirth.Visible = not compact or not hasToast
+		top.Rebirth.Visible = true
+		top.Rebirth.AnchorPoint = if compact then Vector2.new(1, 0) else Vector2.new(0.5, 0)
 		top.Rebirth.Size = UDim2.fromOffset(if compact then 168 else 210, if compact then 45 else 56)
 		top.Rebirth.Position = if compact
-			then UDim2.fromOffset(size.X / 2 + 38, bottomTopY - 55)
+			then UDim2.fromOffset(size.X - 12, sideY + 60 * sideFactor + 6)
 			else UDim2.new(0.5, 0, 0, 72)
 	end
 	screen.Destroying:Connect(function()
@@ -320,11 +355,20 @@ function HudController.Start()
 	end))
 	resizeHud = resize
 	track(root:GetPropertyChangedSignal("AbsoluteSize"):Connect(resize))
+	track(root:GetPropertyChangedSignal("AbsolutePosition"):Connect(resize))
 	track(stack.ChildAdded:Connect(resize))
 	track(stack.ChildRemoved:Connect(resize))
 	screen.Parent = playerGui
 	toastScreen.Parent = playerGui
-	resize()
+	Menus.SetRebirthToggleObserver(function(button: GuiObject?)
+		clearRebirthConns()
+		rebirthToggle = button
+		if button then
+			table.insert(rebirthConns, button:GetPropertyChangedSignal("AbsolutePosition"):Connect(resize))
+			table.insert(rebirthConns, button:GetPropertyChangedSignal("AbsoluteSize"):Connect(resize))
+		end
+		resize()
+	end)
 	for _, entry in pending do
 		HudController.Toast(entry.text, entry.kind)
 	end
