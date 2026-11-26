@@ -102,7 +102,7 @@ local candyPlaza = folder("CandyPlaza", {
 	folder("Eggs", makeModels(plaza.Eggs)),
 	folder("Scenery", makeParts(plaza.Scenery)),
 })
-assert(#plaza.Scenery == 54 and #plaza.BlockSpawns == 10 and #plaza.Eggs == 1, "Contagem da CandyPlaza incorreta")
+assert(#plaza.Scenery == 80 and #plaza.BlockSpawns == 10 and #plaza.Eggs == 1, "Contagem da CandyPlaza incorreta")
 
 local blockModels = {}
 local expectedCounts: { [string]: number } = { GummyBlock = 6, LollipopBlock = 6, ChocoBlock = 7, CloudBlock = 6 }
@@ -121,7 +121,7 @@ local chocolateFalls = folder("ChocolateFalls", {
 	folder("Scenery", makeParts(falls.Scenery)),
 })
 assert(
-	#falls.Scenery == 47 and #falls.BlockSpawns == 10 and #falls.Eggs == 1 and #falls.Gate.Parts == 5,
+	#falls.Scenery == 72 and #falls.BlockSpawns == 10 and #falls.Eggs == 1 and #falls.Gate.Parts == 5,
 	"Contagem da ChocolateFalls incorreta"
 )
 
@@ -134,7 +134,7 @@ local cottonClouds = folder("CottonClouds", {
 	folder("Scenery", makeParts(clouds.Scenery)),
 })
 assert(
-	#clouds.Scenery == 50 and #clouds.BlockSpawns == 10 and #clouds.Eggs == 0 and #clouds.Gate.Parts == 5,
+	#clouds.Scenery == 74 and #clouds.BlockSpawns == 10 and #clouds.Eggs == 0 and #clouds.Gate.Parts == 5,
 	"Contagem da CottonClouds incorreta"
 )
 
@@ -163,6 +163,6 @@ fs.writeFile(
 )
 fs.writeFile("assets/PetModels.model.json", serde.encode("json", folder("PetModels", petModels), true) .. "\n")
 print(
-	`Geradas {partCount} Parts totais: CandyPlaza (54 cenário + 10 spawns + 1 spawn + CandyEgg 8), ChocolateFalls (47 cenário + 10 spawns + 1 spawn + 1 bounds + Gate 5 + ChocolateEgg 8), CottonClouds (50 cenário + 10 spawns + 1 spawn + 1 bounds + Gate 5 = 67; Eggs vazia), BlockTemplates (4 modelos = 25), PetModels (5 modelos = 50).`
+	`Geradas {partCount} Parts totais: CandyPlaza (80 cenário + 10 spawns + 1 spawn + CandyEgg 8), ChocolateFalls (72 cenário + 10 spawns + 1 spawn + 1 bounds + Gate 5 + ChocolateEgg 8), CottonClouds (74 cenário + 10 spawns + 1 spawn + 1 bounds + Gate 5 = 91; Eggs vazia), BlockTemplates (4 modelos = 25), PetModels (5 modelos = 50).`
 )
 print("PrimaryPart definida em todos os blocos, ovos, portão e 5 pets (Core).")

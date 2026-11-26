@@ -1778,7 +1778,7 @@
                 "position": [
                   209,
                   6,
-                  -9.75
+                  -10.9
                 ]
               }
             },
@@ -1825,7 +1825,7 @@
                 "position": [
                   209,
                   6,
-                  9.75
+                  10.9
                 ]
               }
             },
@@ -1872,7 +1872,7 @@
                 "position": [
                   209,
                   12.5,
-                  -9.75
+                  -10.9
                 ]
               }
             },
@@ -1919,7 +1919,7 @@
                 "position": [
                   209,
                   12.5,
-                  9.75
+                  10.9
                 ]
               }
             },
@@ -3486,6 +3486,1227 @@
               5.5,
               5.5,
               5.5
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EastCookieGate_Lintel",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  209,
+                  12.2,
+                  0
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.9411764705882353,
+              0.7647058823529411,
+              0.5294117647058824
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              2.4,
+              2.2,
+              21
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EastCookieGate_Icing",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  209,
+                  13.5,
+                  0
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              2.6,
+              0.8,
+              21.4
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EastCookieGate_CookieN",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  209,
+                  9.2,
+                  -10.9
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.9411764705882353,
+              0.7647058823529411,
+              0.5294117647058824
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              1.2,
+              4.8,
+              4.8
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EastCookieGate_CookieS",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  209,
+                  9.2,
+                  10.9
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.9411764705882353,
+              0.7647058823529411,
+              0.5294117647058824
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Cylinder",
+            "Size": [
+              1.2,
+              4.8,
+              4.8
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "EastCookieGate_CaramelGem",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  209,
+                  12.2,
+                  0
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "Neon",
+            "Shape": "Ball",
+            "Size": [
+              2.2,
+              2.2,
+              2.2
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "ChocoHillNW_Base",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  106,
+                  2,
+                  -56
+                ]
+              }
+            },
+            "CanCollide": true,
+            "CanQuery": false,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              16,
+              9,
+              16
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "ChocoHillNW_Top",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  106,
+                  5.4,
+                  -56
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              11,
+              5.5,
+              11
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "ChocoHillNE_Base",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  172,
+                  2,
+                  -56
+                ]
+              }
+            },
+            "CanCollide": true,
+            "CanQuery": false,
+            "Color": [
+              0.47058823529411764,
+              0.2823529411764706,
+              0.16470588235294117
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              16,
+              9,
+              16
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "ChocoHillNE_Top",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  172,
+                  5.4,
+                  -56
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              11,
+              5.5,
+              11
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "ChocoHillSW_Base",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  106,
+                  2,
+                  56
+                ]
+              }
+            },
+            "CanCollide": true,
+            "CanQuery": false,
+            "Color": [
+              0.47058823529411764,
+              0.2823529411764706,
+              0.16470588235294117
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              16,
+              9,
+              16
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "ChocoHillSW_Top",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  106,
+                  5.4,
+                  56
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              11,
+              5.5,
+              11
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "ChocoHillSE_Base",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  172,
+                  2,
+                  56
+                ]
+              }
+            },
+            "CanCollide": true,
+            "CanQuery": false,
+            "Color": [
+              0.29411764705882354,
+              0.1568627450980392,
+              0.08627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              16,
+              9,
+              16
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "ChocoHillSE_Top",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ],
+                "position": [
+                  172,
+                  5.4,
+                  56
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Ball",
+            "Size": [
+              11,
+              5.5,
+              11
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_01",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9396926207859084,
+                    0,
+                    0.3420201433256687
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    -0.3420201433256687,
+                    0,
+                    0.9396926207859084
+                  ]
+                ],
+                "position": [
+                  96,
+                  0.2,
+                  -18
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_02",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.8191520442889918,
+                    -0.0,
+                    -0.573576436351046
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0.573576436351046,
+                    0,
+                    0.8191520442889918
+                  ]
+                ],
+                "position": [
+                  96,
+                  0.2,
+                  18
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_03",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.6427876096865394,
+                    0,
+                    0.766044443118978
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    -0.766044443118978,
+                    0,
+                    0.6427876096865394
+                  ]
+                ],
+                "position": [
+                  108,
+                  0.2,
+                  -34
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.37254901960784315,
+              0.6352941176470588
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_04",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9659258262890683,
+                    -0.0,
+                    -0.25881904510252074
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0.25881904510252074,
+                    0,
+                    0.9659258262890683
+                  ]
+                ],
+                "position": [
+                  108,
+                  0.2,
+                  34
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_05",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.8660254037844387,
+                    0,
+                    0.49999999999999994
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    -0.49999999999999994,
+                    0,
+                    0.8660254037844387
+                  ]
+                ],
+                "position": [
+                  124,
+                  0.2,
+                  -36
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_06",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.7071067811865476,
+                    -0.0,
+                    -0.7071067811865476
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0.7071067811865476,
+                    0,
+                    0.7071067811865476
+                  ]
+                ],
+                "position": [
+                  156,
+                  0.2,
+                  -36
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.9019607843137255,
+              0.37254901960784315
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_07",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.42261826174069944,
+                    0,
+                    0.9063077870366499
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    -0.9063077870366499,
+                    0,
+                    0.42261826174069944
+                  ]
+                ],
+                "position": [
+                  124,
+                  0.2,
+                  34
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.9411764705882353,
+              0.7647058823529411,
+              0.5294117647058824
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_08",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9063077870366499,
+                    -0.0,
+                    -0.42261826174069944
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0.42261826174069944,
+                    0,
+                    0.9063077870366499
+                  ]
+                ],
+                "position": [
+                  156,
+                  0.2,
+                  34
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_09",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9659258262890683,
+                    0,
+                    0.25881904510252074
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    -0.25881904510252074,
+                    0,
+                    0.9659258262890683
+                  ]
+                ],
+                "position": [
+                  186,
+                  0.2,
+                  -26
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_10",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.766044443118978,
+                    -0.0,
+                    -0.6427876096865393
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0.6427876096865393,
+                    0,
+                    0.766044443118978
+                  ]
+                ],
+                "position": [
+                  186,
+                  0.2,
+                  26
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.2549019607843137,
+              0.35294117647058826
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_11",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.8191520442889918,
+                    0,
+                    0.573576436351046
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    -0.573576436351046,
+                    0,
+                    0.8191520442889918
+                  ]
+                ],
+                "position": [
+                  194,
+                  0.2,
+                  -16
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              0.9607843137254902,
+              0.7254901960784313,
+              0.29411764705882354
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
+            ],
+            "Transparency": 0
+          }
+        },
+        {
+          "ClassName": "Part",
+          "Name": "Sprinkle_12",
+          "Properties": {
+            "Anchored": true,
+            "CFrame": {
+              "CFrame": {
+                "orientation": [
+                  [
+                    0.9396926207859084,
+                    -0.0,
+                    -0.3420201433256687
+                  ],
+                  [
+                    0,
+                    1,
+                    -0.0
+                  ],
+                  [
+                    0.3420201433256687,
+                    0,
+                    0.9396926207859084
+                  ]
+                ],
+                "position": [
+                  194,
+                  0.2,
+                  16
+                ]
+              }
+            },
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Color": [
+              1,
+              0.9607843137254902,
+              0.8627450980392157
+            ],
+            "Material": "SmoothPlastic",
+            "Shape": "Block",
+            "Size": [
+              1.8,
+              0.1,
+              0.7
             ],
             "Transparency": 0
           }
