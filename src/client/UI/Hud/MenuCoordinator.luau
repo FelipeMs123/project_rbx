@@ -22,6 +22,7 @@ local availableBadge: GuiObject? = nil
 local fusionOverlay: GuiObject? = nil
 local rebirthToggle: GuiObject? = nil
 local rebirthToggleCallback: ((GuiObject?) -> ())? = nil
+local rebirthRegisteredCallback: ((boolean) -> ())? = nil
 local coordinating = false
 
 -- A Squad B pode registrar SetModalOpen sem um require de volta pelo HUD.
@@ -29,9 +30,15 @@ function MenuCoordinator.Register(key: string, setter: Setter): () -> ()
 	local entry = entries[key]
 	assert(entry, "Menu desconhecido")
 	entry.setter = setter
+	if key == "Rebirth" and rebirthRegisteredCallback then
+		rebirthRegisteredCallback(true)
+	end
 	return function()
 		if entry.setter == setter then
 			entry.setter = nil
+			if key == "Rebirth" and rebirthRegisteredCallback then
+				rebirthRegisteredCallback(false)
+			end
 		end
 	end
 end
@@ -90,6 +97,11 @@ end
 function MenuCoordinator.SetRebirthToggleObserver(callback: (GuiObject?) -> ())
 	rebirthToggleCallback = callback
 	callback(rebirthToggle)
+end
+
+function MenuCoordinator.SetRebirthRegisteredObserver(callback: (boolean) -> ())
+	rebirthRegisteredCallback = callback
+	callback(entries.Rebirth.setter ~= nil)
 end
 
 function MenuCoordinator.Mount(playerGui: Instance): () -> ()
@@ -221,6 +233,7 @@ function MenuCoordinator.Mount(playerGui: Instance): () -> ()
 		fusionOverlay = nil
 		rebirthToggle = nil
 		rebirthToggleCallback = nil
+		rebirthRegisteredCallback = nil
 	end
 end
 

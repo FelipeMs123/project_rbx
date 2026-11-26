@@ -119,7 +119,7 @@ function HudController.Start()
 	toastRoot.Size = UDim2.fromScale(1, 1)
 	toastRoot.Parent = toastScreen
 	local function shop()
-		HudController.Toast("Loja em breve!", "info")
+		HudController.Toast("Shop coming soon!", "info")
 	end
 	local disconnectors: { () -> () } = {}
 	-- Observe usa Signal.Connection; os demais eventos usam RBXScriptConnection.
@@ -130,9 +130,7 @@ function HudController.Start()
 	end
 	local unmountMenus = Menus.Mount(playerGui)
 	local function openMenu(key: string)
-		if not Menus.Open(key) then
-			HudController.Toast("Use o botão Rebirth original para abrir a confirmação.", "info")
-		end
+		Menus.Open(key)
 	end
 	local function openPets()
 		openMenu("Pets")
@@ -152,10 +150,10 @@ function HudController.Start()
 		end,
 	})
 	Menus.SetDailyBadge(function(available: boolean)
-		side.DailyIcon.Text = if available then "🎁  !" else "🎁"
+		side.DailyBadge.Visible = available
 	end)
 	local bottom = BottomBar.Create(root, function()
-		HudController.Toast("Disponível em breve!", "info")
+		HudController.Toast("Coming soon!", "info")
 	end)
 	for _, key in { "Coins", "Gems" } do
 		local previous: number? = nil
@@ -180,7 +178,7 @@ function HudController.Start()
 	end
 	track(DataController.Observe("Rebirths", function(value: any)
 		if type(value) == "number" then
-			top.Rebirth.Text = "Rebirth: " .. Format.abbreviate(value)
+			top.RebirthLabel.Text = "Rebirth [" .. Format.abbreviate(value) .. "]"
 		end
 	end))
 	local stack = Instance.new("Frame")
@@ -200,6 +198,7 @@ function HudController.Start()
 	layout.Parent = stack
 	toastStack = stack
 	local rebirthToggle: GuiObject? = nil
+	local rebirthRegistered = false
 	local rebirthConns: { RBXScriptConnection } = {}
 	local function clearRebirthConns()
 		for _, connection in rebirthConns do
@@ -236,19 +235,20 @@ function HudController.Start()
 		local factor = math.clamp(size.X / 1100, 0.8, 1.15)
 		top.Scale.Scale = factor
 		-- Reserva a área do RebirthToggleButton original em paisagem compacta (leitura real ou fallback por fórmula).
-		local rebirthLeft = 0.98 * size.X - 132
+		local toggleLeft = 0.98 * size.X - 126
 		local rebirthTop = topInset + 0.37 * coreY - 52
 		local rebirthBottom = topInset + 0.37 * coreY + 8
 		local toggle = rebirthToggle
 		if toggle and toggle.Parent and toggle.AbsoluteSize.X > 0 and toggle.AbsoluteSize.Y > 0 then
 			local togglePos = toggle.AbsolutePosition - screen.AbsolutePosition
 			local toggleSize = toggle.AbsoluteSize
-			rebirthLeft = togglePos.X - 6
+			toggleLeft = togglePos.X
 			rebirthTop = togglePos.Y - 4
 			rebirthBottom = togglePos.Y + toggleSize.Y + 4
 		end
+		local rebirthLeft = toggleLeft - 6
 		local topY = if portrait
-			then math.max(260, topReserve + 8)
+			then topReserve + 8
 			elseif compact then (if topReserve > 0 then topInset + topReserve + 2 else 6)
 			else topReserve + 2
 		local avoidsRebirthTop = compact and (topY + 56 * factor) > rebirthTop
@@ -257,73 +257,61 @@ function HudController.Start()
 			elseif compact then size.X - 262
 			else size.X - 24
 		local width = math.min(520, availableWidth / factor)
-		top.Root.Size = UDim2.fromOffset(width, 128)
+		top.Root.Size = UDim2.fromOffset(width, 62)
 		local capsuleWidth = (width - 20) / 2
 		for index, key in { "Coins", "Gems" } do
 			local capsule = top.Labels[key].Parent :: Frame
 			capsule.Size = UDim2.fromOffset(capsuleWidth, if compact then 56 else 62)
 			capsule.Position = UDim2.fromOffset((index - 1) * (capsuleWidth + 20), 0)
-			top.Labels[key].Size = UDim2.fromOffset(capsuleWidth - 120, 56)
-			top.Labels[key].Position = UDim2.fromOffset(58, if compact then 0 else 3)
+			top.Labels[key].Size = UDim2.fromOffset(capsuleWidth - 118, 52)
+			top.Labels[key].Position = UDim2.new(0, 56, 0.5, 0)
 			local plus = capsule:FindFirstChild("Add" .. key) :: TextButton
-			plus.Position = UDim2.fromOffset(capsuleWidth - 58, if compact then 0 else 3)
+			plus.Size = UDim2.fromOffset(56, 56)
+			plus.Position = UDim2.new(0, capsuleWidth - 58, 0.5, 0)
 		end
 		local topRight = if avoidsRebirthTop then math.min(size.X - 12, rebirthLeft) else size.X - 12
 		local topX = if compact then topRight - width * factor / 2 else size.X / 2
 		top.Root.Position = UDim2.fromOffset(topX, topY)
 		local sideFactor = if compact
-			then 0.75
-			elseif portrait then 0.8
-			else math.clamp((size.Y - 145) / 492, 0.75, 0.95)
+			then 0.56
+			elseif portrait then 0.72
+			else math.clamp((size.Y - 145) / 268, 0.75, 0.95)
 		side.Scale.Scale = sideFactor
-		side.Root.AnchorPoint = if compact or portrait then Vector2.new(0, 0) else Vector2.new(0, 0.5)
-		local smallMenu = compact or portrait
-		side.Root.Size = if compact
-			then UDim2.fromOffset(316, 60)
-			elseif portrait then UDim2.fromOffset(124, 188)
-			else UDim2.fromOffset(108, 492)
-		local sideY = if compact
-			then math.max(bottomTopY - 117, rebirthBottom)
-			else (if portrait then topY + 128 * factor + 12 else math.max(size.Y * 0.25, 84))
-		side.Root.Position = if smallMenu
-			then UDim2.fromOffset(if compact then size.X - 249 else 14, sideY)
-			else UDim2.new(0, 16, 0.5, 0)
-		for _, child in side.Root:GetChildren() do
-			if child:IsA("TextButton") then
-				local index = table.find(
-					{ "DailyButton", "ShopButton", "PetsButton", "InventoryButton", "SettingsButton" },
-					child.Name
-				) or 1
-				child.Size = UDim2.fromOffset(
-					if smallMenu then 60 else 108,
-					if smallMenu then 60 else (if index == 1 then 60 else 100)
-				)
-				local x = if compact then (index - 1) * 64 elseif portrait then ((index - 1) % 2) * 64 else 0
-				local y = if compact
-					then 0
-					elseif portrait then math.floor((index - 1) / 2) * 64
-					else (if index == 1 then 0 else 68 + (index - 2) * 108)
-				child.Position = UDim2.fromOffset(x, y)
-			end
+		side.Root.Size = UDim2.fromOffset(176, 268)
+		side.Root.AnchorPoint = if compact then Vector2.new(0, 0) else Vector2.new(0, 0.5)
+		if compact then
+			local sideHeight = 268 * sideFactor
+			local minSideY = topInset + 6
+			local maxSideY = math.max(minSideY, size.Y - 124 - sideHeight)
+			local desiredSideY = topInset + (coreY - sideHeight) / 2
+			side.Root.Position = UDim2.fromOffset(12, math.clamp(desiredSideY, minSideY, maxSideY))
+		else
+			side.Root.Position = UDim2.new(0, if portrait then 12 else 16, 0.5, 0)
 		end
 		bottom.Scale.Scale = bottomScale
 		bottom.Root.Size = UDim2.fromOffset(440, bottomHeight)
 		for _, button in bottom.Buttons do
 			button.Size = UDim2.fromOffset(212, bottomHeight)
 		end
-		bottom.Root.Position = UDim2.new(0.5, if compact then 38 else 0, 1, -bottomMargin)
+		bottom.Root.Position = UDim2.new(0.5, 0, 1, -bottomMargin)
 		-- Em paisagem, apenas um aviso ocupa a faixa central livre entre os controles.
 		toastLimit = if compact then 1 elseif portrait then 2 else 3
 		stack.ClipsDescendants = true
-		local compactToastWidth = math.min(220, math.max(140, (size.X - 12 - 168 - 8 - (size.X / 2 + 38)) * 2))
+		local compactToastWidth = math.min(260, math.max(160, (size.X - 12 - 168 - 12 - size.X / 2) * 2))
+		local stackTop = topY + 62 * factor + 10
+		local portraitOverlapsRebirth = portrait and (stackTop + 110) > rebirthTop and stackTop < rebirthBottom
+		local portraitToastWidth = if portraitOverlapsRebirth
+			then math.clamp(toggleLeft - 8 - 16, 160, size.X - 32)
+			else size.X - 32
+		local portraitToastX = if portraitOverlapsRebirth then 16 + portraitToastWidth / 2 else size.X / 2
 		stack.Size = UDim2.fromOffset(
-			if compact then compactToastWidth elseif portrait then size.X - 140 else 360,
+			if compact then compactToastWidth elseif portrait then portraitToastWidth else 360,
 			if compact then 52 elseif portrait then 110 else 168
 		)
 		stack.Position = if compact
-			then UDim2.fromOffset(size.X / 2 + 38, bottomTopY - 62)
-			elseif portrait then UDim2.fromOffset((size.X + 120) / 2, sideY)
-			else UDim2.fromOffset(size.X / 2, topY + 128 * factor + 8)
+			then UDim2.fromOffset(size.X / 2, bottomTopY - 62)
+			elseif portrait then UDim2.fromOffset(portraitToastX, stackTop)
+			else UDim2.fromOffset(size.X / 2, stackTop)
 		local count = 0
 		for _, child in stack:GetChildren() do
 			if child:IsA("TextLabel") then
@@ -333,14 +321,22 @@ function HudController.Start()
 				end
 			end
 		end
-		-- O selo sai da barra superior na paisagem para liberar o centro e alinhar à direita abaixo do menu.
-		top.Rebirth.Parent = if compact then root else top.Root
-		top.Rebirth.Visible = true
-		top.Rebirth.AnchorPoint = if compact then Vector2.new(1, 0) else Vector2.new(0.5, 0)
-		top.Rebirth.Size = UDim2.fromOffset(if compact then 168 else 210, if compact then 45 else 56)
-		top.Rebirth.Position = if compact
-			then UDim2.fromOffset(size.X - 12, sideY + 60 * sideFactor + 6)
-			else UDim2.new(0.5, 0, 0, 72)
+		-- Selo Rebirth [N] só aparece após Register("Rebirth", setter); até lá fica escondido.
+		top.Rebirth.Parent = root
+		top.Rebirth.Visible = rebirthRegistered
+		if not rebirthRegistered then
+			return
+		end
+		top.Rebirth.AnchorPoint = Vector2.new(1, 0)
+		local badgeWidth = if compact or portrait then 168 else 200
+		local badgeHeight = if compact then 45 elseif portrait then 48 else 54
+		top.Rebirth.Size = UDim2.fromOffset(badgeWidth, badgeHeight)
+		local minBadgeY = rebirthBottom + 6
+		local maxBadgeY = math.max(minBadgeY, bottomTopY - 8 - badgeHeight)
+		local desiredBadgeY = topInset + (coreY - badgeHeight) / 2
+		local badgeRightMargin = if compact or portrait then 12 else 16
+		top.Rebirth.Position =
+			UDim2.fromOffset(size.X - badgeRightMargin, math.clamp(desiredBadgeY, minBadgeY, maxBadgeY))
 	end
 	screen.Destroying:Connect(function()
 		for _, disconnect in disconnectors do
@@ -374,6 +370,11 @@ function HudController.Start()
 		end
 		resize()
 	end)
+	Menus.SetRebirthRegisteredObserver(function(registered: boolean)
+		rebirthRegistered = registered
+		top.Rebirth.Visible = registered
+		resize()
+	end)
 	for _, entry in pending do
 		HudController.Toast(entry.text, entry.kind)
 	end
@@ -388,8 +389,8 @@ function HudController.Start()
 			HudController.Toast(
 				"+"
 					.. Format.abbreviate(coins)
-					.. " moedas"
-					.. (if gems > 0 then " · +" .. Format.abbreviate(gems) .. " gemas" else ""),
+					.. " coins"
+					.. (if gems > 0 then " · +" .. Format.abbreviate(gems) .. " gems" else ""),
 				"reward"
 			)
 		else

@@ -8,6 +8,7 @@ Theme.Colors = {
 	Inventory = Color3.fromRGB(184, 112, 53),
 	Settings = Color3.fromRGB(135, 143, 158),
 	Orange = Color3.fromRGB(255, 138, 52),
+	Rebirth = Color3.fromRGB(110, 56, 175),
 	Red = Color3.fromRGB(255, 77, 87),
 	Gold = Color3.fromRGB(255, 207, 50),
 } :: { [string]: Color3 }
